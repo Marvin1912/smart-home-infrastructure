@@ -1,41 +1,11 @@
 plugins {
     id 'java'
-    id 'com.bmuschko.docker-remote-api' version '9.3.2'
 }
-
-import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 ext {
     registry = project.registry_local
-
-    version_domain_controller = project.findProperty("version_domain_controller") ?: 'latest'
-    version_host_1 = project.findProperty("version_host_1") ?: 'latest'
-    version_host_2 = project.findProperty("version_host_2") ?: 'latest'
-    version_host_3 = project.findProperty("version_host_3") ?: 'latest'
 }
 
-def createDockerBuildImageTask(String taskName, String dockerfilePath, String imageName) {
-    tasks.create(taskName, DockerBuildImage) {
-        inputDir = file("$project.rootDir/docker_files")
-        dockerFile = file("$project.rootDir/docker_files/$dockerfilePath")
-        images = ([registry + '/' + imageName])
-    }
-}
-
-tasks.create('buildDockerImages') {
-    dependsOn createDockerBuildImageTask('domainControllerBuild', 'domain_controller/Dockerfile', "domain-controller:$version_domain_controller"),
-            createDockerBuildImageTask('hostOneBuild', 'hosts/host_1/Dockerfile', "host-1:$version_host_1"),
-            createDockerBuildImageTask('hostTwoBuild', 'hosts/host_2/Dockerfile', "host-2:$version_host_2"),
-            createDockerBuildImageTask('hostThreeBuild', 'hosts/host_3/Dockerfile', "host-3:$version_host_3")
-
-}
-
-tasks.register('pushDockerImages', DockerPushImage) {
-    images = new HashSet([
-            "$registry/domain-controller:$version_domain_controller".toLowerCase(),
-            "$registry/host-1:$version_host_1".toLowerCase(),
-            "$registry/host-2:$version_host_2".toLowerCase(),
-            "$registry/host-3:$version_host_3".toLowerCase()]
-    )
-}
+// This project now serves as a configuration repository for smart home infrastructure.
+// Docker images are built and managed separately through the docker-compose setup.
+// The Gradle build is maintained for potential future custom tooling and utilities.
