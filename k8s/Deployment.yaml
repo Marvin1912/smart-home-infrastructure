@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: java-app-deployment
+  name: applications
   labels:
-    app: k8s-java-app
+    app: applications
   namespace: default
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: k8s-java-app
+      app: applications
   template:
     metadata:
       labels:
-        app: k8s-java-app
+        app: applications
     spec:
       containers:
-        - name: java-app-container
-          image: 192.168.178.29:5000/k8s:latest
+        - name: applications
+          image: localhost:5000/applications:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 8080

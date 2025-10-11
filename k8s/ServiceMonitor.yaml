@@ -1,7 +1,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: k8s-java-app-service-monitor
+  name: applications-service-monitor
   namespace: default
   labels:
     release: kube-prometheus-stack
@@ -15,4 +15,4 @@ spec:
     - default
   selector:
     matchLabels:
-      app: k8s-java-app
+      app: applications
