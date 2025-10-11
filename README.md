@@ -83,3 +83,74 @@ A local Docker registry runs on the server so that the images can be quickly dis
 - **adapter_application**: Data processing and import service
 - **frontend**: Web frontend for applications
 - **portfolio-performance**: Financial portfolio management application
+
+## Kubernetes Deployment
+
+This infrastructure also supports deployment on Kubernetes with comprehensive resource configurations for scalable and resilient application deployment.
+
+### Kubernetes Resources
+
+The `k8s/` directory contains all necessary Kubernetes manifest files for deploying the Java application:
+
+#### Deployment (`k8s/Deployment.yaml`)
+- **Purpose**: Manages the deployment of the Java application with 3 replicas
+- **Image**: Uses the local Docker registry image `192.168.178.29:5000/k8s:latest`
+- **Resources**: Configured with memory limits (512Mi request, 1Gi limit) and CPU limits (250m request, 500m limit)
+- **Java Options**: JVM tuned with `-Xms512m -Xmx1024m` for optimal performance
+- **Port**: Exposes application on port 8080
+
+#### Service (`k8s/Service.yaml`)
+- **Purpose**: Provides stable network access to the Java application pods
+- **Type**: ClusterIP for internal cluster access
+- **Port Mapping**: External port 7080 → Internal port 8080
+- **Selector**: Routes traffic to pods labeled with `app: k8s-java-app`
+
+#### IngressRoute (`k8s/IngressRoute.yaml`)
+- **Purpose**: Configures external access routes using Traefik ingress controller
+- **Routes**:
+  - `prometheus.kube.test.com` → Prometheus (port 9090)
+  - `grafana.kube.test.com` → Grafana (port 80)
+  - `app.kube.test.com` → Java Application (port 7080)
+- **Entry Point**: Configured for web traffic on standard HTTP port
+
+#### ServiceMonitor (`k8s/ServiceMonitor.yaml`)
+- **Purpose**: Enables Prometheus monitoring for the Java application
+- **Metrics Endpoint**: Scrapes `/actuator/prometheus` endpoint for application metrics
+- **Port**: Targets the `http-web` service port
+- **Namespace**: Monitors resources in the `default` namespace
+- **Label Selector**: Specifically monitors services with `app: k8s-java-app` label
+
+### Kubernetes Architecture
+
+The Kubernetes deployment provides:
+
+- **High Availability**: 3 replicas ensure application availability
+- **Resource Management**: Controlled CPU and memory allocation
+- **Service Discovery**: Stable service endpoints for internal communication
+- **External Access**: Traefik-based ingress for external traffic routing
+- **Monitoring Integration**: Prometheus-based metrics collection and monitoring
+- **Scalability**: Easy horizontal scaling through replica configuration
+
+### Deployment Instructions
+
+1. **Prerequisites**:
+   - Kubernetes cluster with Traefik ingress controller
+   - Prometheus stack installed (`kube-prometheus-stack`)
+   - Access to the local Docker registry at `192.168.178.29:5000`
+
+2. **Deploy the application**:
+   ```bash
+   kubectl apply -f k8s/
+   ```
+
+3. **Verify deployment**:
+   ```bash
+   kubectl get pods -l app=k8s-java-app
+   kubectl get services
+   kubectl get ingressroutes
+   ```
+
+4. **Access the application**:
+   - Application: http://app.kube.test.com
+   - Prometheus: http://prometheus.kube.test.com
+   - Grafana: http://grafana.kube.test.com
