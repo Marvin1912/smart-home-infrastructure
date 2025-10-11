@@ -34,9 +34,6 @@
         <mxCell id="FN8TU1mAKjDCOiVMt3JM-15" value="Postgres" style="shape=cylinder;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;fillColor=none;fontSize=25;" parent="1" vertex="1">
           <mxGeometry x="1386" y="225" width="110" height="110" as="geometry" />
         </mxCell>
-          <mxCell id="FN8TU1mAKjDCOiVMt3JM-40" value="" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffffff;fontSize=12;" parent="1" vertex="1">
-          <mxGeometry x="1324" y="180" width="20" height="20" as="geometry" />
-        </mxCell>
         <mxCell id="FN8TU1mAKjDCOiVMt3JM-51" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;startArrow=none;startFill=0;endArrow=classic;endFill=1;fontSize=12;" parent="1" source="FN8TU1mAKjDCOiVMt3JM-45" target="FN8TU1mAKjDCOiVMt3JM-8" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
