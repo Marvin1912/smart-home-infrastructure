@@ -31,3 +31,10 @@ spec:
             limits:
               memory: "1024Mi"
               cpu: "500m"
+          volumeMounts:
+          - name: data
+            mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: local-mount-pvc
