@@ -80,6 +80,8 @@ services:
     image: localhost:5000/applications:latest
     container_name: adapter_application
     hostname: adapter_application
+    env_file:
+      - ../../env_file.env
     environment:
       IMPORTER_IN: /app/import
       IMPORTER_DONE: /app/import/done
@@ -94,6 +96,7 @@ services:
       EXPORTER_FOLDER: /app/export
       UPLOADER_COST_EXPORT_FOLDER: /app/export
       UPLOADER_CREDENTIALS_PATH: /app/google/credentials.json
+      VOCABULARY_DEEPL_API_KEY: ${VOCABULARY_DEEPL_API_KEY}  
     volumes:
       - "/home/marvin/camt:/app/camt"
       - "/home/marvin/import:/app/import"  

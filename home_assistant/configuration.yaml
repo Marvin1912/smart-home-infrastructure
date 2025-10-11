@@ -43,7 +43,7 @@ influxdb:
   tags:
     source: HA
   tags_attributes:
-    - friendly_name
+    - friendly_name 
   default_measurement: units
   include:
     entity_globs:
