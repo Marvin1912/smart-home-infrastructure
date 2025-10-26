@@ -139,6 +139,10 @@ services:
       - 9005:9001 
 
   portfolio-performance:
+    build:
+      context: ../portfolio-performance-image
+      args:
+        PACKAGING: firefox
     image: localhost:5000/portfolio:latest
     container_name: portfolio
     restart: always
