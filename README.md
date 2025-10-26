@@ -92,27 +92,17 @@ The Portfolio Performance application uses OAuth 2.0 authentication for connecti
 
 #### Basic OAuth Traffic Capture
 ```bash
-# Monitor HTTP/HTTPS traffic for OAuth-related requests
-docker exec -it portfolio tcpdump -i any -A -s 0 -n \
-  'tcp port 80 or tcp port 443' \
-  | grep -E --line-buffered "(GET|POST).*auth|Location:.*code=|redirect_uri=|state="
+tcpdump -i any -A -s 0 -n 'tcp port 80 or tcp port 443' | grep -E --line-buffered "(GET|POST).*auth|Location:.*code=|redirect_uri=|state="
 ```
 
 #### Comprehensive OAuth Flow Monitoring
 ```bash
-# Capture complete OAuth authentication flow with URL logging
-docker exec -it portfolio tcpdump -i any -A -s 0 -n \
-  'tcp port 80 or tcp port 443' \
-  | grep -E --line-buffered "https?://[^\"']*oauth|https?://[^\"']*auth|https?://[^\"']*login" \
-  | tee /tmp/oauth-urls.log
+tcpdump -i any -A -s 0 -n 'tcp port 80 or tcp port 443' | grep -E --line-buffered "https?://[^\"']*oauth|https?://[^\"']*auth|https?://[^\"']*login" | tee /tmp/oauth-urls.log
 ```
 
 #### Targeted Provider Monitoring
 ```bash
-# Monitor traffic to specific OAuth providers
-docker exec -it portfolio tcpdump -i any -A -s 0 -n \
-  '((tcp port 80 or tcp port 443) and (host ~.*portfolio-performance|host ~.*accounts.*))' \
-  | grep -E --line-buffered "(GET|POST).*auth|Location:.*code=|redirect_uri=|state=|authorization_code"
+tcpdump -i any -A -s 0 -n '((tcp port 80 or tcp port 443) and (host ~.*portfolio-performance|host ~.*accounts.*))' | grep -E --line-buffered "(GET|POST).*auth|Location:.*code=|redirect_uri=|state=|authorization_code"
 ```
 
 ### OAuth Port Configuration
