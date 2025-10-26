@@ -83,3 +83,49 @@ A local Docker registry runs on the server so that the images can be quickly dis
 - **adapter_application**: Data processing and import service
 - **frontend**: Web frontend for applications
 - **portfolio-performance**: Financial portfolio management application
+
+## OAuth Network Monitoring
+
+The Portfolio Performance application uses OAuth 2.0 authentication for connecting to financial institutions. To monitor and debug OAuth authentication flows, you can capture network traffic inside the container.
+
+### Monitoring Commands
+
+#### Basic OAuth Traffic Capture
+```bash
+# Monitor HTTP/HTTPS traffic for OAuth-related requests
+docker exec -it portfolio tcpdump -i any -A -s 0 -n \
+  'tcp port 80 or tcp port 443' \
+  | grep -E --line-buffered "(GET|POST).*auth|Location:.*code=|redirect_uri=|state="
+```
+
+#### Comprehensive OAuth Flow Monitoring
+```bash
+# Capture complete OAuth authentication flow with URL logging
+docker exec -it portfolio tcpdump -i any -A -s 0 -n \
+  'tcp port 80 or tcp port 443' \
+  | grep -E --line-buffered "https?://[^\"']*oauth|https?://[^\"']*auth|https?://[^\"']*login" \
+  | tee /tmp/oauth-urls.log
+```
+
+#### Targeted Provider Monitoring
+```bash
+# Monitor traffic to specific OAuth providers
+docker exec -it portfolio tcpdump -i any -A -s 0 -n \
+  '((tcp port 80 or tcp port 443) and (host ~.*portfolio-performance|host ~.*accounts.*))' \
+  | grep -E --line-buffered "(GET|POST).*auth|Location:.*code=|redirect_uri=|state=|authorization_code"
+```
+
+### OAuth Port Configuration
+
+The Portfolio Performance service requires the following ports for OAuth authentication:
+- **Web UI**: Port 5800 (application access)
+- **OAuth Callback**: Port range 49968-59968 (authentication redirects)
+
+The callback server sequentially tries ports in the range 49968 → 55968 → 59968 until it finds an available port for handling OAuth redirects from identity providers.
+
+### Debugging Tips
+
+- Use `--line-buffered` flag to see output in real-time
+- Monitor `/tmp/oauth-urls.log` for captured authentication URLs
+- Check for `redirect_uri`, `code=`, and `state=` parameters in the output
+- The authorization URL typically contains: `oauth`, `authorize`, `auth`, or `login` endpoints
