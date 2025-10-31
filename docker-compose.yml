@@ -158,6 +158,15 @@ services:
       DISPLAY_HEIGHT: 1080
       TZ: "Europe/Berlin"
 
+  marvinpedia:
+    build:
+      context: ../marvinpedia
+    image: localhost:5000/marvinpedia:latest
+    container_name: marvinpedia
+    restart: unless-stopped
+    ports:
+      - "3002:80"
+
 volumes:
   postgres_data:
   influxdb_data:
