@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # InfluxDB Configuration Setup Script
 # This script recreates the InfluxDB configuration from 192.168.178.29:8086
