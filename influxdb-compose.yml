@@ -1,0 +1,55 @@
+services:
+  influxdb:
+    image: influxdb:2.7.1
+    container_name: influxdb
+    hostname: influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: marvin
+      DOCKER_INFLUXDB_INIT_PASSWORD: password
+      DOCKER_INFLUXDB_INIT_ORG: wildfly_domain
+      DOCKER_INFLUXDB_INIT_BUCKET: costs
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
+      INFLUXDB_REPORTING_DISABLED: true
+      INFLUX_TOKEN: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+      - ./setup_influxdb.sh:/scripts/setup_influxdb.sh:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  influxdb-setup:
+    image: influxdb:2.7.1
+    container_name: influxdb-setup
+    environment:
+      INFLUX_URL: http://influxdb:8086
+      INFLUX_ORG: wildfly_domain
+      INFLUX_TOKEN: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
+    volumes:
+      - ./setup_influxdb.sh:/scripts/setup_influxdb.sh:ro
+    command: >
+      sh -c "
+        echo 'Waiting for InfluxDB to be ready...';
+        while ! curl -f http://influxdb:8086/health; do
+          echo 'InfluxDB not ready, waiting...';
+          sleep 5;
+        done;
+        echo 'InfluxDB is ready, running setup script...';
+        chmod +x /scripts/setup_influxdb.sh;
+        /scripts/setup_influxdb.sh;
+        echo 'Setup completed!';
+      "
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  influxdb_data:
