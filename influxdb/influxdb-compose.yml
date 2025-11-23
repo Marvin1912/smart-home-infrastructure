@@ -16,7 +16,6 @@ services:
       - "8086:8086"
     volumes:
       - influxdb_data:/var/lib/influxdb
-      - ./setup_influxdb.sh:/scripts/setup_influxdb.sh:ro
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8086/health"]
