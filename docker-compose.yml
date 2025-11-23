@@ -96,7 +96,8 @@ services:
       EXPORTER_FOLDER: /app/export
       UPLOADER_COST_EXPORT_FOLDER: /app/export
       UPLOADER_CREDENTIALS_PATH: /app/google/credentials.json
-      VOCABULARY_DEEPL_API_KEY: ${VOCABULARY_DEEPL_API_KEY}  
+      VOCABULARY_DEEPL_API_KEY: ${VOCABULARY_DEEPL_API_KEY}
+      INFLUXDB_EXPORT_ENABLED: true
     volumes:
       - "/home/marvin/camt:/app/camt"
       - "/home/marvin/import:/app/import"  
