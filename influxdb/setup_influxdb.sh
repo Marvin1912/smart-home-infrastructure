@@ -6,7 +6,8 @@
 set -e
 
 # Configuration variables
-INFLUX_URL="http://localhost:8086"
+# shellcheck disable=SC2269
+INFLUX_URL="${INFLUX_URL:-http://localhost:8086}"
 INFLUX_ORG="wildfly_domain"
 INIT_TOKEN="temp-init-token-will-be-replaced"
 INFLUX_TOKEN="${INFLUX_TOKEN:-}"
@@ -110,7 +111,7 @@ generate_api_token() {
 
 # Check if InfluxDB is running
 check_influxdb() {
-    print_info "Checking InfluxDB connection..."
+    print_info "Checking InfluxDB connection... $INFLUX_URL"
     if ! curl -s "$INFLUX_URL/health" > /dev/null; then
         print_error "Cannot connect to InfluxDB at $INFLUX_URL"
         echo "Please make sure InfluxDB is running and accessible"

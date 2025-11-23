@@ -27,7 +27,7 @@ services:
     image: influxdb:2.7.1
     container_name: influxdb-setup
     environment:
-      INFLUX_URL: http://influxdb:8086
+      INFLUX_URL: http://host.docker.internal:8086
       INFLUX_ORG: wildfly_domain
     volumes:
       - ./setup_influxdb.sh:/scripts/setup_influxdb.sh:ro
@@ -47,6 +47,8 @@ services:
       influxdb:
         condition: service_healthy
     restart: "no"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   influxdb_data:
