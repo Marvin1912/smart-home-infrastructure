@@ -1,0 +1,247 @@
+#!/bin/bash
+
+# InfluxDB Configuration Setup Script
+# This script recreates the InfluxDB configuration from 192.168.178.29:8086
+
+set -e
+
+# Configuration variables
+INFLUX_URL="http://localhost:8086"
+INFLUX_ORG="wildfly_domain"
+INFLUX_TOKEN="${INFLUX_TOKEN:-}"
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to print colored output
+print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
+
+print_error() {
+    echo -e "${RED}✗ $1${NC}"
+}
+
+print_info() {
+    echo -e "${YELLOW}ℹ $1${NC}"
+}
+
+# Check if InfluxDB token is provided
+check_token() {
+    if [ -z "$INFLUX_TOKEN" ]; then
+        print_error "INFLUX_TOKEN environment variable is not set!"
+        echo "Usage: INFLUX_TOKEN=your_token_here $0"
+        echo "Or export INFLUX_TOKEN before running the script"
+        exit 1
+    fi
+}
+
+# Check if InfluxDB is running
+check_influxdb() {
+    print_info "Checking InfluxDB connection..."
+    if ! curl -s "$INFLUX_URL/health" > /dev/null; then
+        print_error "Cannot connect to InfluxDB at $INFLUX_URL"
+        echo "Please make sure InfluxDB is running and accessible"
+        exit 1
+    fi
+    print_success "InfluxDB is accessible at $INFLUX_URL"
+}
+
+# Check if organization exists, create if not
+setup_organization() {
+    print_info "Setting up organization '$INFLUX_ORG'..."
+
+    # Check if org exists
+    ORG_ID=$(curl -s -H "Authorization: Token $INFLUX_TOKEN" \
+        "$INFLUX_URL/api/v2/orgs" | \
+        jq -r ".orgs[] | select(.name==\"$INFLUX_ORG\") | .id" 2>/dev/null || echo "")
+
+    if [ -z "$ORG_ID" ]; then
+        print_info "Creating organization '$INFLUX_ORG'..."
+        ORG_ID=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"$INFLUX_ORG\",\"description\":\"\"}" \
+            "$INFLUX_URL/api/v2/orgs" | jq -r '.id')
+        print_success "Organization '$INFLUX_ORG' created with ID: $ORG_ID"
+    else
+        print_success "Organization '$INFLUX_ORG' already exists with ID: $ORG_ID"
+    fi
+}
+
+# Create user buckets
+create_buckets() {
+    print_info "Creating user buckets..."
+
+    # Bucket: costs
+    print_info "Creating bucket 'costs'..."
+    COSTS_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "orgID": "'"$ORG_ID"'",
+            "name": "costs",
+            "retentionRules": [
+                {
+                    "type": "expire",
+                    "everySeconds": 0,
+                    "shardGroupDurationSeconds": 604800
+                }
+            ]
+        }' \
+        "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
+    print_success "Bucket 'costs' created with ID: $COSTS_BUCKET"
+
+    # Bucket: sensor_data
+    print_info "Creating bucket 'sensor_data'..."
+    SENSOR_DATA_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "orgID": "'"$ORG_ID"'",
+            "name": "sensor_data",
+            "retentionRules": [
+                {
+                    "type": "expire",
+                    "everySeconds": 15552000,
+                    "shardGroupDurationSeconds": 604800
+                }
+            ]
+        }' \
+        "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
+    print_success "Bucket 'sensor_data' created with ID: $SENSOR_DATA_BUCKET"
+
+    # Bucket: sensor_data_30m
+    print_info "Creating bucket 'sensor_data_30m'..."
+    SENSOR_DATA_30M_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "orgID": "'"$ORG_ID"'",
+            "name": "sensor_data_30m",
+            "retentionRules": [
+                {
+                    "type": "expire",
+                    "everySeconds": 0,
+                    "shardGroupDurationSeconds": 604800
+                }
+            ]
+        }' \
+        "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
+    print_success "Bucket 'sensor_data_30m' created with ID: $SENSOR_DATA_30M_BUCKET"
+
+    # Bucket: system_metrics
+    print_info "Creating bucket 'system_metrics'..."
+    SYSTEM_METRICS_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "orgID": "'"$ORG_ID"'",
+            "name": "system_metrics",
+            "retentionRules": [
+                {
+                    "type": "expire",
+                    "everySeconds": 0,
+                    "shardGroupDurationSeconds": 604800
+                }
+            ]
+        }' \
+        "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
+    print_success "Bucket 'system_metrics' created with ID: $SYSTEM_METRICS_BUCKET"
+}
+
+# Create scheduled tasks
+create_tasks() {
+    print_info "Creating scheduled tasks..."
+
+    # Task 1: Downsample to 30m means (Active)
+    print_info "Creating task 'Downsample to 30m means' (Active)..."
+    TASK1_FLUX='option task = {name: "Downsample to 30m means", every: 7d}
+
+from(bucket: "sensor_data")
+    |> range(start: -7d)
+    |> filter(fn: (r) => r._field == "value")
+    |> aggregateWindow(every: 30m, fn: mean, createEmpty: false)
+    // |> to(bucket: "sensor_data_30m")'
+
+    TASK1_ID=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "orgID": "'"$ORG_ID"'",
+            "org": "'"$INFLUX_ORG"'",
+            "name": "Downsample to 30m means",
+            "status": "active",
+            "flux": '"$(echo "$TASK1_FLUX" | jq -Rs .)"',
+            "every": "7d"
+        }' \
+        "$INFLUX_URL/api/v2/tasks" | jq -r '.id')
+    print_success "Task 'Downsample to 30m means' created with ID: $TASK1_ID"
+
+    # Task 2: Downsample All (Inactive)
+    print_info "Creating task 'Downsample All' (Inactive)..."
+    TASK2_FLUX='option task = {name: "Downsample All", every: 7d}
+
+from(bucket: "sensor_data")
+    |> range(start: -30d)
+    |> filter(fn: (r) => r._field == "value")
+    |> aggregateWindow(every: 30m, fn: mean, createEmpty: false)
+    |> to(bucket: "sensor_data_30m")'
+
+    TASK2_ID=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d '{
+            "orgID": "'"$ORG_ID"'",
+            "org": "'"$INFLUX_ORG"'",
+            "name": "Downsample All",
+            "status": "inactive",
+            "flux": '"$(echo "$TASK2_FLUX" | jq -Rs .)"',
+            "every": "7d"
+        }' \
+        "$INFLUX_URL/api/v2/tasks" | jq -r '.id')
+    print_success "Task 'Downsample All' created with ID: $TASK2_ID"
+}
+
+# Verify configuration
+verify_setup() {
+    print_info "Verifying configuration..."
+
+    echo ""
+    print_info "Created buckets:"
+    curl -s -H "Authorization: Token $INFLUX_TOKEN" \
+        "$INFLUX_URL/api/v2/buckets?org=$INFLUX_ORG" | \
+        jq -r '.buckets[] | "  - \(.name) (ID: \(.id), Retention: \(.retentionRules[0].everySeconds // "infinite") seconds)"'
+
+    echo ""
+    print_info "Created tasks:"
+    curl -s -H "Authorization: Token $INFLUX_TOKEN" \
+        "$INFLUX_URL/api/v2/tasks?org=$INFLUX_ORG" | \
+        jq -r '.tasks[] | "  - \(.name) (ID: \(.id), Status: \(.status), Every: \(.every))"'
+}
+
+# Main execution
+main() {
+    echo "🚀 InfluxDB Configuration Setup Script"
+    echo "====================================="
+    echo "Target: $INFLUX_URL"
+    echo "Organization: $INFLUX_ORG"
+    echo ""
+
+    check_token
+    check_influxdb
+    setup_organization
+    create_buckets
+    create_tasks
+    verify_setup
+
+    echo ""
+    print_success "InfluxDB configuration setup completed successfully!"
+    echo ""
+    echo "Configuration Summary:"
+    echo "  - Organization: $INFLUX_ORG (ID: $ORG_ID)"
+    echo "  - User Buckets: 4 (costs, sensor_data, sensor_data_30m, system_metrics)"
+    echo "  - Tasks: 2 (1 active, 1 inactive)"
+    echo ""
+    echo "Note: The 'Downsample to 30m means' task has its to() bucket line commented out,"
+    echo "exactly as in the original configuration."
+}
+
+# Run main function
+main "$@"
