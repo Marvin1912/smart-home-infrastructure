@@ -30,7 +30,7 @@ services:
       INFLUX_URL: http://host.docker.internal:8086
       INFLUX_ORG: wildfly_domain
     volumes:
-      - ./setup_influxdb.sh:/scripts/setup_influxdb.sh:ro
+      - ./setup_influxdb.sh:/scripts/setup_influxdb.sh
     command: >
       sh -c "
         echo 'Installing dependencies...';
