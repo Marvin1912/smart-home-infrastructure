@@ -8,6 +8,7 @@ set -e
 # Configuration variables
 INFLUX_URL="http://localhost:8086"
 INFLUX_ORG="wildfly_domain"
+INIT_TOKEN="temp-init-token-will-be-replaced"
 INFLUX_TOKEN="${INFLUX_TOKEN:-}"
 
 # Colors for output
@@ -29,14 +30,82 @@ print_info() {
     echo -e "${YELLOW}ℹ $1${NC}"
 }
 
-# Check if InfluxDB token is provided
-check_token() {
-    if [ -z "$INFLUX_TOKEN" ]; then
-        print_error "INFLUX_TOKEN environment variable is not set!"
-        echo "Usage: INFLUX_TOKEN=your_token_here $0"
-        echo "Or export INFLUX_TOKEN before running the script"
+# Generate a new API token using the initial admin token
+generate_api_token() {
+    print_info "Generating new API token..."
+
+    # Use the init token to create a proper API token with all permissions
+    local org_response=$(curl -s -H "Authorization: Token $INIT_TOKEN" \
+        "$INFLUX_URL/api/v2/orgs" | \
+        jq -r ".orgs[] | select(.name==\"$INFLUX_ORG\") | .id" 2>/dev/null || echo "")
+
+    if [ -z "$org_response" ]; then
+        print_error "Organization '$INFLUX_ORG' not found or init token invalid"
         exit 1
     fi
+
+    # Create a new token with read/write permissions for the organization
+    local token_response=$(curl -s -X POST \
+        -H "Authorization: Token $INIT_TOKEN" \
+        -H "Content-Type: application/json" \
+        -d "{
+            \"status\": \"active\",
+            \"description\": \"API token for InfluxDB setup\",
+            \"orgID\": \"$org_response\",
+            \"permissions\": [
+                {
+                    \"action\": \"read\",
+                    \"resource\": {
+                        \"type\": \"orgs\"
+                    }
+                },
+                {
+                    \"action\": \"write\",
+                    \"resource\": {
+                        \"type\": \"orgs\"
+                    }
+                },
+                {
+                    \"action\": \"read\",
+                    \"resource\": {
+                        \"type\": \"buckets\",
+                        \"orgID\": \"$org_response\"
+                    }
+                },
+                {
+                    \"action\": \"write\",
+                    \"resource\": {
+                        \"type\": \"buckets\",
+                        \"orgID\": \"$org_response\"
+                    }
+                },
+                {
+                    \"action\": \"read\",
+                    \"resource\": {
+                        \"type\": \"tasks\",
+                        \"orgID\": \"$org_response\"
+                    }
+                },
+                {
+                    \"action\": \"write\",
+                    \"resource\": {
+                        \"type\": \"tasks\",
+                        \"orgID\": \"$org_response\"
+                    }
+                }
+            ]
+        }" \
+        "$INFLUX_URL/api/v2/authorizations")
+
+    INFLUX_TOKEN=$(echo "$token_response" | jq -r '.token')
+
+    if [ -z "$INFLUX_TOKEN" ] || [ "$INFLUX_TOKEN" = "null" ]; then
+        print_error "Failed to generate API token"
+        echo "Response: $token_response"
+        exit 1
+    fi
+
+    print_success "New API token generated successfully"
 }
 
 # Check if InfluxDB is running
@@ -224,8 +293,8 @@ main() {
     echo "Organization: $INFLUX_ORG"
     echo ""
 
-    check_token
     check_influxdb
+    generate_api_token
     setup_organization
     create_buckets
     create_tasks
@@ -238,6 +307,7 @@ main() {
     echo "  - Organization: $INFLUX_ORG (ID: $ORG_ID)"
     echo "  - User Buckets: 4 (costs, sensor_data, sensor_data_30m, system_metrics)"
     echo "  - Tasks: 2 (1 active, 1 inactive)"
+    echo "  - Generated API Token: ${INFLUX_TOKEN:0:20}..."
     echo ""
     echo "Note: The 'Downsample to 30m means' task has its to() bucket line commented out,"
     echo "exactly as in the original configuration."

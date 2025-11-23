@@ -9,9 +9,8 @@ services:
       DOCKER_INFLUXDB_INIT_PASSWORD: password
       DOCKER_INFLUXDB_INIT_ORG: wildfly_domain
       DOCKER_INFLUXDB_INIT_BUCKET: costs
-      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: temp-init-token-will-be-replaced
       INFLUXDB_REPORTING_DISABLED: true
-      INFLUX_TOKEN: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
     ports:
       - "8086:8086"
     volumes:
@@ -30,7 +29,6 @@ services:
     environment:
       INFLUX_URL: http://influxdb:8086
       INFLUX_ORG: wildfly_domain
-      INFLUX_TOKEN: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
     volumes:
       - ./setup_influxdb.sh:/scripts/setup_influxdb.sh:ro
     command: >
