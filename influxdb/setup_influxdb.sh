@@ -173,7 +173,7 @@ create_buckets() {
             "retentionRules": [
                 {
                     "type": "expire",
-                    "everySeconds": 15552000,
+                    "everySeconds": 18316800,
                     "shardGroupDurationSeconds": 604800
                 }
             ]
