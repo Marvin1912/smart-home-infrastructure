@@ -434,11 +434,11 @@ spec:
     spec:
       initContainers:
         - name: influxdb-setup
-          image: appropriate/curl:latest
-          command: ["/bin/sh", "-c"]
+          image: bash:5.2.21
+          command: ["/bin/bash", "-c"]
           args:
             - |
-              apk add --no-cache jq
+              apk add --no-cache curl jq
               chmod +x /scripts/setup_influxdb.sh
               /scripts/setup_influxdb.sh
           env:
