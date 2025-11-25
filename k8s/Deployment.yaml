@@ -55,10 +55,7 @@ spec:
             - name: INFLUX_URL
               value: "http://192.168.178.29:8086"
             - name: INFLUX_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: influxdb-secrets
-                  key: token
+              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
             - name: INFLUX_ORG
               value: "wildfly_domain"
             - name: INFLUXDB_EXPORT_ENABLED
@@ -117,10 +114,7 @@ spec:
             - name: DOCKER_INFLUXDB_INIT_BUCKET
               value: "costs"
             - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: influxdb-secrets
-                  key: admin-token
+              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
             - name: INFLUXDB_REPORTING_DISABLED
               value: "true"
           resources:
