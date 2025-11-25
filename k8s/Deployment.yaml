@@ -38,3 +38,56 @@ spec:
       - name: data
         persistentVolumeClaim:
           claimName: local-mount-pvc
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+        - name: influxdb
+          image: influxdb:2.7.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8086
+              name: http
+          env:
+            - name: DOCKER_INFLUXDB_INIT_MODE
+              value: "setup"
+            - name: DOCKER_INFLUXDB_INIT_USERNAME
+              value: "marvin"
+            - name: DOCKER_INFLUXDB_INIT_PASSWORD
+              value: "password"
+            - name: DOCKER_INFLUXDB_INIT_ORG
+              value: "wildfly_domain"
+            - name: DOCKER_INFLUXDB_INIT_BUCKET
+              value: "costs"
+            - name: INFLUXDB_REPORTING_DISABLED
+              value: "true"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: influxdb-data
+              mountPath: /var/lib/influxdb
+      volumes:
+        - name: influxdb-data
+          persistentVolumeClaim:
+            claimName: influxdb-pvc

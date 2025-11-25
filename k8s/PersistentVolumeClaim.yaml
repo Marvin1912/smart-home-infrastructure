@@ -10,3 +10,17 @@ spec:
     requests:
       storage: 1Gi
   volumeName: local-mount-pvc
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: influxdb-pvc
+  namespace: default
+spec:
+  storageClassName: local-mount
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
