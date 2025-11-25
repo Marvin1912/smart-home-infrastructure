@@ -24,6 +24,47 @@ spec:
           env:
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
+            - name: ADAPTER_PORT
+              value: "9001"
+            - name: DATA_SOURCE
+              value: "jdbc:postgresql://192.168.178.29:5432/costs"
+            - name: DATA_SOURCE_USERNAME
+              value: "marvin"
+            - name: DATA_SOURCE_PASSWORD
+              value: "password"
+            - name: MAIL_USERNAME
+              value: ""
+            - name: MAIL_PASSWORD
+              value: ""
+            - name: CAMT_DIRECTORY_IN
+              value: "./app/camt"
+            - name: CAMT_DIRECTORY_DONE
+              value: "./app/camt/done"
+            - name: IMPORTER_IN_COSTS
+              value: "./app/import/costs"
+            - name: IMPORTER_IN_SENSORDATA
+              value: "./app/import/sensordata"
+            - name: IMPORTER_DONE
+              value: "./app/import/done"
+            - name: EXPORTER_FOLDER
+              value: "./app/export"
+            - name: UPLOADER_CREDENTIALS_PATH
+              value: "./app/google/credentials.json"
+            - name: UPLOADER_COST_EXPORT_FOLDER
+              value: "./app/export"
+            - name: INFLUX_URL
+              value: "http://192.168.178.29:8086"
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secrets
+                  key: token
+            - name: INFLUX_ORG
+              value: "wildfly_domain"
+            - name: INFLUXDB_EXPORT_ENABLED
+              value: "false"
+            - name: CONSUL_URL
+              value: "http://192.168.178.29:8500"
           resources:
             requests:
               memory: "512Mi"
@@ -75,6 +116,11 @@ spec:
               value: "wildfly_domain"
             - name: DOCKER_INFLUXDB_INIT_BUCKET
               value: "costs"
+            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secrets
+                  key: admin-token
             - name: INFLUXDB_REPORTING_DISABLED
               value: "true"
           resources:
