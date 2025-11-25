@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: applications-service
+  namespace: default
+  labels:
+    app: applications-service
+spec:
+  selector:
+    app: applications
+  ports:
+    - name: http-web
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

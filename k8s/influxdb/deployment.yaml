@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      initContainers:
+        - name: influxdb-setup
+          image: bash:5.2.21
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              apk add --no-cache curl jq
+              chmod +x /scripts/setup_influxdb.sh
+              /scripts/setup_influxdb.sh
+          env:
+            - name: INFLUX_URL
+              value: "http://influxdb:8086"
+            - name: INFLUX_ORG
+              value: "wildfly_domain"
+            - name: INIT_TOKEN
+              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+          volumeMounts:
+            - name: influxdb-setup-script
+              mountPath: /scripts/setup_influxdb.sh
+              subPath: setup_influxdb.sh
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+      containers:
+        - name: influxdb
+          image: influxdb:2.7.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8086
+              name: http
+          env:
+            - name: DOCKER_INFLUXDB_INIT_MODE
+              value: "setup"
+            - name: DOCKER_INFLUXDB_INIT_USERNAME
+              value: "marvin"
+            - name: DOCKER_INFLUXDB_INIT_PASSWORD
+              value: "password"
+            - name: DOCKER_INFLUXDB_INIT_ORG
+              value: "wildfly_domain"
+            - name: DOCKER_INFLUXDB_INIT_BUCKET
+              value: "costs"
+            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+            - name: INFLUXDB_REPORTING_DISABLED
+              value: "true"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: influxdb-data
+              mountPath: /var/lib/influxdb
+      volumes:
+        - name: influxdb-data
+          persistentVolumeClaim:
+            claimName: influxdb-pvc
+        - name: influxdb-setup-script
+          configMap:
+            name: influxdb-setup-script
