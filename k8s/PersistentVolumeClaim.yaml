@@ -24,3 +24,4 @@ spec:
   resources:
     requests:
       storage: 5Gi
+  volumeName: local-mount-influxdb
