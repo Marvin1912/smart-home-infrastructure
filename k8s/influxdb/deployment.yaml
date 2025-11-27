@@ -27,7 +27,7 @@ spec:
 
               # Wait for InfluxDB to be healthy
               echo "Waiting for InfluxDB to be ready..."
-              until curl -f http://localhost:8086/health; do
+              until curl -f http://influxdb-service.default.svc.cluster.local:8086/health; do
                 echo "InfluxDB not ready, sleeping 5 seconds..."
                 sleep 5
               done
@@ -39,7 +39,7 @@ spec:
               echo "Setup completed successfully, exiting..."
           env:
             - name: INFLUX_URL
-              value: "http://localhost:8086"
+              value: "http://influxdb-service.default.svc.cluster.local:8086"
             - name: INFLUX_ORG
               value: "wildfly_domain"
             - name: INIT_TOKEN
