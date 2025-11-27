@@ -16,14 +16,27 @@ spec:
         app: influxdb
     spec:
       initContainers:
-        - name: influxdb-setup
+        - name: influxdb-setup-sidecar
           image: bash:5.2.21
+          restartPolicy: Always
           command: ["/bin/sh", "-c"]
           args:
             - |
+              # Install dependencies
               apk add --no-cache curl jq
+
+              # Wait for InfluxDB to be healthy
+              echo "Waiting for InfluxDB to be ready..."
+              until curl -f http://influxdb-service.default.svc.cluster.local:8086/health; do
+                echo "InfluxDB not ready, sleeping 5 seconds..."
+                sleep 5
+              done
+
+              echo "InfluxDB is ready, running setup..."
               chmod +x /scripts/setup_influxdb.sh
               /scripts/setup_influxdb.sh
+
+              echo "Setup completed successfully, exiting..."
           env:
             - name: INFLUX_URL
               value: "http://influxdb-service.default.svc.cluster.local:8086"
@@ -49,6 +62,18 @@ spec:
           ports:
             - containerPort: 8086
               name: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8086
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8086
+            initialDelaySeconds: 15
+            periodSeconds: 5
           env:
             - name: DOCKER_INFLUXDB_INIT_MODE
               value: "setup"
