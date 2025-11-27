@@ -11,7 +11,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   storageClassName: local-mount
   local:
-    path: /home/marvin/camt
+    path: /home/marvin/data
   nodeAffinity:
     required:
       nodeSelectorTerms:

@@ -37,23 +37,23 @@ spec:
             - name: MAIL_PASSWORD
               value: ""
             - name: CAMT_DIRECTORY_IN
-              value: "./app/camt"
+              value: "./data/camt"
             - name: CAMT_DIRECTORY_DONE
-              value: "./app/camt/done"
+              value: "./data/camt/done"
             - name: IMPORTER_IN_COSTS
-              value: "./app/import/costs"
+              value: "./data/import/costs"
             - name: IMPORTER_IN_SENSORDATA
-              value: "./app/import/sensordata"
+              value: "./data/import/sensordata"
             - name: IMPORTER_DONE
-              value: "./app/import/done"
+              value: "./data/import/sensordata/done"
             - name: EXPORTER_FOLDER
-              value: "./app/export"
+              value: "./data/export"
             - name: UPLOADER_CREDENTIALS_PATH
-              value: "./app/google/credentials.json"
+              value: "./data/google/credentials.json"
             - name: UPLOADER_COST_EXPORT_FOLDER
-              value: "./app/export"
+              value: "./data/export"
             - name: INFLUX_URL
-              value: "http://192.168.178.29:8086"
+              value: "http://influxdb-service.default.svc.cluster.local:8086"
             - name: INFLUX_TOKEN
               value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
             - name: INFLUX_ORG
