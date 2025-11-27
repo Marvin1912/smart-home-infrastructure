@@ -18,7 +18,7 @@ spec:
       initContainers:
         - name: influxdb-setup
           image: bash:5.2.21
-          command: ["/bin/bash", "-c"]
+          command: ["/bin/sh", "-c"]
           args:
             - |
               apk add --no-cache curl jq
@@ -26,7 +26,7 @@ spec:
               /scripts/setup_influxdb.sh
           env:
             - name: INFLUX_URL
-              value: "http://influxdb:8086"
+              value: "http://influxdb-service.default.svc.cluster.local:8086"
             - name: INFLUX_ORG
               value: "wildfly_domain"
             - name: INIT_TOKEN
@@ -81,3 +81,7 @@ spec:
         - name: influxdb-setup-script
           configMap:
             name: influxdb-setup-script
+            items:
+              - key: setup_influxdb.sh
+                path: setup_influxdb.sh
+                mode: 0755
