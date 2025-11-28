@@ -128,7 +128,7 @@ data:
                 return 0
             fi
             print_info "Waiting for InfluxDB to be ready... ($((retries + 1))/$max_retries)"
-            sleep 2
+            sleep 5
             retries=$((retries + 1))
         done
 

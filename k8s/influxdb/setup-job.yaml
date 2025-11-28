@@ -4,7 +4,7 @@ metadata:
   name: influxdb-setup-job
   namespace: default
   labels:
-    app: influxdb
+    app: influxdb-setup
     component: setup-job
 spec:
   backoffLimit: 3
@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: influxdb
+        app: influxdb-setup
         component: setup-job
     spec:
       restartPolicy: OnFailure
