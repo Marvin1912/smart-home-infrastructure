@@ -18,8 +18,12 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: influxdb-setup
-        image: bash:5.2.21
-        command: ["/scripts/setup_influxdb.sh"]
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            apk add --no-cache curl jq &&
+            /scripts/setup_influxdb.sh
         env:
         - name: INFLUX_URL
           value: "http://influxdb-service.default.svc.cluster.local:8086"
