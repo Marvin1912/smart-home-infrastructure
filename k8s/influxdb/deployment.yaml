@@ -34,29 +34,6 @@ spec:
             port: 8086
           initialDelaySeconds: 15
           periodSeconds: 5
-        lifecycle:
-          postStart:
-            exec:
-              command:
-                - /bin/sh
-                - -c
-                - |
-                  # Install dependencies
-                  command -v curl >/dev/null 2>&1 || (apt-get update && apt-get install -y curl jq)
-
-                  # Set environment variables for setup script
-                  export INFLUX_URL="http://localhost:8086"
-                  export INFLUX_ORG="wildfly_domain"
-                  export INIT_TOKEN="rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
-
-                  # Wait for InfluxDB to be healthy before running setup
-                  while ! curl -f http://localhost:8086/health; do
-                    echo 'InfluxDB not ready, waiting...'
-                    sleep 5
-                  done
-
-                  # Run setup script (has built-in retry logic and error handling)
-                  /scripts/setup_influxdb.sh > /tmp/setup.log 2>&1 || echo "Setup completed with status: $?"
         env:
           - name: DOCKER_INFLUXDB_INIT_MODE
             value: "setup"
