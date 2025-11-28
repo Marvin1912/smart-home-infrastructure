@@ -16,7 +16,7 @@ data:
     # shellcheck disable=SC2269
     INFLUX_URL="${INFLUX_URL:-http://localhost:8086}"
     INFLUX_ORG="wildfly_domain"
-    INIT_TOKEN="temp-init-token-will-be-replaced"
+    INIT_TOKEN="${INIT_TOKEN:-}"
     INFLUX_TOKEN="${INFLUX_TOKEN:-}"
 
     # Colors for output
@@ -40,7 +40,7 @@ data:
 
     # Generate a new API token using the initial admin token
     generate_api_token() {
-        print_info "Generating new API token..."
+        print_info "Generating new API token with init token: ${INIT_TOKEN}..."
 
         # Use the init token to create a proper API token with all permissions
         local org_response=$(curl -s -H "Authorization: Token $INIT_TOKEN" \
