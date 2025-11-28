@@ -255,7 +255,7 @@ data:
                 "org": "'"$INFLUX_ORG"'",
                 "name": "Downsample to 30m means",
                 "status": "active",
-                "flux": '"'$(echo "$TASK1_FLUX" | jq -Rs .)'"',
+                "flux": '"$(echo "$TASK1_FLUX" | jq -Rs .)"',
                 "every": "7d"
             }' \
             "$INFLUX_URL/api/v2/tasks" | jq -r '.id')
@@ -278,7 +278,7 @@ data:
                 "org": "'"$INFLUX_ORG"'",
                 "name": "Downsample All",
                 "status": "inactive",
-                "flux": '"'$(echo "$TASK2_FLUX" | jq -Rs .)'"',
+                "flux": '"$(echo "$TASK2_FLUX" | jq -Rs .)"',
                 "every": "7d"
             }' \
             "$INFLUX_URL/api/v2/tasks" | jq -r '.id')
