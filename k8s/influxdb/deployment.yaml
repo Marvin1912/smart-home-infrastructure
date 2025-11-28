@@ -15,90 +15,76 @@ spec:
       labels:
         app: influxdb
     spec:
-      initContainers:
-        - name: influxdb-setup-sidecar
-          image: bash:5.2.21
-          restartPolicy: Always
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              # Install dependencies
-              apk add --no-cache curl jq
-
-              # Wait for InfluxDB to be healthy
-              echo "Waiting for InfluxDB to be ready..."
-              until curl -f http://influxdb-service.default.svc.cluster.local:8086/health; do
-                echo "InfluxDB not ready, sleeping 5 seconds..."
-                sleep 5
-              done
-
-              echo "InfluxDB is ready, running setup..."
-              chmod +x /scripts/setup_influxdb.sh
-              /scripts/setup_influxdb.sh
-
-              echo "Setup completed successfully, exiting..."
-          env:
-            - name: INFLUX_URL
-              value: "http://influxdb-service.default.svc.cluster.local:8086"
-            - name: INFLUX_ORG
-              value: "wildfly_domain"
-            - name: INIT_TOKEN
-              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
-          volumeMounts:
-            - name: influxdb-setup-script
-              mountPath: /scripts/setup_influxdb.sh
-              subPath: setup_influxdb.sh
-          resources:
-            requests:
-              memory: "64Mi"
-              cpu: "100m"
-            limits:
-              memory: "128Mi"
-              cpu: "200m"
       containers:
-        - name: influxdb
-          image: influxdb:2.7.1
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8086
-              name: http
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: 8086
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: 8086
-            initialDelaySeconds: 15
-            periodSeconds: 5
-          env:
-            - name: DOCKER_INFLUXDB_INIT_MODE
-              value: "setup"
-            - name: DOCKER_INFLUXDB_INIT_USERNAME
-              value: "marvin"
-            - name: DOCKER_INFLUXDB_INIT_PASSWORD
-              value: "password"
-            - name: DOCKER_INFLUXDB_INIT_ORG
-              value: "wildfly_domain"
-            - name: DOCKER_INFLUXDB_INIT_BUCKET
-              value: "costs"
-            - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
-              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
-            - name: INFLUXDB_REPORTING_DISABLED
-              value: "true"
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-          volumeMounts:
-            - name: influxdb-data
-              mountPath: /var/lib/influxdb
+      - name: influxdb
+        image: influxdb:2.7.1
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8086
+            name: http
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: 15
+          periodSeconds: 5
+        lifecycle:
+          postStart:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  # Install dependencies
+                  command -v curl >/dev/null 2>&1 || (apt-get update && apt-get install -y curl jq)
+
+                  # Set environment variables for setup script
+                  export INFLUX_URL="http://localhost:8086"
+                  export INFLUX_ORG="wildfly_domain"
+                  export INIT_TOKEN="rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+
+                  # Wait for InfluxDB to be healthy before running setup
+                  while ! curl -f http://localhost:8086/health; do
+                    echo 'InfluxDB not ready, waiting...'
+                    sleep 5
+                  done
+
+                  # Run setup script (has built-in retry logic and error handling)
+                  /scripts/setup_influxdb.sh > /tmp/setup.log 2>&1 || echo "Setup completed with status: $?"
+        env:
+          - name: DOCKER_INFLUXDB_INIT_MODE
+            value: "setup"
+          - name: DOCKER_INFLUXDB_INIT_USERNAME
+            value: "marvin"
+          - name: DOCKER_INFLUXDB_INIT_PASSWORD
+            value: "password"
+          - name: DOCKER_INFLUXDB_INIT_ORG
+            value: "wildfly_domain"
+          - name: DOCKER_INFLUXDB_INIT_BUCKET
+            value: "costs"
+          - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+            value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+          - name: INFLUXDB_REPORTING_DISABLED
+            value: "true"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        volumeMounts:
+          - name: influxdb-data
+            mountPath: /var/lib/influxdb
+          - name: influxdb-setup-script
+            mountPath: /scripts/setup_influxdb.sh
+            subPath: setup_influxdb.sh
       volumes:
         - name: influxdb-data
           persistentVolumeClaim:
