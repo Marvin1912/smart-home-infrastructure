@@ -25,3 +25,9 @@ spec:
         - kind: Service
           name: influxdb-service
           port: 8086
+    - match: Host(`postgres.kube.test.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: postgres-service
+          port: 5432
