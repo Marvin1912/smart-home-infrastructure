@@ -5,6 +5,12 @@ metadata:
   labels:
     app: grafana
 spec:
+  valuesFrom:
+    - targetPath: secureJsonData.token
+      valueFrom:
+        secretKeyRef:
+          name: influxdb-token
+          key: TOKEN
   instanceSelector:
     matchLabels:
       app: grafana
@@ -20,8 +26,5 @@ spec:
       organization: wildfly_domain
       version: Flux
       tlsSkipVerify: true
-    valuesFrom:
-    - type: Secret
-      name: influxdb-token
-      key: token
-      targetPath: secureJsonData.token
+    secureJsonData:
+      "token": ${TOKEN}
