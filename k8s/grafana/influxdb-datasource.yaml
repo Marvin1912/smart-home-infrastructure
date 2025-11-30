@@ -20,6 +20,8 @@ spec:
       organization: wildfly_domain
       version: Flux
       tlsSkipVerify: true
-    secureJsonDataFromSecret:
-      - name: influxdb-token
-        key: token
+    valuesFrom:
+    - type: Secret
+      name: influxdb-token
+      key: token
+      targetPath: secureJsonData.token
