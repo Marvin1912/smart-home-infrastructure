@@ -27,7 +27,7 @@ spec:
             - name: ADAPTER_PORT
               value: "9001"
             - name: DATA_SOURCE
-              value: "jdbc:postgresql://192.168.178.29:5432/costs"
+              value: "jdbc:postgresql://postgres-service.default.svc.cluster.local:5432/costs"
             - name: DATA_SOURCE_USERNAME
               value: "marvin"
             - name: DATA_SOURCE_PASSWORD
