@@ -11,6 +11,6 @@ spec:
   ports:
     - name: http-web
       protocol: TCP
-      port: 8080
-      targetPort: 8080
+      port: 9055
+      targetPort: 9055
   type: ClusterIP

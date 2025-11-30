@@ -20,12 +20,12 @@ spec:
           image: localhost:5000/applications:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 9055
           env:
             - name: JAVA_OPTS
               value: "-Xms512m -Xmx1024m"
             - name: ADAPTER_PORT
-              value: "9001"
+              value: "9055"
             - name: DATA_SOURCE
               value: "jdbc:postgresql://postgres-service.default.svc.cluster.local:5432/costs"
             - name: DATA_SOURCE_USERNAME

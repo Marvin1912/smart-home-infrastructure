@@ -31,3 +31,9 @@ spec:
         - kind: Service
           name: postgres-service
           port: 5432
+    - match: Host(`app.kube.test.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: applications-service
+          port: 9055

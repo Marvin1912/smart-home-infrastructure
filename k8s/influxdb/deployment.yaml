@@ -58,7 +58,7 @@ spec:
             cpu: "500m"
         volumeMounts:
           - name: influxdb-data
-            mountPath: /var/lib/influxdb
+            mountPath: /var/lib/influxdb2
           - name: influxdb-setup-script
             mountPath: /scripts/setup_influxdb.sh
             subPath: setup_influxdb.sh
