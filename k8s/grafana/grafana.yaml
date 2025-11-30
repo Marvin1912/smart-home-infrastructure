@@ -1,0 +1,12 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
+metadata:
+  name: grafana
+  namespace: default
+spec:
+  config:
+    security:
+      admin_user: marvin
+      admin_password: password
+      cookie_samesite: disabled
+      allow_embedding: "true"
