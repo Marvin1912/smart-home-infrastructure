@@ -1,0 +1,24 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: influxdb-datasource
+  labels:
+    app: grafana
+spec:
+  instanceSelector:
+    matchLabels:
+      app: grafana
+  datasource:
+    name: influxdb
+    type: influxdb
+    access: proxy
+    url: http://influxdb-service.default.svc.cluster.local:8086
+    isDefault: true
+    jsonData:
+      defaultBucket: costs
+      httpMode: POST
+      organization: wildfly_domain
+      version: Flux
+      tlsSkipVerify: true
+    secureJsonData:
+      token: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
