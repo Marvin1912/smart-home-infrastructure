@@ -36,8 +36,7 @@ spec:
       "panels": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -118,8 +117,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
               "refId": "A"
@@ -130,8 +128,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -273,8 +270,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_temperatur\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_temperatur\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
               "refId": "A"
