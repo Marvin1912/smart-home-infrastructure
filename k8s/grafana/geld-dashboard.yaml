@@ -36,8 +36,7 @@ spec:
       "panels": [
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "description": "",
           "fieldConfig": {
@@ -130,8 +129,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"daily\")\n  |> aggregateWindow(every: 1mo, fn: sum, timeSrc: \"_start\")",
               "refId": "A"
@@ -142,8 +140,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -222,8 +219,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"daily\")",
               "refId": "A"
@@ -234,8 +230,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -314,8 +309,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"monthly\")\n  |> aggregateWindow(every: 1mo, fn: sum, timeSrc: \"_start\")",
               "refId": "A"
@@ -326,8 +320,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -406,8 +399,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"salary\")",
               "refId": "A"
@@ -418,8 +410,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -497,8 +488,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"salary\")\n  |> aggregateWindow(every: 1y, fn: sum, timeSrc: \"_start\")",
               "refId": "A"
@@ -509,8 +499,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -602,8 +591,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"salary\" or r[\"costType\"] == \"monthly\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"costType\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with difference: r.salary - r.monthly }))\n  |> keep(columns: [\"_time\", \"difference\"])\n  |> aggregateWindow(every: 1y, fn: sum, column: \"difference\", timeSrc: \"_start\")",
               "refId": "A"
@@ -614,8 +602,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "influxdb",
-            "uid": "P951FEA4DE68E13C5"
+            "type": "influxdb"
           },
           "fieldConfig": {
             "defaults": {
@@ -693,8 +680,7 @@ spec:
           "targets": [
             {
               "datasource": {
-                "type": "influxdb",
-                "uid": "P951FEA4DE68E13C5"
+                "type": "influxdb"
               },
               "query": "from(bucket: \"costs\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"costs\")\n  |> filter(fn: (r) => r[\"costType\"] == \"salary\" or r[\"costType\"] == \"monthly\")\n  |> pivot(rowKey: [\"_time\"], columnKey: [\"costType\"], valueColumn: \"_value\")\n  |> map(fn: (r) => ({ r with difference: r.salary - r.monthly }))\n  |> keep(columns: [\"_time\", \"difference\"])",
               "refId": "A"
