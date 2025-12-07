@@ -125,6 +125,8 @@ services:
     restart: unless-stopped
     privileged: true
     network_mode: host
+    extra_hosts:
+      - "influxdb.kube.test.com:192.168.178.29"
 
   mosquitto:
     image: eclipse-mosquitto:2.0.18
