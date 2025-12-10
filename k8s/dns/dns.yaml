@@ -5,12 +5,45 @@ metadata:
   namespace: default
 data:
   Corefile: |
+    home-lab.com:53 {
+        log
+        errors
+        health
+        file /etc/coredns/zones/home-lab
+    }
+
     .:53 {
         log
         errors
         health
-        forward . 8.8.8.8 8.8.4.4
+        cache 30
+        forward . 192.168.178.1
     }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-zone
+  namespace: default
+data:
+  home-lab: |
+    $ORIGIN home-lab.com.
+    @       86400 IN SOA ns.home-lab.com. admin.home-lab.com. (
+                2024020101 ; Serial
+                3600       ; Refresh
+                1800       ; Retry
+                604800     ; Expire
+                86400 )    ; Negative Cache TTL
+
+    ; Name servers
+    @       IN NS   ns.home-lab.com.
+
+    ; DNS server hostname
+    ns      IN A    192.168.178.29
+
+    ; Hostnames
+    grafana    IN A    192.168.178.29
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -43,6 +76,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /etc/coredns
+            - name: config-zone
+              mountPath: /etc/coredns/zones
           livenessProbe:
             httpGet:
               path: /health
@@ -62,3 +97,6 @@ spec:
             items:
               - key: Corefile
                 path: Corefile
+        - name: config-zone
+          configMap:
+            name: coredns-zone

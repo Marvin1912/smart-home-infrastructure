@@ -13,7 +13,7 @@ spec:
         - kind: Service
           name: kube-prometheus-stack-prometheus
           port: 9090
-    - match: Host(`grafana.home.com`)
+    - match: Host(`grafana.home-lab.com`)
       kind: Rule
       services:
         - kind: Service
