@@ -7,7 +7,7 @@ spec:
   entryPoints:
     - web
   routes:
-    - match: Host(`prometheus.kube.test.com`)
+    - match: Host(`prometheus.home-lab.com`)
       kind: Rule
       services:
         - kind: Service
@@ -19,21 +19,15 @@ spec:
         - kind: Service
           name: grafana-service
           port: 3000
-    - match: Host(`influxdb.kube.test.com`)
+    - match: Host(`influxdb.home-lab.com`)
       kind: Rule
       services:
         - kind: Service
           name: influxdb-service
           port: 8086
-    - match: Host(`postgres.kube.test.com`)
+    - match: Host(`postgres.home-lab.com`)
       kind: Rule
       services:
         - kind: Service
           name: postgres-service
           port: 5432
-    - match: Host(`app.kube.test.com`)
-      kind: Rule
-      services:
-        - kind: Service
-          name: applications-service
-          port: 9055
