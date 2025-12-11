@@ -1,0 +1,25 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: influxdb-datasource
+  labels:
+    app: grafana
+spec:
+  instanceSelector:
+    matchLabels:
+      app: grafana
+  datasource:
+    name: prometheus
+    type: prometheus
+    typeLogoUrl: public/plugins/prometheus/img/prometheus_logo.svg
+    access: proxy
+    url: http://kube-prometheus-stack-prometheus.default.svc.cluster.local:9090
+    user: "",
+    database: "",
+    basicAuth: false,
+    basicAuthUser: "",
+    withCredentials: false,
+    isDefault: false
+    jsonData:
+      pdcInjected: false,
+      tlsSkipVerify: true
