@@ -16,6 +16,7 @@ data:
         log
         errors
         health
+        prometheus :9153
         cache 30
         forward . 192.168.178.1
     }

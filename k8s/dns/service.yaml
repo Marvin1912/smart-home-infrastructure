@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: homedns
+  namespace: default
+  labels:
+    app: homedns
+spec:
+  selector:
+    app: homedns
+  ports:
+    - name: metrics
+      port: 9153
+      targetPort: 9153
+      protocol: TCP
+
