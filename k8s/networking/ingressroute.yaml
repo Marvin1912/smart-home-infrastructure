@@ -31,3 +31,9 @@ spec:
         - kind: Service
           name: postgres-service
           port: 5432
+    - match: Host(`frontend.home-lab.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: frontend-service
+          port: 3001
