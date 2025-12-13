@@ -44,6 +44,8 @@ spec:
               value: "/data/import/costs"
             - name: IMPORTER_IN_SENSORDATA
               value: "/data/import/sensordata"
+            - name: IMPORTER_IN_VOCABULARY
+              value: "/data/import/vocabulary"
             - name: IMPORTER_DONE
               value: "/data/import/sensordata/done"
             - name: EXPORTER_FOLDER
