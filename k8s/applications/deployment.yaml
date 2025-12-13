@@ -52,6 +52,8 @@ spec:
               value: "/data/google/credentials.json"
             - name: UPLOADER_COST_EXPORT_FOLDER
               value: "/data/export"
+            - name: UPLOADER_ENABLED
+              value: "true"
             - name: INFLUX_URL
               value: "http://influxdb-service.default.svc.cluster.local:8086"
             - name: INFLUX_TOKEN
