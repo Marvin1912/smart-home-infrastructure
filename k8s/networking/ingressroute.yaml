@@ -36,4 +36,4 @@ spec:
       services:
         - kind: Service
           name: frontend-service
-          port: 3001
+          port: 80
