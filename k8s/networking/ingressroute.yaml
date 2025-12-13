@@ -37,3 +37,9 @@ spec:
         - kind: Service
           name: frontend-service
           port: 3001
+    - match: Host(`backend.home-lab.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: applications-service
+          port: 9055
