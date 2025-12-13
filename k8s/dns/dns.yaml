@@ -47,6 +47,7 @@ data:
     influxdb     IN A    192.168.178.29
     postgres     IN A    192.168.178.29
     prometheus   IN A    192.168.178.29
+    frontend     IN A    192.168.178.29
 
 ---
 apiVersion: apps/v1
