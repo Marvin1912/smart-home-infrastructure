@@ -17,6 +17,18 @@ data:
             0.0.0.0 #
             fallthrough
         }
+        template IN ANY instagram.com {
+            rcode NXDOMAIN
+        }
+        template IN ANY welt.de {
+          rcode NXDOMAIN
+        }
+        template IN ANY mopo.de {
+          rcode NXDOMAIN
+        }
+        template IN ANY bild.de {
+          rcode NXDOMAIN
+        }
         log
         errors
         health
