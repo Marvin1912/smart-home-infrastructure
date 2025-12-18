@@ -13,17 +13,21 @@ data:
     }
 
     .:53 {
+        hosts /etc/coredns/blocklist/adblock.hosts {
+            reload 30s
+            fallthrough
+        }
         template IN ANY instagram.com {
             rcode NXDOMAIN
         }
         template IN ANY welt.de {
-          rcode NXDOMAIN
+            rcode NXDOMAIN
         }
         template IN ANY mopo.de {
-          rcode NXDOMAIN
+            rcode NXDOMAIN
         }
         template IN ANY bild.de {
-          rcode NXDOMAIN
+            rcode NXDOMAIN
         }
         log
         errors
@@ -96,6 +100,8 @@ spec:
               mountPath: /etc/coredns
             - name: config-zone
               mountPath: /etc/coredns/zones
+            - name: blocklist-volume
+              mountPath: /etc/coredns/blocklist
           livenessProbe:
             httpGet:
               path: /health
@@ -118,3 +124,6 @@ spec:
         - name: config-zone
           configMap:
             name: coredns-zone
+        - name: blocklist-volume
+          persistentVolumeClaim:
+            claimName: local-mount-blocklist
