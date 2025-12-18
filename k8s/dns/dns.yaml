@@ -13,17 +13,9 @@ data:
     }
 
     .:53 {
-        template IN ANY instagram.com {
-            rcode NXDOMAIN
-        }
-        template IN ANY welt.de {
-          rcode NXDOMAIN
-        }
-        template IN ANY mopo.de {
-          rcode NXDOMAIN
-        }
-        template IN ANY bild.de {
-          rcode NXDOMAIN
+        hosts /etc/coredns/blocklist/blocklist.db {
+            0.0.0.0 #
+            fallthrough
         }
         log
         errors
@@ -96,6 +88,8 @@ spec:
               mountPath: /etc/coredns
             - name: config-zone
               mountPath: /etc/coredns/zones
+            - name: blocklist-volume
+              mountPath: /etc/coredns/blocklist
           livenessProbe:
             httpGet:
               path: /health
@@ -118,3 +112,6 @@ spec:
         - name: config-zone
           configMap:
             name: coredns-zone
+        - name: blocklist-volume
+          configMap:
+            name: coredns-blocklist
