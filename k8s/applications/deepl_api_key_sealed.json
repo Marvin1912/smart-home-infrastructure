@@ -1,0 +1,19 @@
+{
+  "kind": "SealedSecret",
+  "apiVersion": "bitnami.com/v1alpha1",
+  "metadata": {
+    "name": "deepl-api-key",
+    "namespace": "default"
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "name": "deepl-api-key",
+        "namespace": "default"
+      }
+    },
+    "encryptedData": {
+      "VOCABULARY_DEEPL_API_KEY": "AgB5DeZj7sA4FdElHQZP4GbZX/w9ToLLu68jl/WU/SvQr3Y4020lgqpMAKmy8A5aXtrtdBALGHOH3p/ucSAIl2J6GiCR310U+b5/Eki/htDSf2cqpGIGiKn/tLQMXKl5KiLn8W0urIotKMafyDZZhFjk+cyOtqZ81mr9LNrD0nzahVMjq34rNOQzVnOjr3eGFJwbNLwODmEZZlPxLiHk3hVS7iZeVFQY+nS3+nCApBrbajhaxjSFHitLIT8teXU2K+tTDWCzuNSPD5dHo4GUH9TuyZGh5s7h/x3k8NPhpEY0R/OzNtv04ZutmI90eMz2c/uITWs6+cKWGObeBTSgFcEP3HnuVh6pCHMi5j5RvKjKwEDHvHW3ST7JTMlMA3YCOI7+wGOc67BJQHEV9n/MDTtAUOJ2vZVNQ2SLfUv1j1WFyJDMFw415RrEDuwoB7SMlfTC8x23SnjqKpLYSAtCT3iZUzqtdyprcPWpAnHUYwQaWKcX+NVBVzjXNcGc7zstn1holDGAL3rbYIpz1ud84K6TBCxw1r2KlE3YqHkrs2OhmXGBLjsrA5Pw9dABOedDahhSAkL+QdhxhN0y0XphfRluBn37aAVIdpCBC6sPlSCGTadvvmz0yefbCdGKMPgKS69nn6imVdpw3fw8qM2KxyszZDwjnAkxp0URy7wJP4HnGU62zMQUPsbXTEV7PkUZm524jRMhrHi1vMUIUm+sq87V/TLtYcrqcTJjSmXKeK/pugr5qdsdUSA="
+    }
+  }
+}

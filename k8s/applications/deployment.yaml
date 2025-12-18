@@ -66,6 +66,11 @@ spec:
               value: "false"
             - name: CONSUL_URL
               value: "http://192.168.178.29:8500"
+            - name: VOCABULARY_DEEPL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: deepl-api-key 
+                  key: VOCABULARY_DEEPL_API_KEY
           resources:
             requests:
               memory: "512Mi"
