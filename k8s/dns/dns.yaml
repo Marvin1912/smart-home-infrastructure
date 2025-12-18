@@ -13,7 +13,7 @@ data:
     }
 
     .:53 {
-        hosts /etc/coredns/blocklist/blocklist.db {
+        hosts /etc/coredns/blocklist/adblock.hosts {
             0.0.0.0 #
             fallthrough
         }
@@ -86,6 +86,27 @@ spec:
     spec:
       hostNetwork: true
       dnsPolicy: Default
+
+      initContainers:
+        - name: fetch-blocklist
+          image: curlimages/curl:8.17.0
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              mkdir -p /etc/coredns/blocklist
+              tmp="$(mktemp)"
+
+              curl -fsSL https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts \
+                | awk 'NF && $1 ~ /^(0\.0\.0\.0|127\.0\.0\.1)$/ && $2 ~ /^[A-Za-z0-9.-]+$/ {print "0.0.0.0 " $2}' \
+                | sed 's/\r$//' \
+                > "$tmp"
+
+              mv "$tmp" /etc/coredns/blocklist/adblock.hosts
+          volumeMounts:
+            - name: blocklist-volume
+              mountPath: /etc/coredns/blocklist
+
       containers:
         - name: coredns
           image: coredns/coredns:1.13.2
@@ -125,5 +146,4 @@ spec:
           configMap:
             name: coredns-zone
         - name: blocklist-volume
-          configMap:
-            name: coredns-blocklist
+          emptyDir: {}
