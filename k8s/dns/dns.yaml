@@ -153,4 +153,5 @@ spec:
           configMap:
             name: coredns-zone
         - name: blocklist-volume
-          emptyDir: {}
+          persistentVolumeClaim:
+            claimName: local-mount-blocklist
