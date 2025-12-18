@@ -205,7 +205,7 @@ spec:
                 "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
               },
               "exemplar": true,
-              "expr": "coredns_build_info{instance=~\"$instance\"}",
+              "expr": "sum without (pod) (coredns_build_info{instance=~\"$instance\"})",
               "format": "time_series",
               "interval": "",
               "intervalFactor": 1,
@@ -624,7 +624,7 @@ spec:
                 "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
               },
               "exemplar": true,
-              "expr": "go_memstats_alloc_bytes{instance=~\"$instance\"}",
+              "expr": "sum without (pod) (go_memstats_alloc_bytes{instance=~\"$instance\"})",
               "interval": "",
               "intervalFactor": 2,
               "legendFormat": "{{instance}}",
