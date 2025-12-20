@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: home-assistant-rules
+  namespace: default
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: battery
+    rules:
+    - alert: BatteryLow
+      expr: homeassistant_sensor_battery_percent < 10
+      for: 1m
+      labels:
+        severity: error
+      annotations:
+        summary: "{{ $labels.friendly_name }} is low!"
+        description: "{{ $labels.friendly_name }} has a value of {{ $value }}"
+
