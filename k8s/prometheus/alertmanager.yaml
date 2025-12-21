@@ -1,8 +1,8 @@
-apiVersion: monitoring.coreos.com/v1beta1
+apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
-  name: gmail-receiver-example
-  namespace: monitoring
+  name: alertmanager-config
+  namespace: default
   labels:
     alertmanagerConfig: main
 spec:

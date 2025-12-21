@@ -10,7 +10,7 @@ spec:
   - name: battery
     rules:
     - alert: BatteryLow
-      expr: homeassistant_sensor_battery_percent < 10
+      expr: homeassistant_sensor_battery_percent < 90
       for: 1m
       labels:
         severity: error
