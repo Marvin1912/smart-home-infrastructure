@@ -7,9 +7,6 @@ set -e
 
 GRAFANA_URL="http://grafana.home-lab.com"
 NAMESPACE="default"
-OUTPUT_DIR="dashboards"
-
-mkdir -p "$OUTPUT_DIR"
 
 echo "Fetching dashboards list..."
 DASHBOARDS=$(curl -s -u "marvin:password" "$GRAFANA_URL/apis/dashboard.grafana.app/v1beta1/namespaces/$NAMESPACE/dashboards" | jq -r '.items[].metadata.name')
@@ -24,18 +21,17 @@ echo "Found $(echo "$DASHBOARDS" | wc -l) dashboards"
 for DASHBOARD in $DASHBOARDS; do
     echo "Fetching dashboard: $DASHBOARD"
     DASHBOARD_JSON=$(curl -s -u "marvin:password" "$GRAFANA_URL/apis/dashboard.grafana.app/v1beta1/namespaces/$NAMESPACE/dashboards/$DASHBOARD")
-    DASHBOARD_TITLE=$(echo "$DASHBOARD_JSON" | jq -r '.spec.dashboard | fromjson | .title')
+    DASHBOARD_TITLE=$(echo "$DASHBOARD_JSON" | jq -r '.spec.title')
 
     if [ -z "$DASHBOARD_TITLE" ] || [ "$DASHBOARD_TITLE" == "null" ]; then
         echo "Warning: Could not extract title for dashboard $DASHBOARD, using name as fallback"
         DASHBOARD_TITLE=$DASHBOARD
     fi
 
-    # Sanitize filename: replace spaces and special characters with underscores
-    SANITIZED_TITLE=$(echo "$DASHBOARD_TITLE" | tr '[:space:]' '_' | tr -dc 'a-zA-Z0-9_-.')
+    SANITIZED_TITLE=$(echo "$DASHBOARD_TITLE" | sed 's/ /_/g' | tr -dc 'a-zA-Z0-9_.-' | tr '[:upper:]' '[:lower:]')
 
     echo "Saving as: $SANITIZED_TITLE.json"
-    echo "$DASHBOARD_JSON" > "$OUTPUT_DIR/$SANITIZED_TITLE.json"
+    echo "$DASHBOARD_JSON" | jq -r '.spec' > "dashboards/$SANITIZED_TITLE.json"
 done
 
-echo "All dashboards fetched successfully to $OUTPUT_DIR/"
+echo "All dashboards fetched successfully to $(pwd)/dashboards"
