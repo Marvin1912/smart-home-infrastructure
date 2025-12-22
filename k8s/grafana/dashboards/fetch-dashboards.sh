@@ -23,7 +23,19 @@ echo "Found $(echo "$DASHBOARDS" | wc -l) dashboards"
 
 for DASHBOARD in $DASHBOARDS; do
     echo "Fetching dashboard: $DASHBOARD"
-    curl -s -u "marvin:password" "$GRAFANA_URL/apis/dashboard.grafana.app/v1beta1/namespaces/$NAMESPACE/dashboards/$DASHBOARD" | jq '.' > "$OUTPUT_DIR/$DASHBOARD.json"
+    DASHBOARD_JSON=$(curl -s -u "marvin:password" "$GRAFANA_URL/apis/dashboard.grafana.app/v1beta1/namespaces/$NAMESPACE/dashboards/$DASHBOARD")
+    DASHBOARD_TITLE=$(echo "$DASHBOARD_JSON" | jq -r '.spec.dashboard | fromjson | .title')
+
+    if [ -z "$DASHBOARD_TITLE" ] || [ "$DASHBOARD_TITLE" == "null" ]; then
+        echo "Warning: Could not extract title for dashboard $DASHBOARD, using name as fallback"
+        DASHBOARD_TITLE=$DASHBOARD
+    fi
+
+    # Sanitize filename: replace spaces and special characters with underscores
+    SANITIZED_TITLE=$(echo "$DASHBOARD_TITLE" | tr '[:space:]' '_' | tr -dc 'a-zA-Z0-9_-.')
+
+    echo "Saving as: $SANITIZED_TITLE.json"
+    echo "$DASHBOARD_JSON" > "$OUTPUT_DIR/$SANITIZED_TITLE.json"
 done
 
 echo "All dashboards fetched successfully to $OUTPUT_DIR/"
