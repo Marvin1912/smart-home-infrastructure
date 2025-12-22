@@ -4,7 +4,8 @@
       {
         "builtIn": 1,
         "datasource": {
-          "type": "grafana"
+          "type": "grafana",
+          "uid": "-- Grafana --"
         },
         "enable": true,
         "hide": true,
@@ -21,7 +22,7 @@
   "panels": [
     {
       "datasource": {
-        "type": "prometheus"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -67,14 +68,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Badezimmer Batterie\"}",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.friendly_name == \"Badezimmer Batterie\")",
           "refId": "A"
         }
       ],
@@ -83,7 +77,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -133,14 +127,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Flur Batterie\"}",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.friendly_name == \"Flur Batterie\")",
           "refId": "A"
         }
       ],
@@ -149,7 +136,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -199,14 +186,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Küche Batterie\"}",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.friendly_name == \"Küche Batterie\")",
           "refId": "A"
         }
       ],
@@ -215,7 +195,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -265,14 +245,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Schlafzimmer Batterie\"}",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.friendly_name == \"Schlafzimmer Batterie\")",
           "refId": "A"
         }
       ],
@@ -281,7 +254,7 @@
     },
     {
       "datasource": {
-        "type": "prometheus"
+        "type": "influxdb"
       },
       "fieldConfig": {
         "defaults": {
@@ -331,14 +304,7 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus"
-          },
-          "editorMode": "code",
-          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Wohnzimmer Batterie\"}",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.friendly_name == \"Wohnzimmer Batterie\")",
           "refId": "A"
         }
       ],
@@ -610,5 +576,6 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Sensordaten"
+  "title": "Sensordaten",
+  "weekStart": ""
 }
