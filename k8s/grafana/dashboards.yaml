@@ -4415,7 +4415,7 @@ spec:
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: system metrics-dashboard
+  name: system-metrics-dashboard
   labels:
     app: grafana
 spec:
