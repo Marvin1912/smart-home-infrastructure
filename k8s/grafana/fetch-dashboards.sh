@@ -31,7 +31,7 @@ for DASHBOARD in $DASHBOARDS; do
     SANITIZED_TITLE=$(echo "$DASHBOARD_TITLE" | sed 's/ /_/g' | tr -dc 'a-zA-Z0-9_.-' | tr '[:upper:]' '[:lower:]')
 
     echo "Saving as: $SANITIZED_TITLE.json"
-    echo "$DASHBOARD_JSON" | jq -r '.spec' > "dashboards/$SANITIZED_TITLE.json"
+    echo "$DASHBOARD_JSON" | jq -r '.spec | walk(if type == "object" then with_entries(select(.key != "uid")) else . end)' > "dashboards/$SANITIZED_TITLE.json"
 done
 
 echo "All dashboards fetched successfully to $(pwd)/dashboards"
