@@ -25,12 +25,6 @@ spec:
         - kind: Service
           name: influxdb-service
           port: 8086
-    - match: Host(`postgres.home-lab.com`)
-      kind: Rule
-      services:
-        - kind: Service
-          name: postgres-service
-          port: 5432
     - match: Host(`frontend.home-lab.com`)
       kind: Rule
       services:
