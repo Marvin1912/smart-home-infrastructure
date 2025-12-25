@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: home-assistant-rules
+  namespace: default
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: plants
+    rules:
+    - alert: NeedsWater
+      expr: water_plant = 1
+      for: 1m
+      labels:
+        severity: error
+      annotations:
+        summary: "{{ $labels.plant }} needs Water!"
+        description: "{{ $labels.plant }} must be watered!"
+

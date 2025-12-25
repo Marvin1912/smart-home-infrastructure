@@ -32,10 +32,6 @@ spec:
               value: "marvin"
             - name: DATA_SOURCE_PASSWORD
               value: "password"
-            - name: MAIL_USERNAME
-              value: ""
-            - name: MAIL_PASSWORD
-              value: ""
             - name: CAMT_DIRECTORY_IN
               value: "/data/camt"
             - name: CAMT_DIRECTORY_DONE
