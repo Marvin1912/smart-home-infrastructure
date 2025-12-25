@@ -10,7 +10,7 @@ spec:
   - name: plants
     rules:
     - alert: NeedsWater
-      expr: water_plant = 1
+      expr: water_plant == 1
       for: 1m
       labels:
         severity: error
