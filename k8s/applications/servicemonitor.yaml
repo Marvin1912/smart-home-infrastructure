@@ -15,4 +15,4 @@ spec:
     - default
   selector:
     matchLabels:
-      app: applications
+      app: applications-service
