@@ -3878,7 +3878,7 @@ spec:
           "gridPos": {
             "h": 4,
             "w": 4,
-            "x": 5,
+            "x": 0,
             "y": 0
           },
           "id": 2,
@@ -3942,7 +3942,7 @@ spec:
           "gridPos": {
             "h": 4,
             "w": 4,
-            "x": 10,
+            "x": 7,
             "y": 0
           },
           "id": 3,
@@ -3981,8 +3981,7 @@ spec:
         },
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+            "uid": "272f6c09-fb8f-4579-8861-098348aaf0a4"
           },
           "fieldConfig": {
             "defaults": {
@@ -3991,57 +3990,114 @@ spec:
               },
               "mappings": [],
               "thresholds": {
-                "mode": "percentage",
+                "mode": "absolute",
                 "steps": [
                   {
                     "color": "green",
                     "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
                   }
                 ]
-              },
-              "unit": "percent"
+              }
             },
             "overrides": []
           },
           "gridPos": {
             "h": 4,
             "w": 4,
-            "x": 15,
+            "x": 14,
             "y": 0
           },
           "id": 4,
           "options": {
-            "minVizHeight": 75,
-            "minVizWidth": 75,
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
               ],
-              "fields": "",
+              "fields": "/^state \\{domain=\"sensor\", entity_id=\"drachenbaum_battery_state\", friendly_name=\"Drachenbaum Battery state\", source=\"HA\"\\}$/",
               "values": false
             },
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true,
-            "sizing": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
           "pluginVersion": "12.1.0",
           "targets": [
             {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
-              },
-              "editorMode": "code",
-              "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Birkenfeige Batterie\"}",
-              "instant": false,
-              "legendFormat": "__auto",
-              "range": true,
+              "query": "from(bucket: \"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"entity_id\"] == \"drachenbaum_battery_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"state\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
               "refId": "A"
             }
           ],
-          "title": "Birkenfeige Batterie",
-          "type": "gauge"
+          "title": "Drachenbaum Batterie",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "uid": "272f6c09-fb8f-4579-8861-098348aaf0a4"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 4,
+            "x": 20,
+            "y": 0
+          },
+          "id": 5,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "/^state \\{domain=\"sensor\", entity_id=\"ficus_bonsai_battery_state\", friendly_name=\"Ficus Bonsai Battery state\", source=\"HA\"\\}$/",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "query": "from(bucket: \"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"entity_id\"] == \"ficus_bonsai_battery_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"state\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+              "refId": "A"
+            }
+          ],
+          "title": "Ficus Bonsai Batterie",
+          "type": "stat"
         },
         {
           "datasource": {
@@ -4101,7 +4157,32 @@ spec:
                 ]
               }
             },
-            "overrides": []
+            "overrides": [
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "Emerald Palm"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": true
+                    }
+                  }
+                ]
+              }
+            ]
           },
           "gridPos": {
             "h": 10,
@@ -4130,7 +4211,7 @@ spec:
                 "type": "influxdb",
                 "uid": "272f6c09-fb8f-4579-8861-098348aaf0a4"
               },
-              "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"moisture_feder_calathea_luftfeuchtigkeit\" then \"Feder Calathea\"\n        else if r.entity_id == \"moisture_emerald_palm_luftfeuchtigkeit\" then \"Emerald Palm\"\n        else if r.entity_id == \"moisture_birkenfeige_luftfeuchtigkeit\" then \"Birkenfeige\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])",
+              "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"moisture_feder_calathea_luftfeuchtigkeit\" or r.entity_id == \"feder_calathea_soil_moisture\" then \"Feder Calathea\"\n        else if r.entity_id == \"moisture_emerald_palm_luftfeuchtigkeit\" or r.entity_id == \"emerald_palm_soil_moisture\" then \"Emerald Palm\"\n        else if r.entity_id == \"drachenbaum_soil_moisture\" then \"Drachenbaum\"\n        else if r.entity_id == \"ficus_bonsai_soil_moisture\" then \"Ficus Bonsai\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])",
               "refId": "A"
             }
           ],
@@ -4242,7 +4323,7 @@ spec:
                 "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
               },
               "editorMode": "code",
-              "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Badezimmer Batterie\"}",
+              "expr": "sum by (friendly_name) (homeassistant_sensor_battery_percent{friendly_name=\"Badezimmer Batterie\"})",
               "instant": false,
               "legendFormat": "__auto",
               "range": true,
@@ -4612,7 +4693,7 @@ spec:
               "datasource": {
                 "type": "influxdb"
               },
-              "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
+              "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit\" or r.entity_id == \"badezimmer_humidity\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_2\" or r.entity_id == \"flur_humidity\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_3\" or r.entity_id == \"kueche_humidity\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_4\" or r.entity_id == \"schlafzimmer_humidity\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_5\" or r.entity_id == \"wohnzimmer_humidity\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit\" or r.entity_id == \"badezimmer_humidity\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_2\" or r.entity_id == \"flur_humidity\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_3\" or r.entity_id == \"kueche_humidity\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_4\" or r.entity_id == \"schlafzimmer_humidity\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_luftfeuchtigkeit_5\" or r.entity_id == \"wohnzimmer_humidity\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
               "refId": "A"
             }
           ],
@@ -4768,7 +4849,187 @@ spec:
               "datasource": {
                 "type": "influxdb"
               },
-              "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_temperatur\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_temperatur\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_2\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_3\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_4\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_5\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
+              "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_temperatur\" or r.entity_id == \"badezimmer_temperature\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_2\" or r.entity_id == \"flur_temperature\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_3\" or r.entity_id == \"kueche_temperature\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_4\" or r.entity_id == \"schlafzimmer_temperature\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_5\" or r.entity_id == \"wohnzimmer_temperature\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"lumi_lumi_weather_temperatur\" or r.entity_id == \"badezimmer_temperature\" then \"Badezimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_2\" or r.entity_id == \"flur_temperature\" then \"Flur\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_3\" or r.entity_id == \"kueche_temperature\" then \"Küche\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_4\" or r.entity_id == \"schlafzimmer_temperature\" then \"Schlafzimmer\"\n        else if r.entity_id == \"lumi_lumi_weather_temperatur_5\" or r.entity_id == \"wohnzimmer_temperature\" then \"Wohnzimmer\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Temperatur",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "influxdb"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "max": 30,
+              "min": 15,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "celsius"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "value {domain=\"sensor\", entity_id=\"lumi_lumi_weather_temperatur_2\", friendly_name=\"LUMI lumi.weather Temperatur\", source=\"HA\"}"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Flur"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "value {domain=\"sensor\", entity_id=\"lumi_lumi_weather_temperatur_3\", friendly_name=\"LUMI lumi.weather Temperatur\", source=\"HA\"}"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Küche"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "value {domain=\"sensor\", entity_id=\"lumi_lumi_weather_temperatur_4\", friendly_name=\"LUMI lumi.weather Temperatur\", source=\"HA\"}"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Schlafzimmer"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "value {domain=\"sensor\", entity_id=\"lumi_lumi_weather_temperatur_5\", friendly_name=\"LUMI lumi.weather Temperatur\", source=\"HA\"}"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Wohnzimmer"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "value {domain=\"sensor\", entity_id=\"lumi_lumi_weather_temperatur\", friendly_name=\"LUMI lumi.weather Temperatur\", source=\"HA\"}"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Badezimmer"
+                  }
+                ]
+              },
+              {
+                "__systemRef": "hideSeriesFrom",
+                "matcher": {
+                  "id": "byNames",
+                  "options": {
+                    "mode": "exclude",
+                    "names": [
+                      "Draußen"
+                    ],
+                    "prefix": "All except:",
+                    "readOnly": true
+                  }
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 7,
+            "w": 24,
+            "x": 0,
+            "y": 18
+          },
+          "id": 8,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb"
+              },
+              "query": "b30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"draussen_temperature\" then \"Draußen\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: 6h, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"draussen_temperature\" then \"Draußen\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
               "refId": "A"
             }
           ],
