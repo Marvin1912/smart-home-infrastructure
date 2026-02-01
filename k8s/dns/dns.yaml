@@ -65,6 +65,7 @@ data:
     prometheus   IN A    192.168.178.29
     frontend     IN A    192.168.178.29
     backend      IN A    192.168.178.29
+    wiki         IN A    192.168.178.29
 
 ---
 apiVersion: apps/v1
