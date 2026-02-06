@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: linkwarden-app-pvc
+  namespace: linkwarden
+  labels:
+    app: linkwarden
+spec:
+  storageClassName: local-mount
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
