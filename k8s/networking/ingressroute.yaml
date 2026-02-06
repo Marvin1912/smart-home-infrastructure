@@ -43,3 +43,9 @@ spec:
         - kind: Service
           name: linkwarden
           port: 3000
+    - match: Host(`wiki.home-lab.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: wikijs-service
+          port: 3000
