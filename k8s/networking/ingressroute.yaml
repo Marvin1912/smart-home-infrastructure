@@ -37,3 +37,9 @@ spec:
         - kind: Service
           name: applications-service
           port: 9055
+    - match: Host(`linkwarden.home-lab.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: linkwarden
+          port: 9056
