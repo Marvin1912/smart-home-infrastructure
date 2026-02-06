@@ -17,16 +17,14 @@ spec:
     spec:
       containers:
         - name: linkwarden
-          image: linkwarden/linkwarden:latest
+          image: ghcr.io/linkwarden/linkwarden:v2.13.5
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
               name: http
           env:
             - name: DATABASE_URL
-              value: "jdbc:postgresql://marvin@postgres-service.default.svc.cluster.local:5432/costs?currentSchema=linkwarden"
-            - name: POSTGRES_PASSWORD
-              value: password
+              value: "postgresql://marvin:password@postgres-service.default.svc.cluster.local:5432/costs?schema=linkwarden"
             - name: NEXTAUTH_URL
               value: "http://linkwarden.home-lab.com/api/v1/auth"
             - name: NEXTAUTH_SECRET
@@ -37,10 +35,10 @@ spec:
               memory: 256Mi
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 1500Mi
           volumeMounts:
             - name: data
-              mountPath: /data
+              mountPath: /data/data
       volumes:
         - name: data
           persistentVolumeClaim:

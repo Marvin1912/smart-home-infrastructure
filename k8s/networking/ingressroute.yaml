@@ -42,4 +42,4 @@ spec:
       services:
         - kind: Service
           name: linkwarden
-          port: 9056
+          port: 3000
