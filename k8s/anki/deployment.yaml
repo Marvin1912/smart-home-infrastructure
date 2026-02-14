@@ -26,6 +26,8 @@ spec:
               value: /data/collection.anki2
             - name: SCHEDULE
               value: 0 0 * * *
+            - name: API_BASE_URL
+              value: http://applications-service:9055
             - name: ANKI_USERNAME
               valueFrom:
                 secretKeyRef:
