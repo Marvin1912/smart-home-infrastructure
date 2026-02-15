@@ -49,3 +49,9 @@ spec:
         - kind: Service
           name: wikijs-service
           port: 3000
+    - match: Host(`anki.home-lab.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: anki-service
+          port: 8000

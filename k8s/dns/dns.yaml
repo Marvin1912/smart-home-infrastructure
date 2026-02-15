@@ -73,6 +73,7 @@ data:
     backend      IN A    192.168.178.29
     linkwarden   IN A    192.168.178.29
     wiki         IN A    192.168.178.29
+    anki         IN A    192.168.178.29
 
 ---
 apiVersion: apps/v1
