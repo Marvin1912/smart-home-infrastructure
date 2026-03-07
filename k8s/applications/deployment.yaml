@@ -47,7 +47,7 @@ spec:
             - name: EXPORTER_FOLDER
               value: "/data/export"
             - name: BACKUP_UPLOAD_ENABLED
-              value: "false"
+              value: "true"
             - name: BACKUP_WATCH_DIR
               value: "/data/backup/in"
             - name: BACKUP_DONE_DIR
