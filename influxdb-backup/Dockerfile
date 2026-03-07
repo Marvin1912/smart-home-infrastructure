@@ -10,7 +10,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL \
        "https://dl.influxdata.com/influxdb/releases/influxdb2-client-${INFLUX_CLI_VERSION}-linux-amd64.tar.gz" \
-       | tar xz --strip-components=1 -C /usr/local/bin influx
+       -o /tmp/influx.tar.gz \
+    && tar xzf /tmp/influx.tar.gz -C /tmp \
+    && find /tmp -name "influx" -type f -exec mv {} /usr/local/bin/influx \; \
+    && chmod +x /usr/local/bin/influx \
+    && rm -f /tmp/influx.tar.gz
 
 RUN mkdir -p /app/backup/keys
 
