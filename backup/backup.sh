@@ -215,7 +215,6 @@ log "Step 6/6: Packaging into zip archive..."
 ARCHIVE_DATA_NAME="${DB_NAME}_${TIMESTAMP}.sql.gz.enc"
 ARCHIVE_KEY_NAME="${DB_NAME}_${TIMESTAMP}.key.enc"
 
-cp "${ENCRYPTED_FILE}" "${BACKUP_DIR}/${ARCHIVE_DATA_NAME}"
 cp "${ENCRYPTED_KEY_FILE}" "${BACKUP_DIR}/${ARCHIVE_KEY_NAME}"
 
 (cd "${BACKUP_DIR}" && zip -j "${FINAL_ZIP}" "${ARCHIVE_DATA_NAME}" "${ARCHIVE_KEY_NAME}")
