@@ -1,6 +1,47 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
+  name: applications-influxdb-backup
+  namespace: default
+spec:
+  schedule: "0 3 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: influxdb-backup
+              image: localhost:5000/influxdb-backup:latest
+              imagePullPolicy: Always
+              command: ["/app/backup/backup.sh"]
+              env:
+                - name: INFLUX_URL
+                  value: "http://influxdb.default.svc.cluster.local:8086"
+                - name: INFLUX_ORG
+                  value: "wildfly_domain"
+                - name: INFLUX_TOKEN
+                  value: "temp-init-token-will-be-replaced"
+                - name: BACKUP_DIR
+                  value: "/data/backup/out"
+                - name: PUBLIC_KEY
+                  value: "/app/backup/keys/backup_public.pem"
+                - name: WATCH_DIR
+                  value: "/data/backup/in"
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: local-mount-pvc
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
   name: applications-db-backup
   namespace: default
 spec:
