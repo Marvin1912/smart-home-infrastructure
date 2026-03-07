@@ -15,7 +15,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: db-backup
-              image: localhost:5000/applications:latest
+              image: localhost:5000/db-backup:latest
               imagePullPolicy: Always
               command: ["/app/backup/backup.sh"]
               env:
