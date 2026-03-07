@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: applications-db-backup
+  namespace: default
+spec:
+  schedule: "0 2 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: db-backup
+              image: localhost:5000/applications:latest
+              imagePullPolicy: Always
+              command: ["/app/backup/backup.sh"]
+              env:
+                - name: DB_HOST
+                  value: "postgres-service.default.svc.cluster.local"
+                - name: DB_PORT
+                  value: "5432"
+                - name: DB_NAME
+                  value: "costs"
+                - name: DB_USER
+                  value: "marvin"
+                - name: PGPASSWORD
+                  value: "password"
+                - name: BACKUP_DIR
+                  value: "/data/backup/out"
+                - name: PUBLIC_KEY
+                  value: "/app/backup/keys/backup_public.pem"
+                - name: WATCH_DIR
+                  value: "/data/backup/in"
+              volumeMounts:
+                - name: data
+                  mountPath: /data
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: local-mount-pvc

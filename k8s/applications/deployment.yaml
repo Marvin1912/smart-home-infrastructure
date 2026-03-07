@@ -46,6 +46,14 @@ spec:
               value: "/data/import/sensordata/done"
             - name: EXPORTER_FOLDER
               value: "/data/export"
+            - name: BACKUP_UPLOAD_ENABLED
+              value: "false"
+            - name: BACKUP_WATCH_DIR
+              value: "/data/backup/in"
+            - name: BACKUP_DONE_DIR
+              value: "/data/backup/done"
+            - name: BACKUP_ERROR_DIR
+              value: "/data/backup/error"
             - name: UPLOADER_CREDENTIALS_PATH
               value: "/data/google/credentials.json"
             - name: UPLOADER_COST_EXPORT_FOLDER
