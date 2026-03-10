@@ -31,6 +31,15 @@ spec:
                   value: "/app/backup/keys/backup_public.pem"
                 - name: WATCH_DIR
                   value: "/data/backup/in"
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m"
+                  ephemeral-storage: "128Mi"
+                limits:
+                  memory: "256Mi"
+                  cpu: "200m"
+                  ephemeral-storage: "512Mi"
               volumeMounts:
                 - name: data
                   mountPath: /data
@@ -76,6 +85,15 @@ spec:
                   value: "/app/backup/keys/backup_public.pem"
                 - name: WATCH_DIR
                   value: "/data/backup/in"
+              resources:
+                requests:
+                  memory: "128Mi"
+                  cpu: "100m"
+                  ephemeral-storage: "128Mi"
+                limits:
+                  memory: "256Mi"
+                  cpu: "200m"
+                  ephemeral-storage: "512Mi"
               volumeMounts:
                 - name: data
                   mountPath: /data

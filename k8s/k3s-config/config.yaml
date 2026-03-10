@@ -1,0 +1,10 @@
+# k3s node configuration
+# Deploy to: /etc/rancher/k3s/config.yaml
+#
+# Migration steps (manual maintenance window):
+#   1. sudo systemctl stop k3s
+#   2. sudo rsync -av /var/lib/rancher/k3s/ /home/k3s-data/
+#   3. sudo cp k8s/k3s-config/config.yaml /etc/rancher/k3s/config.yaml
+#   4. sudo systemctl start k3s
+#   5. Verify: kubectl get nodes
+data-dir: /home/k3s-data

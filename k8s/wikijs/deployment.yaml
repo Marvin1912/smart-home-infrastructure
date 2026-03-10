@@ -41,9 +41,11 @@ spec:
             requests:
               memory: "512Mi"
               cpu: "250m"
+              ephemeral-storage: "256Mi"
             limits:
               memory: "1024Mi"
               cpu: "500m"
+              ephemeral-storage: "1Gi"
           volumeMounts:
             - name: wikijs-data
               mountPath: /wiki/data
