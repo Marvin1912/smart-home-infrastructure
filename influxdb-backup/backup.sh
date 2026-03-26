@@ -12,8 +12,9 @@
 #   INFLUX_URL    - InfluxDB URL (default: http://localhost:8086)
 #   INFLUX_TOKEN  - InfluxDB API token with read access (REQUIRED)
 #   INFLUX_ORG    - InfluxDB organization name (default: wildfly_domain)
-#   INFLUX_BUCKET - Specific bucket to back up (default: all buckets)
-#   BACKUP_DIR    - Output directory for backups (default: ./backups)
+#   INFLUX_BUCKET   - Specific bucket to back up (default: all buckets)
+#   EXCLUDE_BUCKETS - Comma-separated list of buckets to exclude (default: none)
+#   BACKUP_DIR      - Output directory for backups (default: ./backups)
 #   PUBLIC_KEY    - Path to RSA public key (default: ./keys/backup_public.pem)
 #   WATCH_DIR     - Directory to atomically move the final zip into (optional)
 
@@ -29,6 +30,7 @@ TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 INFLUX_URL="${INFLUX_URL:-http://localhost:8086}"
 INFLUX_ORG="${INFLUX_ORG:-wildfly_domain}"
 INFLUX_BUCKET="${INFLUX_BUCKET:-}"
+EXCLUDE_BUCKETS="${EXCLUDE_BUCKETS:-}"
 
 if [[ -z "${INFLUX_TOKEN:-}" ]]; then
     echo "ERROR: INFLUX_TOKEN environment variable is required but not set."
@@ -68,6 +70,7 @@ while [[ $# -gt 0 ]]; do
             echo "  INFLUX_TOKEN  InfluxDB API token with read access (REQUIRED)"
             echo "  INFLUX_ORG    InfluxDB organization name (default: wildfly_domain)"
             echo "  INFLUX_BUCKET Specific bucket to back up (default: all buckets)"
+            echo "  EXCLUDE_BUCKETS Comma-separated buckets to exclude (default: none)"
             echo "  BACKUP_DIR    Output directory (default: ./backups)"
             echo "  PUBLIC_KEY    RSA public key path (default: ./keys/backup_public.pem)"
             echo "  WATCH_DIR     Watch directory for atomic move (optional)"
@@ -108,7 +111,7 @@ trap cleanup EXIT
 check_prerequisites() {
     local missing=()
 
-    for cmd in influx openssl tar zip; do
+    for cmd in influx jq openssl tar zip; do
         if ! command -v "${cmd}" &>/dev/null; then
             missing+=("${cmd}")
         fi
@@ -137,6 +140,42 @@ validate_public_key() {
     log "Using public key: ${PUBLIC_KEY}"
 }
 
+list_filtered_buckets() {
+    local all_buckets
+    all_buckets=$(influx bucket list \
+        --host "${INFLUX_URL}" \
+        --token "${INFLUX_TOKEN}" \
+        --org "${INFLUX_ORG}" \
+        --json | jq -r '.[].name')
+
+    IFS=',' read -ra EXCLUDE_ARRAY <<< "${EXCLUDE_BUCKETS}"
+
+    while IFS= read -r bucket; do
+        [[ -z "${bucket}" ]] && continue
+
+        # Skip system buckets
+        if [[ "${bucket}" == _* ]]; then
+            log "  Skipping system bucket: ${bucket}"
+            continue
+        fi
+
+        # Skip excluded buckets
+        local excluded=false
+        for exclude in "${EXCLUDE_ARRAY[@]}"; do
+            exclude="$(echo -n "${exclude}" | xargs)"
+            if [[ "${bucket}" == "${exclude}" ]]; then
+                log "  Excluding bucket: ${bucket}"
+                excluded=true
+                break
+            fi
+        done
+
+        if [[ "${excluded}" == false ]]; then
+            echo "${bucket}"
+        fi
+    done <<< "${all_buckets}"
+}
+
 # ============================================================================
 # Main
 # ============================================================================
@@ -150,6 +189,11 @@ log "Starting backup process..."
 log "InfluxDB: ${INFLUX_URL} (org: ${INFLUX_ORG})"
 if [[ -n "${INFLUX_BUCKET}" ]]; then
     log "Bucket:   ${INFLUX_BUCKET}"
+    if [[ -n "${EXCLUDE_BUCKETS}" ]]; then
+        log "WARNING: EXCLUDE_BUCKETS is ignored when INFLUX_BUCKET is set"
+    fi
+elif [[ -n "${EXCLUDE_BUCKETS}" ]]; then
+    log "Exclude:  ${EXCLUDE_BUCKETS}"
 else
     log "Bucket:   all buckets"
 fi
@@ -163,20 +207,47 @@ mkdir -p "${BACKUP_DIR}"
 # Step 1: Create InfluxDB snapshot
 log "Step 1/6: Creating InfluxDB snapshot..."
 
-INFLUX_BACKUP_ARGS=(
-    backup
-    --host "${INFLUX_URL}"
-    --token "${INFLUX_TOKEN}"
-    --org "${INFLUX_ORG}"
-)
-
 if [[ -n "${INFLUX_BUCKET}" ]]; then
-    INFLUX_BACKUP_ARGS+=(--bucket "${INFLUX_BUCKET}")
+    # Mode: Single bucket
+    influx backup \
+        --host "${INFLUX_URL}" \
+        --token "${INFLUX_TOKEN}" \
+        --org "${INFLUX_ORG}" \
+        --bucket "${INFLUX_BUCKET}" \
+        "${SNAPSHOT_DIR}" 2>&1 | while IFS= read -r line; do log "  influx: ${line}"; done
+
+elif [[ -n "${EXCLUDE_BUCKETS}" ]]; then
+    # Mode: All buckets minus excluded ones
+    log "  Listing buckets and applying exclusions..."
+    BACKUP_BUCKETS=()
+    while IFS= read -r b; do
+        [[ -n "${b}" ]] && BACKUP_BUCKETS+=("${b}")
+    done < <(list_filtered_buckets)
+
+    if [[ ${#BACKUP_BUCKETS[@]} -eq 0 ]]; then
+        log "ERROR: No buckets remaining after exclusions"
+        exit 1
+    fi
+
+    log "  Backing up ${#BACKUP_BUCKETS[@]} bucket(s): ${BACKUP_BUCKETS[*]}"
+    for bucket in "${BACKUP_BUCKETS[@]}"; do
+        log "  Backing up bucket: ${bucket}"
+        influx backup \
+            --host "${INFLUX_URL}" \
+            --token "${INFLUX_TOKEN}" \
+            --org "${INFLUX_ORG}" \
+            --bucket "${bucket}" \
+            "${SNAPSHOT_DIR}" 2>&1 | while IFS= read -r line; do log "  influx: ${line}"; done
+    done
+
+else
+    # Mode: All buckets
+    influx backup \
+        --host "${INFLUX_URL}" \
+        --token "${INFLUX_TOKEN}" \
+        --org "${INFLUX_ORG}" \
+        "${SNAPSHOT_DIR}" 2>&1 | while IFS= read -r line; do log "  influx: ${line}"; done
 fi
-
-INFLUX_BACKUP_ARGS+=("${SNAPSHOT_DIR}")
-
-influx "${INFLUX_BACKUP_ARGS[@]}" 2>&1 | while IFS= read -r line; do log "  influx: ${line}"; done
 
 if [[ ! -d "${SNAPSHOT_DIR}" ]] || [[ -z "$(ls -A "${SNAPSHOT_DIR}")" ]]; then
     log "ERROR: InfluxDB snapshot failed or produced empty directory"
