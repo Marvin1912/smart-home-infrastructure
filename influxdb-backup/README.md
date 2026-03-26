@@ -46,6 +46,9 @@ INFLUX_TOKEN=<token> ./backup.sh --output-dir /mnt/backups
 # Back up a specific bucket only
 INFLUX_TOKEN=<token> INFLUX_BUCKET=sensor_data ./backup.sh
 
+# Exclude large buckets to reduce backup size
+INFLUX_TOKEN=<token> EXCLUDE_BUCKETS=sensor_data ./backup.sh
+
 # With file-watcher integration (atomic move to watched directory)
 INFLUX_TOKEN=<token> ./backup.sh --watch-dir /app/backup/in
 ```
@@ -58,6 +61,7 @@ INFLUX_TOKEN=<token> ./backup.sh --watch-dir /app/backup/in
 | `INFLUX_TOKEN` | *(required)* | API token with read access |
 | `INFLUX_ORG` | `wildfly_domain` | Organization name |
 | `INFLUX_BUCKET` | *(empty = all buckets)* | Specific bucket to back up |
+| `EXCLUDE_BUCKETS` | *(empty = no exclusions)* | Comma-separated list of buckets to exclude |
 | `BACKUP_DIR` | `./backups` | Output directory for backup files |
 | `PUBLIC_KEY` | `./keys/backup_public.pem` | Path to RSA public key |
 | `WATCH_DIR` | *(empty)* | Directory to atomically move the final zip into |
@@ -98,7 +102,7 @@ INFLUX_TOKEN=<token> ./restore.sh ./backups/influxdb_backup_20260301_120000.zip 
 
 ## InfluxDB Buckets
 
-The backup covers all buckets in the `wildfly_domain` organization:
+The backup covers all buckets in the `wildfly_domain` organization. Use `EXCLUDE_BUCKETS` to skip large buckets (e.g., `sensor_data`) and reduce backup size. System buckets (`_monitoring`, `_tasks`) are automatically excluded when using `EXCLUDE_BUCKETS`.
 
 | Bucket | Retention | Description |
 |--------|-----------|-------------|
@@ -136,7 +140,7 @@ Build and push the Docker image to a local registry:
 ./build-and-push.sh --registry my-registry:5000 --tag v1.0.0
 ```
 
-The image is based on `debian:bookworm-slim` and includes the `influx` CLI (v2.7.5), `openssl`, `tar`, and `zip`.
+The image is based on `debian:bookworm-slim` and includes the `influx` CLI (v2.7.5), `jq`, `openssl`, `tar`, and `zip`.
 
 Run the container:
 
