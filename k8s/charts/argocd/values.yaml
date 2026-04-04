@@ -3,7 +3,11 @@
 
 argocdVersion: "2.10.3"
 
-# Server insecure mode for Traefik TLS termination
+# Server insecure mode for Traefik TLS termination.
+# argocd-cmd-params-cm has server.insecure: true, but the upstream install.yaml
+# deployment has no envFrom to wire it up. Apply the flag directly:
+#   kubectl patch deployment argocd-server -n argocd --type=json \
+#     -p='[{"op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--insecure"}]'
 server:
   insecure: true
 
