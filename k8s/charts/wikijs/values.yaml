@@ -1,6 +1,6 @@
 image:
-  repository: localhost:5000/wikijs
-  tag: "latest"
+  repository: ghcr.io/requarks/wiki
+  tag: "2"
   pullPolicy: Always
 
 containerPort: 3000
