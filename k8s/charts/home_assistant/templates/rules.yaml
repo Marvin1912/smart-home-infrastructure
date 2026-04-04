@@ -4,7 +4,11 @@ metadata:
   name: home-assistant-rules
   namespace: default
   labels:
-    release: kube-prometheus-stack
+    release: {{ .Values.prometheusRules.releaseLabel }}
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   groups:
   - name: battery

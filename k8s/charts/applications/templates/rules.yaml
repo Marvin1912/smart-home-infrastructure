@@ -2,7 +2,7 @@
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: home-assistant-rules
+  name: application-rules
   namespace: default
   labels:
     release: {{ .Values.prometheusRules.releaseLabel }}

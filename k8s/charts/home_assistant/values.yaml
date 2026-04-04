@@ -4,3 +4,7 @@ homeAssistant:
 
 battery:
   alertThreshold: 10
+
+prometheusRules:
+  enabled: true
+  releaseLabel: kube-prometheus-stack
