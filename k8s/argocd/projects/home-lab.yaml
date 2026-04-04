@@ -16,5 +16,3 @@ spec:
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
-    - group: ''
-      kind: LimitRange
