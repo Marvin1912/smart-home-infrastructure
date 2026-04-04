@@ -1,168 +1,24 @@
 {{- /*
-Complete manifests for ArgoCD Deployment components with resource limits applied.
-All required fields (spec.selector, spec.template.metadata.labels, image) are
-included to satisfy Kubernetes schema validation during ArgoCD sync.
-Images must match the installed ArgoCD version — update values.yaml when upgrading.
-
-Note: argocd-application-controller is a StatefulSet. Its spec.selector is both
-required (schema validation) and immutable (Kubernetes constraint), making it
-impossible to patch via ArgoCD sync. Resource limits for that component are set
-directly via kubectl patch and tracked in values.yaml for documentation purposes.
+LimitRange for the argocd namespace.
+Sets default resource requests/limits for all containers, covering all ArgoCD
+components (Deployments and StatefulSets) without touching their specs directly.
+This avoids immutable-field conflicts and SSA ownership issues that arise when
+patching Deployments that were installed via the official ArgoCD install.yaml.
 Reference: Issue #64 - Priority 1: Immediate Resource Limits
 */ -}}
 
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: LimitRange
 metadata:
-  name: argocd-repo-server
+  name: argocd-resource-limits
   namespace: argocd
 spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-repo-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-repo-server
-    spec:
-      containers:
-      - name: argocd-repo-server
-        image: {{ .Values.images.argocd | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.repoServer.requests.cpu | quote }}
-            memory: {{ .Values.resources.repoServer.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.repoServer.limits.cpu | quote }}
-            memory: {{ .Values.resources.repoServer.limits.memory | quote }}
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-server
-  namespace: argocd
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-server
-    spec:
-      containers:
-      - name: argocd-server
-        image: {{ .Values.images.argocd | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.server.requests.cpu | quote }}
-            memory: {{ .Values.resources.server.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.server.limits.cpu | quote }}
-            memory: {{ .Values.resources.server.limits.memory | quote }}
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-applicationset-controller
-  namespace: argocd
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-applicationset-controller
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-applicationset-controller
-    spec:
-      containers:
-      - name: argocd-applicationset-controller
-        image: {{ .Values.images.argocd | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.applicationsetController.requests.cpu | quote }}
-            memory: {{ .Values.resources.applicationsetController.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.applicationsetController.limits.cpu | quote }}
-            memory: {{ .Values.resources.applicationsetController.limits.memory | quote }}
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-notifications-controller
-  namespace: argocd
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-notifications-controller
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-notifications-controller
-    spec:
-      containers:
-      - name: argocd-notifications-controller
-        image: {{ .Values.images.argocd | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.notificationsController.requests.cpu | quote }}
-            memory: {{ .Values.resources.notificationsController.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.notificationsController.limits.cpu | quote }}
-            memory: {{ .Values.resources.notificationsController.limits.memory | quote }}
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-dex-server
-  namespace: argocd
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-dex-server
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-dex-server
-    spec:
-      containers:
-      - name: dex
-        image: {{ .Values.images.dex | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.dexServer.requests.cpu | quote }}
-            memory: {{ .Values.resources.dexServer.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.dexServer.limits.cpu | quote }}
-            memory: {{ .Values.resources.dexServer.limits.memory | quote }}
-
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-redis
-  namespace: argocd
-spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-redis
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-redis
-    spec:
-      containers:
-      - name: redis
-        image: {{ .Values.images.redis | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.redis.requests.cpu | quote }}
-            memory: {{ .Values.resources.redis.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.redis.limits.cpu | quote }}
-            memory: {{ .Values.resources.redis.limits.memory | quote }}
+  limits:
+  - type: Container
+    default:
+      cpu: {{ .Values.limitRange.default.cpu | quote }}
+      memory: {{ .Values.limitRange.default.memory | quote }}
+    defaultRequest:
+      cpu: {{ .Values.limitRange.defaultRequest.cpu | quote }}
+      memory: {{ .Values.limitRange.defaultRequest.memory | quote }}
