@@ -38,7 +38,7 @@ resources:
     ephemeral-storage: "512Mi"
   limits:
     memory: "2Gi"
-    cpu: "1"
+    cpu: "350m"
     ephemeral-storage: "2Gi"
 
 persistence:

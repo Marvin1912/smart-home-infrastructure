@@ -14,7 +14,7 @@ resources:
     ephemeral-storage: "256Mi"
   limits:
     memory: "512Mi"
-    cpu: "500m"
+    cpu: "150m"
     ephemeral-storage: "512Mi"
 
 service:

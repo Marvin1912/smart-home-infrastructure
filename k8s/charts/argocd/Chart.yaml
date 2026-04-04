@@ -1,0 +1,6 @@
+apiVersion: v2
+name: argocd
+description: Argo CD with resource limits and custom configuration
+type: application
+version: 1.0.0
+appVersion: "2.10.3"

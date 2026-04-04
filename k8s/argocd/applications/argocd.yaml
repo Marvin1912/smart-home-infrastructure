@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: home-lab
+  source:
+    repoURL: 'git@github.com:Marvin1912/smart-home-infrastructure.git'
+    targetRevision: master
+    path: k8s/charts/argocd
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: argocd
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
