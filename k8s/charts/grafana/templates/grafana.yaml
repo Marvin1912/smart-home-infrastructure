@@ -16,15 +16,4 @@ spec:
         spec:
           containers:
             - name: grafana
-              env:
-                - name: GF_SECURITY_ADMIN_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Values.grafana.adminUserSecret.name }}
-                      key: {{ .Values.grafana.adminUserSecret.key }}
-                - name: GF_SECURITY_ADMIN_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: {{ .Values.grafana.adminPasswordSecret.name }}
-                      key: {{ .Values.grafana.adminPasswordSecret.key }}
 
