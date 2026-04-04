@@ -7,10 +7,11 @@ containerPort: 3000
 
 env:
   dbType: postgres
-  dbHost: postgres-service.default.svc.cluster.local
+  dbHost: postgres-service
   dbPort: "5432"
-  dbUser: wikijs
-  dbName: wikijs
+  dbUser: marvin
+  dbName: costs
+  port: "3000"
 
 pv:
   size: 2Gi
