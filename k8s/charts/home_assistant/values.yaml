@@ -3,7 +3,7 @@ homeAssistant:
   metricsPort: 8123
 
 battery:
-  alertThreshold: 100
+  alertThreshold: 10
 
 prometheusRules:
   enabled: true
