@@ -44,6 +44,7 @@ resources:
 persistence:
   mountPath: /data
   storageClassName: local-mount
+  claimName: local-mount-pvc
 
 pv:
   size: 1Gi

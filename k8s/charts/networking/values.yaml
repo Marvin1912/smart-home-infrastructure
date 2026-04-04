@@ -1,57 +1,55 @@
 ingressRoute:
-  name: main-routes
+  name: kube-test
   namespace: default
   entryPoints:
     - web
-    - websecure
   routes:
     prometheus:
-      host: prometheus.local
-      service: prometheus-service
+      host: prometheus.home-lab.com
+      service: kube-prometheus-stack-prometheus
       port: 9090
     grafana:
-      host: grafana.local
+      host: grafana.home-lab.com
       service: grafana-service
       port: 3000
     influxdb:
-      host: influxdb.local
+      host: influxdb.home-lab.com
       service: influxdb-service
       port: 8086
     frontend:
-      host: frontend.local
+      host: frontend.home-lab.com
       service: frontend-service
-      port: 3000
+      port: 80
     backend:
-      host: backend.local
+      host: backend.home-lab.com
       service: applications-service
       port: 9055
     linkwarden:
-      host: linkwarden.local
-      service: linkwarden-service
+      host: linkwarden.home-lab.com
+      service: linkwarden
       port: 3000
     wiki:
-      host: wiki.local
+      host: wiki.home-lab.com
       service: wikijs-service
       port: 3000
     anki:
-      host: anki.local
+      host: anki.home-lab.com
       service: anki-service
       port: 8000
 
 ingressRouteArgocd:
-  name: argocd-routes
+  name: argocd
   namespace: argocd
   entryPoints:
     - web
-    - websecure
-  host: argocd.local
+  host: argocd.home-lab.com
   service: argocd-server
-  port: 443
+  port: 80
 
 ingressRouteTcp:
-  name: mqtt-route
+  name: postgres-tcp-route
   namespace: default
   entryPoints:
-    - mqtt
-  service: mqtt-service
-  port: 8883
+    - postgres
+  service: postgres-service
+  port: 5432

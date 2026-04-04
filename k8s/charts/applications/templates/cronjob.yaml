@@ -57,7 +57,7 @@ spec:
           volumes:
             - name: data
               persistentVolumeClaim:
-                claimName: {{ .Values.persistence.volumeName }}
+                claimName: {{ .Values.persistence.claimName }}
 {{- end }}
 ---
 {{- if .Values.cronjobs.dbBackup.enabled }}
@@ -121,5 +121,5 @@ spec:
           volumes:
             - name: data
               persistentVolumeClaim:
-                claimName: {{ .Values.persistence.volumeName }}
+                claimName: {{ .Values.persistence.claimName }}
 {{- end }}
