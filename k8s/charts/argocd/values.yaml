@@ -3,20 +3,26 @@
 
 argocdVersion: "2.10.3"
 
-# Container images — must match the installed ArgoCD version
-images:
-  argocd: "quay.io/argoproj/argocd:v2.10.3"
-  dex: "ghcr.io/dexidp/dex:v2.37.0"
-  redis: "redis:7.0.14-alpine"
-
 # Server insecure mode for Traefik TLS termination
 server:
   insecure: true
 
-# Resource limits for ArgoCD critical components (Priority 1)
-# Per Issue #64 recommendations: Only limit critical components to reach ~3000m total cluster limit
+# LimitRange applied to the argocd namespace.
+# Covers all components (Deployments + StatefulSet) without touching their specs.
+# Note: containers that already declare their own resources ignore the LimitRange defaults.
+limitRange:
+  default:
+    cpu: "200m"
+    memory: "256Mi"
+  defaultRequest:
+    cpu: "25m"
+    memory: "64Mi"
+
+# Per-component resource limits — kept for documentation and direct kubectl patching.
+# These are NOT applied by the Helm chart (patching Deployments owned by install.yaml
+# causes SSA field-manager conflicts that strip container args/env/volumeMounts).
+# Applied manually via: kubectl patch <kind> <name> -n argocd --type=json -p='[...]'
 resources:
-  # Critical components with limits
   applicationController:
     requests:
       cpu: 100m
@@ -41,8 +47,6 @@ resources:
       cpu: 200m
       memory: 256Mi
 
-  # Other components without explicit limits in Priority 1
-  # These will run without limits for now (Priority 2 action)
   applicationsetController:
     requests:
       cpu: 25m
