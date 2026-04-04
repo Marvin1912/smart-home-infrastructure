@@ -3,6 +3,12 @@
 
 argocdVersion: "2.10.3"
 
+# Container images — must match the installed ArgoCD version
+images:
+  argocd: "quay.io/argoproj/argocd:v2.10.3"
+  dex: "ghcr.io/dexidp/dex:v2.37.0"
+  redis: "redis:7.0.14-alpine"
+
 # Server insecure mode for Traefik TLS termination
 server:
   insecure: true
