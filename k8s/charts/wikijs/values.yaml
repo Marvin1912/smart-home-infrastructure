@@ -22,6 +22,8 @@ pv:
 persistence:
   storageClassName: local-mount
   mountPath: /data
+  size: 2Gi
+  volumeName: local-mount-wikijs
 
 service:
   port: 3000
