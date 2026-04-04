@@ -1,3 +1,5 @@
+replicaCount: 1
+
 image:
   repository: localhost:5000/frontend
   tag: "latest"
