@@ -27,7 +27,10 @@ spec:
             - name: INFLUX_ORG
               value: {{ .Values.influxdb.org | quote }}
             - name: INIT_TOKEN
-              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secrets
+                  key: init-token
           volumeMounts:
             - name: setup-script
               mountPath: /scripts
