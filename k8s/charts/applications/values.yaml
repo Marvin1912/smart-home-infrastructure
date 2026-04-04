@@ -69,7 +69,7 @@ cronjobs:
     schedule: "0 2 * * *"
     image:
       repository: localhost:5000/influxdb-backup
-      tag: "v1.0.0"
+      tag: "latest"
       pullPolicy: Always
     command: ["/bin/bash", "-c", "influx backup /backup"]
     env:
@@ -94,7 +94,7 @@ cronjobs:
     schedule: "0 3 * * *"
     image:
       repository: localhost:5000/db-backup
-      tag: "v1.0.0"
+      tag: "latest"
       pullPolicy: Always
     command: ["/bin/bash", "-c", "pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME > $BACKUP_DIR/backup.sql"]
     env:
