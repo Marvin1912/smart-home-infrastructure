@@ -40,13 +40,19 @@ spec:
           - name: DOCKER_INFLUXDB_INIT_USERNAME
             value: "marvin"
           - name: DOCKER_INFLUXDB_INIT_PASSWORD
-            value: "password"
+            valueFrom:
+              secretKeyRef:
+                name: influxdb-credentials
+                key: INFLUX_ADMIN_PASSWORD
           - name: DOCKER_INFLUXDB_INIT_ORG
             value: "wildfly_domain"
           - name: DOCKER_INFLUXDB_INIT_BUCKET
             value: "costs"
           - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
-            value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+            valueFrom:
+              secretKeyRef:
+                name: influxdb-credentials
+                key: INFLUX_ADMIN_TOKEN
           - name: INFLUXDB_REPORTING_DISABLED
             value: "true"
         resources:

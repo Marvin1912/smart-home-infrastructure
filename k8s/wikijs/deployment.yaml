@@ -34,7 +34,10 @@ spec:
             - name: DB_USER
               value: "marvin"
             - name: DB_PASS
-              value: "password"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
             - name: PORT
               value: "3000"
           resources:

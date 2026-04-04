@@ -9,8 +9,8 @@ spec:
     - targetPath: secureJsonData.token
       valueFrom:
         secretKeyRef:
-          name: influxdb-token
-          key: TOKEN
+          name: applications-credentials
+          key: INFLUX_TOKEN
   instanceSelector:
     matchLabels:
       app: grafana

@@ -31,7 +31,10 @@ spec:
             - name: DATA_SOURCE_USERNAME
               value: "marvin"
             - name: DATA_SOURCE_PASSWORD
-              value: "password"
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: DATA_SOURCE_PASSWORD
             - name: CAMT_DIRECTORY_IN
               value: "/data/camt"
             - name: CAMT_DIRECTORY_DONE
@@ -63,7 +66,10 @@ spec:
             - name: INFLUX_URL
               value: "http://influxdb-service.default.svc.cluster.local:8086"
             - name: INFLUX_TOKEN
-              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: INFLUX_TOKEN
             - name: INFLUX_ORG
               value: "wildfly_domain"
             - name: INFLUXDB_EXPORT_ENABLED

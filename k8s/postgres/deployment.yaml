@@ -46,7 +46,10 @@ spec:
           - name: POSTGRES_USER
             value: "marvin"
           - name: POSTGRES_PASSWORD
-            value: "password"
+            valueFrom:
+              secretKeyRef:
+                name: postgres-credentials
+                key: POSTGRES_PASSWORD
           - name: POSTGRES_DB
             value: "costs"
           - name: PGDATA
