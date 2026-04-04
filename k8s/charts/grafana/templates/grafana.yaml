@@ -8,23 +8,7 @@ metadata:
 spec:
   config:
     security:
+      admin_user: {{ .Values.grafana.user }}
+      admin_password: {{ .Values.grafana.password }}
       cookie_samesite: {{ .Values.grafana.cookieSamesite }}
       allow_embedding: {{ .Values.grafana.allowEmbedding | quote }}
-  deployment:
-    spec:
-      template:
-        spec:
-          containers:
-            - name: grafana
-              env:
-                - name: GF_SECURITY_ADMIN_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: grafana-admin-credentials
-                      key: GF_SECURITY_ADMIN_USER
-                - name: GF_SECURITY_ADMIN_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: grafana-admin-credentials
-                      key: GF_SECURITY_ADMIN_PASSWORD
-
