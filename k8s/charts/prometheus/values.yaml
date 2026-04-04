@@ -1,2 +1,11 @@
+# Prometheus Resource Limits (Issue #64 - Priority 1)
+prometheus:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
 alertmanager:
   email: notification@home-lab.local

@@ -1,0 +1,66 @@
+# ArgoCD Configuration with Resource Limits (Issue #64 - Priority 1)
+# Reference: https://github.com/argoproj/argo-cd/releases/v2.10.3
+
+argocdVersion: "2.10.3"
+
+# Server insecure mode for Traefik TLS termination
+server:
+  insecure: true
+
+# Resource limits for ArgoCD components
+resources:
+  applicationController:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+  repoServer:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  server:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  applicationsetController:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+  notificationsController:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+  dexServer:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+  redis:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 50m
+      memory: 64Mi

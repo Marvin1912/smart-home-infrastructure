@@ -1,0 +1,145 @@
+{{- /*
+These patches are applied to the ArgoCD components installed via the official manifest.
+They add resource limits to prevent OOMKill and enable proper pod eviction policies.
+Reference: Issue #64 - Priority 1: Immediate Resource Limits
+*/ -}}
+
+---
+# Patch: argocd-application-controller-0
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: argocd-application-controller
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-application-controller
+        resources:
+          requests:
+            cpu: {{ .Values.resources.applicationController.requests.cpu | quote }}
+            memory: {{ .Values.resources.applicationController.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.applicationController.limits.cpu | quote }}
+            memory: {{ .Values.resources.applicationController.limits.memory | quote }}
+
+---
+# Patch: argocd-repo-server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-repo-server
+        resources:
+          requests:
+            cpu: {{ .Values.resources.repoServer.requests.cpu | quote }}
+            memory: {{ .Values.resources.repoServer.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.repoServer.limits.cpu | quote }}
+            memory: {{ .Values.resources.repoServer.limits.memory | quote }}
+
+---
+# Patch: argocd-server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-server
+        resources:
+          requests:
+            cpu: {{ .Values.resources.server.requests.cpu | quote }}
+            memory: {{ .Values.resources.server.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.server.limits.cpu | quote }}
+            memory: {{ .Values.resources.server.limits.memory | quote }}
+
+---
+# Patch: argocd-applicationset-controller
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-applicationset-controller
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-applicationset-controller
+        resources:
+          requests:
+            cpu: {{ .Values.resources.applicationsetController.requests.cpu | quote }}
+            memory: {{ .Values.resources.applicationsetController.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.applicationsetController.limits.cpu | quote }}
+            memory: {{ .Values.resources.applicationsetController.limits.memory | quote }}
+
+---
+# Patch: argocd-notifications-controller
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-notifications-controller
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-notifications-controller
+        resources:
+          requests:
+            cpu: {{ .Values.resources.notificationsController.requests.cpu | quote }}
+            memory: {{ .Values.resources.notificationsController.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.notificationsController.limits.cpu | quote }}
+            memory: {{ .Values.resources.notificationsController.limits.memory | quote }}
+
+---
+# Patch: argocd-dex-server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-dex-server
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: dex
+        resources:
+          requests:
+            cpu: {{ .Values.resources.dexServer.requests.cpu | quote }}
+            memory: {{ .Values.resources.dexServer.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.dexServer.limits.cpu | quote }}
+            memory: {{ .Values.resources.dexServer.limits.memory | quote }}
+
+---
+# Patch: argocd-redis
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-redis
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: redis
+        resources:
+          requests:
+            cpu: {{ .Values.resources.redis.requests.cpu | quote }}
+            memory: {{ .Values.resources.redis.requests.memory | quote }}
+          limits:
+            cpu: {{ .Values.resources.redis.limits.cpu | quote }}
+            memory: {{ .Values.resources.redis.limits.memory | quote }}
