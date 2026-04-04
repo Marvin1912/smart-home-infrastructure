@@ -3,6 +3,7 @@ prometheusDatasource:
   url: http://prometheus-service.default.svc.cluster.local:9090
   access: proxy
   isDefault: true
+  type: "prometheus"
   jsonData:
     pdcInjected: false
     tlsSkipVerify: true
