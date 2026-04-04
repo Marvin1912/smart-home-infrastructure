@@ -1,36 +1,15 @@
 {{- /*
-Complete manifests for ArgoCD components with resource limits applied.
+Complete manifests for ArgoCD Deployment components with resource limits applied.
 All required fields (spec.selector, spec.template.metadata.labels, image) are
 included to satisfy Kubernetes schema validation during ArgoCD sync.
 Images must match the installed ArgoCD version — update values.yaml when upgrading.
+
+Note: argocd-application-controller is a StatefulSet. Its spec.selector is both
+required (schema validation) and immutable (Kubernetes constraint), making it
+impossible to patch via ArgoCD sync. Resource limits for that component are set
+directly via kubectl patch and tracked in values.yaml for documentation purposes.
 Reference: Issue #64 - Priority 1: Immediate Resource Limits
 */ -}}
-
----
-# Note: spec.selector is intentionally omitted — it is immutable on StatefulSets
-# and may not be updated after creation. ServerSideApply=true ensures the existing
-# selector set by the original manifest is preserved and not managed here.
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: argocd-application-controller
-  namespace: argocd
-spec:
-  template:
-    metadata:
-      labels:
-        app.kubernetes.io/name: argocd-application-controller
-    spec:
-      containers:
-      - name: argocd-application-controller
-        image: {{ .Values.images.argocd | quote }}
-        resources:
-          requests:
-            cpu: {{ .Values.resources.applicationController.requests.cpu | quote }}
-            memory: {{ .Values.resources.applicationController.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.resources.applicationController.limits.cpu | quote }}
-            memory: {{ .Values.resources.applicationController.limits.memory | quote }}
 
 ---
 apiVersion: apps/v1
