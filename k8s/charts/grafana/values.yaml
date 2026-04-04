@@ -8,7 +8,9 @@ prometheusDatasource:
     tlsSkipVerify: true
 
 grafana:
-  adminUser: admin
+  adminUserSecret:
+    name: grafana-admin-credentials
+    key: GF_SECURITY_ADMIN_USER
   adminPasswordSecret:
     name: grafana-admin-credentials
     key: GF_SECURITY_ADMIN_PASSWORD
