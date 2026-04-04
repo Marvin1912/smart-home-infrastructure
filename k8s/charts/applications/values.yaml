@@ -34,11 +34,11 @@ env:
 resources:
   requests:
     memory: "1500Mi"
-    cpu: "750m"
+    cpu: "500m"
     ephemeral-storage: "512Mi"
   limits:
     memory: "2Gi"
-    cpu: "350m"
+    cpu: "700m"
     ephemeral-storage: "2Gi"
 
 persistence:
