@@ -8,11 +8,11 @@ replicaCount: 1
 resources:
   requests:
     memory: "256Mi"
-    cpu: "250m"
+    cpu: "200m"
     ephemeralStorage: "256Mi"
   limits:
     memory: "512Mi"
-    cpu: "250m"
+    cpu: "400m"
     ephemeralStorage: "1Gi"
 
 pv:
