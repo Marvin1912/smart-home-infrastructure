@@ -18,6 +18,8 @@ influxdbDatasource:
   name: InfluxDB
   url: http://influxdb-service.default.svc.cluster.local:8086
   access: proxy
+  type: "influxdb"
+  isDefault: false
   credentialsSecret:
     name: influxdb-credentials
     key: INFLUX_TOKEN
