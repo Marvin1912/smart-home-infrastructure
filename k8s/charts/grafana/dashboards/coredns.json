@@ -2334,7 +2334,6 @@
           "text": "192.168.178.29:9153",
           "value": "192.168.178.29:9153"
         },
-        "datasource": "717f5493-d868-4b43-86ef-3773515b6ac2",
         "definition": "label_values(up{service=\"homedns\"},instance)",
         "includeAll": false,
         "label": "Instance",
