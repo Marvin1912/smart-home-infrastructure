@@ -1,6 +1,0 @@
-apiVersion: v2
-name: linkwarden
-description: A Helm chart for the linkwarden service
-type: application
-version: 1.0.0
-appVersion: "latest"
