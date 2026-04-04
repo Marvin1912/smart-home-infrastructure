@@ -36,11 +36,11 @@ spec:
             requests:
               cpu: {{ .Values.resources.requests.cpu | quote }}
               memory: {{ .Values.resources.requests.memory | quote }}
-              ephemeral-storage: {{ .Values.resources.requests.ephemeral-storage | quote }}
+              ephemeral-storage: {{ index .Values.resources.requests "ephemeral-storage" | quote }}
             limits:
               cpu: {{ .Values.resources.limits.cpu | quote }}
               memory: {{ .Values.resources.limits.memory | quote }}
-              ephemeral-storage: {{ .Values.resources.limits.ephemeral-storage | quote }}
+              ephemeral-storage: {{ index .Values.resources.limits "ephemeral-storage" | quote }}
           volumeMounts:
             - name: data
               mountPath: {{ .Values.persistence.mountPath }}

@@ -1,0 +1,27 @@
+prometheusDatasource:
+  name: Prometheus
+  url: http://prometheus-service.default.svc.cluster.local:9090
+  access: proxy
+  isDefault: true
+  jsonData:
+    pdcInjected: false
+    tlsSkipVerify: true
+
+grafana:
+  adminUser: admin
+  adminPasswordSecret:
+    name: grafana-credentials
+    key: ADMIN_PASSWORD
+  cookieSamesite: Lax
+  allowEmbedding: true
+
+influxdbDatasource:
+  name: InfluxDB
+  url: http://influxdb-service.default.svc.cluster.local:8086
+  access: proxy
+  credentialsSecret:
+    name: influxdb-credentials
+    key: INFLUX_TOKEN
+  jsonData:
+    version: Flux
+    organization: wildfly_domain

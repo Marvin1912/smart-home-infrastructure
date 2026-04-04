@@ -15,5 +15,5 @@ spec:
       labels:
         severity: error
       annotations:
-        summary: "{{ $labels.friendly_name }} is low!"
-        description: "{{ $labels.friendly_name }} has a value of {{ $value }}"
+        summary: "{{ "$" }}labels.friendly_name is low!"
+        description: "{{ "$" }}labels.friendly_name has a value of {{ "$" }}value"

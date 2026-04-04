@@ -16,6 +16,6 @@ spec:
       labels:
         severity: error
       annotations:
-        summary: "{{ $labels.plant }} needs Water!"
-        description: "{{ $labels.plant }} must be watered!"
+        summary: "{{ "$" }}labels.plant needs Water!"
+        description: "{{ "$" }}labels.plant must be watered!"
 {{- end }}

@@ -41,11 +41,11 @@ spec:
                 requests:
                   memory: {{ .Values.cronjobs.influxdbBackup.resources.requests.memory | quote }}
                   cpu: {{ .Values.cronjobs.influxdbBackup.resources.requests.cpu | quote }}
-                  ephemeral-storage: {{ .Values.cronjobs.influxdbBackup.resources.requests.ephemeral-storage | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.influxdbBackup.resources.requests "ephemeral-storage" | quote }}
                 limits:
                   memory: {{ .Values.cronjobs.influxdbBackup.resources.limits.memory | quote }}
                   cpu: {{ .Values.cronjobs.influxdbBackup.resources.limits.cpu | quote }}
-                  ephemeral-storage: {{ .Values.cronjobs.influxdbBackup.resources.limits.ephemeral-storage | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.influxdbBackup.resources.limits "ephemeral-storage" | quote }}
               volumeMounts:
                 - name: data
                   mountPath: {{ .Values.persistence.mountPath }}
@@ -100,11 +100,11 @@ spec:
                 requests:
                   memory: {{ .Values.cronjobs.dbBackup.resources.requests.memory | quote }}
                   cpu: {{ .Values.cronjobs.dbBackup.resources.requests.cpu | quote }}
-                  ephemeral-storage: {{ .Values.cronjobs.dbBackup.resources.requests.ephemeral-storage | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.dbBackup.resources.requests "ephemeral-storage" | quote }}
                 limits:
                   memory: {{ .Values.cronjobs.dbBackup.resources.limits.memory | quote }}
                   cpu: {{ .Values.cronjobs.dbBackup.resources.limits.cpu | quote }}
-                  ephemeral-storage: {{ .Values.cronjobs.dbBackup.resources.limits.ephemeral-storage | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.dbBackup.resources.limits "ephemeral-storage" | quote }}
               volumeMounts:
                 - name: data
                   mountPath: {{ .Values.persistence.mountPath }}
