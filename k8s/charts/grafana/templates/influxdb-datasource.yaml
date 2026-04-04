@@ -26,5 +26,5 @@ spec:
       organization: {{ .Values.influxdbDatasource.jsonData.organization }}
       version: {{ .Values.influxdbDatasource.jsonData.version }}
       tlsSkipVerify: {{ .Values.influxdbDatasource.jsonData.tlsSkipVerify }}
-    secureJsonData:
-      "token": ${TOKEN}
+  secureJsonData:
+    "token": ${INFLUX_ADMIN_TOKEN}
