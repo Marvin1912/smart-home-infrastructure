@@ -1,0 +1,25 @@
+# Argo CD Installation v2.10.3
+# This file documents the Argo CD installation for the k3s cluster.
+# The actual installation is done via the official Argo CD manifest from:
+# https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.3/manifests/install.yaml
+#
+# To apply the base Argo CD installation:
+# kubectl create namespace argocd
+# kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.3/manifests/install.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: argocd-cmd-params-cm
+    app.kubernetes.io/part-of: argocd
+data:
+  # Configure argocd-server to run in insecure mode for Traefik TLS termination
+  server.insecure: "true"

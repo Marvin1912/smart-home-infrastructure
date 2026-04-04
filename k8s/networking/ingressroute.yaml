@@ -55,3 +55,10 @@ spec:
         - kind: Service
           name: anki-service
           port: 8000
+    - match: Host(`argocd.home-lab.com`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: argocd-server
+          namespace: argocd
+          port: 80

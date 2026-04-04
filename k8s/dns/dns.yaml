@@ -65,6 +65,7 @@ data:
     ns      IN A    192.168.178.29
 
     ; Hostnames
+    argocd       IN A    192.168.178.29
     grafana      IN A    192.168.178.29
     influxdb     IN A    192.168.178.29
     postgres     IN A    192.168.178.29

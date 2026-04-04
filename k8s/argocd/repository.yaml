@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: git-repository-ssh
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: git
+  url: git@github.com:Marvin1912/smart-home-infrastructure.git
+  sshPrivateKey: |
+    [SSH_KEY_WILL_BE_POPULATED_FROM_KUBERNETES_SECRET]
+---
+# Note: The actual secret is created separately via kubectl with the SSH private key file.
+# This manifest serves as documentation of the repository configuration.
+# The Repository resource will be auto-discovered by Argo CD from the secret above.
