@@ -1,0 +1,35 @@
+image:
+  repository: influxdb
+  tag: "2.7.1"
+  pullPolicy: Always
+
+replicaCount: 1
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+    ephemeralStorage: "256Mi"
+  limits:
+    memory: "1500Mi"
+    cpu: "500m"
+    ephemeralStorage: "1Gi"
+
+pv:
+  hostPath: /home/marvin/influxdb2
+  capacity: 5Gi
+  nodeSelector:
+    kubernetes.io/hostname: home-server
+
+influxdb:
+  org: "wildfly_domain"
+  bucket: "costs"
+  reportingDisabled: "true"
+
+probes:
+  liveness:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness:
+    initialDelaySeconds: 15
+    periodSeconds: 5

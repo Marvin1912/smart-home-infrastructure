@@ -1,0 +1,35 @@
+image:
+  repository: postgres
+  tag: "15.3"
+  pullPolicy: Always
+
+replicaCount: 1
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "250m"
+    ephemeralStorage: "256Mi"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+    ephemeralStorage: "1Gi"
+
+pv:
+  hostPath: /home/marvin/postgres
+  capacity: 5Gi
+  nodeSelector:
+    kubernetes.io/hostname: home-server
+
+postgres:
+  user: marvin
+  database: costs
+  pgdataPath: /var/lib/postgresql/data/pgdata
+
+probes:
+  liveness:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  readiness:
+    initialDelaySeconds: 15
+    periodSeconds: 5

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: influxdb
+description: InfluxDB time-series database Helm chart
+type: application
+version: 1.0.0

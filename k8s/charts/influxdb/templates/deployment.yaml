@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb
+  labels:
+    app: influxdb
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: influxdb
+  template:
+    metadata:
+      labels:
+        app: influxdb
+    spec:
+      containers:
+      - name: influxdb
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          - containerPort: 8086
+            name: http
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: {{ .Values.probes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.probes.readiness.periodSeconds }}
+        env:
+          - name: DOCKER_INFLUXDB_INIT_MODE
+            value: "setup"
+          - name: DOCKER_INFLUXDB_INIT_USERNAME
+            value: "marvin"
+          - name: DOCKER_INFLUXDB_INIT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: influxdb-credentials
+                key: INFLUX_ADMIN_PASSWORD
+          - name: DOCKER_INFLUXDB_INIT_ORG
+            value: "{{ .Values.influxdb.org }}"
+          - name: DOCKER_INFLUXDB_INIT_BUCKET
+            value: "{{ .Values.influxdb.bucket }}"
+          - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: influxdb-credentials
+                key: INFLUX_ADMIN_TOKEN
+          - name: INFLUXDB_REPORTING_DISABLED
+            value: "{{ .Values.influxdb.reportingDisabled }}"
+        resources:
+          requests:
+            memory: {{ .Values.resources.requests.memory | quote }}
+            cpu: {{ .Values.resources.requests.cpu | quote }}
+            ephemeral-storage: {{ .Values.resources.requests.ephemeralStorage | quote }}
+          limits:
+            memory: {{ .Values.resources.limits.memory | quote }}
+            cpu: {{ .Values.resources.limits.cpu | quote }}
+            ephemeral-storage: {{ .Values.resources.limits.ephemeralStorage | quote }}
+        volumeMounts:
+          - name: influxdb-data
+            mountPath: /var/lib/influxdb2
+          - name: influxdb-setup-script
+            mountPath: /scripts/setup_influxdb.sh
+            subPath: setup_influxdb.sh
+      volumes:
+        - name: influxdb-data
+          persistentVolumeClaim:
+            claimName: influxdb-pvc
+        - name: influxdb-setup-script
+          configMap:
+            name: influxdb-setup-script
+            items:
+              - key: setup_influxdb.sh
+                path: setup_influxdb.sh
+                mode: 0755

@@ -1,0 +1,2 @@
+alertmanager:
+  email: notification@home-lab.local

@@ -1,0 +1,30 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: influxdb-datasource
+  labels:
+    app: grafana
+spec:
+  valuesFrom:
+    - targetPath: secureJsonData.token
+      valueFrom:
+        secretKeyRef:
+          name: {{ .Values.influxdbDatasource.credentialsSecret.name }}
+          key: {{ .Values.influxdbDatasource.credentialsSecret.key }}
+  instanceSelector:
+    matchLabels:
+      app: grafana
+  datasource:
+    name: {{ .Values.influxdbDatasource.name }}
+    type: {{ .Values.influxdbDatasource.type }}
+    access: {{ .Values.influxdbDatasource.access }}
+    url: {{ .Values.influxdbDatasource.url }}
+    isDefault: {{ .Values.influxdbDatasource.isDefault }}
+    jsonData:
+      defaultBucket: {{ .Values.influxdbDatasource.jsonData.defaultBucket }}
+      httpMode: {{ .Values.influxdbDatasource.jsonData.httpMode }}
+      organization: {{ .Values.influxdbDatasource.jsonData.organization }}
+      version: {{ .Values.influxdbDatasource.jsonData.version }}
+      tlsSkipVerify: {{ .Values.influxdbDatasource.jsonData.tlsSkipVerify }}
+    secureJsonData:
+      "token": ${TOKEN}
