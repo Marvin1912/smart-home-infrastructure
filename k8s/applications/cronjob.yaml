@@ -29,7 +29,7 @@ spec:
                       name: applications-credentials
                       key: INFLUX_TOKEN
                 - name: EXCLUDE_BUCKETS
-                  value: "sensor_data"
+                  value: "system_metrics"
                 - name: BACKUP_DIR
                   value: "/data/backup/out"
                 - name: PUBLIC_KEY
