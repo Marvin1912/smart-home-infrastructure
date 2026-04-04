@@ -8,7 +8,7 @@ metadata:
 spec:
   config:
     security:
-      admin_user: {{ .Values.grafana.adminUser }}
+      admin_user: ${GF_SECURITY_ADMIN_USER}
       admin_password: ${GF_SECURITY_ADMIN_PASSWORD}
       cookie_samesite: {{ .Values.grafana.cookieSamesite }}
       allow_embedding: {{ .Values.grafana.allowEmbedding | quote }}
