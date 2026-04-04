@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: influxdb-setup-script
   namespace: default
+  annotations:
+    helm.sh/hook: pre-install
 data:
   setup_influxdb.sh: |
     #!/usr/bin/env bash

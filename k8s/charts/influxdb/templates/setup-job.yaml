@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: influxdb-setup-job
+  namespace: default
+  annotations:
+    helm.sh/hook: post-install
+    helm.sh/hook-weight: "1"
+    helm.sh/hook-delete-policy: hook-succeeded
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: influxdb
+      restartPolicy: Never
+      containers:
+        - name: setup
+          image: influxdb:2.7.8
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              /bin/bash /scripts/setup_influxdb.sh
+          env:
+            - name: INFLUX_URL
+              value: "http://influxdb-service.default.svc.cluster.local:8086"
+            - name: INIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secrets
+                  key: init-token
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: influxdb-secrets
+                  key: influx-token
+          volumeMounts:
+            - name: setup-script
+              mountPath: /scripts
+      volumes:
+        - name: setup-script
+          configMap:
+            name: influxdb-setup-script
+            defaultMode: 0755

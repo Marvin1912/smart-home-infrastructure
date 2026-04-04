@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: localhost:5000/anki
-  tag: "latest"
+  tag: "v1.0.0"
   pullPolicy: Always
 
 pv:
