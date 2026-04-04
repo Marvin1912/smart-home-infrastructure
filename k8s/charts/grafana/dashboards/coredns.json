@@ -2334,7 +2334,9 @@
           "text": "192.168.178.29:9153",
           "value": "192.168.178.29:9153"
         },
-        "datasource": "prometheus",
+        "datasource": {
+          "type": "prometheus"
+        },
         "definition": "label_values(up{service=\"homedns\"},instance)",
         "includeAll": false,
         "label": "Instance",
