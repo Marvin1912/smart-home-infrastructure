@@ -6,6 +6,10 @@ metadata:
   namespace: default
   labels:
     release: {{ .Values.serviceMonitor.releaseLabel }}
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   endpoints:
   - path: {{ .Values.serviceMonitor.path }}

@@ -4,6 +4,11 @@ kind: CronJob
 metadata:
   name: applications-influxdb-backup
   namespace: default
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   schedule: {{ .Values.cronjobs.influxdbBackup.schedule | quote }}
   concurrencyPolicy: Forbid
@@ -61,6 +66,11 @@ kind: CronJob
 metadata:
   name: applications-db-backup
   namespace: default
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   schedule: {{ .Values.cronjobs.dbBackup.schedule | quote }}
   concurrencyPolicy: Forbid
