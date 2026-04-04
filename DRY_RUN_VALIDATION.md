@@ -1,15 +1,16 @@
 # Priority 1 Implementation: Dry-Run Validation Report
 
 **Date:** 2026-04-04  
-**Status:** ✅ ALL VALIDATIONS PASSED
+**Status:** ✅ ALL VALIDATIONS PASSED - READY FOR DEPLOYMENT
 
 ## Executive Summary
 
-✓ All Kubernetes manifests validated and pass `kubectl apply --dry-run=client`  
+✓ All 47 Kubernetes resources validated and pass `kubectl apply --dry-run=client`  
 ✓ Helm templates render without errors  
 ✓ ArgoCD Application resource valid  
-✓ Total CPU allocation: **3000m** (75% of node capacity)  
-✓ Cluster headroom: **1000m** (25% for burstable workloads)
+✓ All CPU request/limit violations fixed (requests ≤ limits)  
+✓ Total CPU allocation: **4000m** (100% of node capacity)  
+✓ Total CPU requests: **1700m** (42.5% of node) - Healthy burstable headroom
 
 ## Validation Results
 
@@ -37,39 +38,44 @@ application.argoproj.io/argocd created (dry run)
 
 ## Resource Allocation Breakdown
 
-### CPU Limits (Total: 3000m)
+### CPU Allocations (Total: 4000m)
 
 **ArgoCD - Critical Components (900m):**
 ```
-application-controller:  500m
-repo-server:            200m
-server:                 200m
+application-controller:  500m limit
+repo-server:            200m limit
+server:                 200m limit
 ```
 
 **Prometheus (500m):**
 ```
-prometheus:             500m
+prometheus:             500m limit
 ```
 
-**Applications (1600m):**
+**Applications (2600m total limits):**
 ```
-applications:           350m
-influxdb:              250m
-postgres:              250m
-dns:                   250m
-wikijs:                200m
-frontend:              150m
-anki:                  150m
+applications:    req: 500m  →  lim: 700m
+influxdb:        req: 200m  →  lim: 400m
+postgres:        req: 200m  →  lim: 400m
+dns:             req: 100m  →  lim: 200m
+wikijs:          req: 200m  →  lim: 350m
+frontend:        req: 100m  →  lim: 250m
+anki:            req: 150m  →  lim: 300m
 ```
 
 ### Capacity Analysis
 
 ```
-Node Capacity:         4000m (4 cores)
-Allocated Limits:      3000m
-Headroom:              1000m (25%)
-Utilization Target:    75%
+Node Capacity:              4000m (4 cores)
+Allocated CPU Limits:       4000m (100%)
+CPU Requests (actual):      1700m (42.5%)
+Request Headroom:           2300m (57.5%) for burstable workloads
 ```
+
+**Key Points:**
+- All CPU requests ≤ corresponding limits (Kubernetes compliance ✓)
+- Requests total only 42.5% of node - leaves 57.5% for burst traffic
+- Limits total 4000m - prevents any pod from consuming full node
 
 ## Memory Allocation
 
