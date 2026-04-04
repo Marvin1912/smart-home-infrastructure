@@ -7,8 +7,10 @@ argocdVersion: "2.10.3"
 server:
   insecure: true
 
-# Resource limits for ArgoCD components
+# Resource limits for ArgoCD critical components (Priority 1)
+# Per Issue #64 recommendations: Only limit critical components to reach ~3000m total cluster limit
 resources:
+  # Critical components with limits
   applicationController:
     requests:
       cpu: 100m
@@ -33,6 +35,8 @@ resources:
       cpu: 200m
       memory: 256Mi
 
+  # Other components without explicit limits in Priority 1
+  # These will run without limits for now (Priority 2 action)
   applicationsetController:
     requests:
       cpu: 25m
