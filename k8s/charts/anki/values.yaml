@@ -18,8 +18,8 @@ persistence:
 anki:
   collectionPath: /data/collection.anki2
   syncServer: http://localhost:8080
-  schedule: "0 * * * *"
-  apiBaseUrl: "http://localhost:8000"
+  schedule: "0 0 * * *"
+  apiBaseUrl: "http://applications-service:9055"
 
 containerPort: 8000
 
