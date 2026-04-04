@@ -15,7 +15,7 @@ env:
 
 pv:
   size: 2Gi
-  path: /home/marvin/wikijs
+  path: /home/marvin/wiki
   nodeSelector:
     kubernetes.io/hostname: home-server
 
