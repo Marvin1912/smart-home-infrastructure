@@ -7,15 +7,15 @@ Reference: Issue #64 - Priority 1: Immediate Resource Limits
 */ -}}
 
 ---
+# Note: spec.selector is intentionally omitted — it is immutable on StatefulSets
+# and may not be updated after creation. ServerSideApply=true ensures the existing
+# selector set by the original manifest is preserved and not managed here.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: argocd-application-controller
   namespace: argocd
 spec:
-  selector:
-    matchLabels:
-      app.kubernetes.io/name: argocd-application-controller
   template:
     metadata:
       labels:
