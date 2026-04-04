@@ -9,6 +9,18 @@ spec:
   config:
     security:
       admin_user: marvin
-      admin_password: password
+      admin_password: ${GF_SECURITY_ADMIN_PASSWORD}
       cookie_samesite: disabled
       allow_embedding: "true"
+  deployment:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana
+              env:
+                - name: GF_SECURITY_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-credentials
+                      key: GRAFANA_ADMIN_PASSWORD

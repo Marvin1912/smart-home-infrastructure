@@ -24,7 +24,10 @@ spec:
                 - name: INFLUX_ORG
                   value: "wildfly_domain"
                 - name: INFLUX_TOKEN
-                  value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+                  valueFrom:
+                    secretKeyRef:
+                      name: applications-credentials
+                      key: INFLUX_TOKEN
                 - name: EXCLUDE_BUCKETS
                   value: "sensor_data"
                 - name: BACKUP_DIR
@@ -80,7 +83,10 @@ spec:
                 - name: DB_USER
                   value: "marvin"
                 - name: PGPASSWORD
-                  value: "password"
+                  valueFrom:
+                    secretKeyRef:
+                      name: applications-credentials
+                      key: PGPASSWORD
                 - name: BACKUP_DIR
                   value: "/data/backup/out"
                 - name: PUBLIC_KEY

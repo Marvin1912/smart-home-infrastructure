@@ -28,7 +28,10 @@ spec:
             - name: NEXTAUTH_URL
               value: "http://linkwarden.home-lab.com/api/v1/auth"
             - name: NEXTAUTH_SECRET
-              value: password
+              valueFrom:
+                secretKeyRef:
+                  name: linkwarden-credentials
+                  key: NEXTAUTH_SECRET
           resources:
             requests:
               cpu: 250m

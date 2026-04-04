@@ -30,7 +30,10 @@ spec:
         - name: INFLUX_ORG
           value: "wildfly_domain"
         - name: INIT_TOKEN
-          value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
+          valueFrom:
+            secretKeyRef:
+              name: influxdb-credentials
+              key: INFLUX_ADMIN_TOKEN
         resources:
           requests:
             memory: "128Mi"
