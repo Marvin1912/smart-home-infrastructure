@@ -1,24 +1,22 @@
 {{- /*
-Patch for Prometheus StatefulSet to add resource limits.
-This patch is applied to the prometheus-kube-prometheus-stack-prometheus StatefulSet
-created by the kube-prometheus-stack Helm chart.
+Patch for the Prometheus CRD to set resource limits on the prometheus container.
+The Prometheus Operator reads this CRD and propagates the settings to the StatefulSet,
+avoiding the conflict where ArgoCD and the operator fight over direct StatefulSet ownership.
 Reference: Issue #64 - Priority 1: Immediate Resource Limits
 */ -}}
 
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
 metadata:
-  name: prometheus-kube-prometheus-stack-prometheus
+  name: kube-prometheus-stack-prometheus
   namespace: default
 spec:
-  template:
-    spec:
-      containers:
-      - name: prometheus
-        resources:
-          requests:
-            cpu: {{ .Values.prometheus.requests.cpu | quote }}
-            memory: {{ .Values.prometheus.requests.memory | quote }}
-          limits:
-            cpu: {{ .Values.prometheus.limits.cpu | quote }}
-            memory: {{ .Values.prometheus.limits.memory | quote }}
+  containers:
+  - name: prometheus
+    resources:
+      requests:
+        cpu: {{ .Values.prometheus.requests.cpu | quote }}
+        memory: {{ .Values.prometheus.requests.memory | quote }}
+      limits:
+        cpu: {{ .Values.prometheus.limits.cpu | quote }}
+        memory: {{ .Values.prometheus.limits.memory | quote }}
