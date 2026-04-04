@@ -10,8 +10,8 @@ prometheusDatasource:
 grafana:
   adminUser: admin
   adminPasswordSecret:
-    name: grafana-credentials
-    key: GRAFANA_ADMIN_PASSWORD
+    name: grafana-admin-credentials
+    key: GF_SECURITY_ADMIN_PASSWORD
   cookieSamesite: Lax
   allowEmbedding: true
 
