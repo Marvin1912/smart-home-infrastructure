@@ -1,9 +1,9 @@
 prometheusDatasource:
   name: Prometheus
-  url: http://prometheus-service.default.svc.cluster.local:9090
+  url: http://kube-prometheus-stack-prometheus.default.svc.cluster.local:9090
   access: proxy
-  isDefault: true
-  type: "prometheus"
+  isDefault: false
+  type: prometheus
   jsonData:
     pdcInjected: false
     tlsSkipVerify: true
@@ -18,11 +18,14 @@ influxdbDatasource:
   name: InfluxDB
   url: http://influxdb-service.default.svc.cluster.local:8086
   access: proxy
-  type: "influxdb"
-  isDefault: false
+  type: influxdb
+  isDefault: true
   credentialsSecret:
     name: influxdb-credentials
     key: INFLUX_TOKEN
   jsonData:
-    version: Flux
+    defaultBucket: costs
+    httpMode: POST
     organization: wildfly_domain
+    version: Flux
+    tlsSkipVerify: true
