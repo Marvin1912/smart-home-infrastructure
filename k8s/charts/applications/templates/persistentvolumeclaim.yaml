@@ -2,6 +2,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: local-mount-pvc
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   storageClassName: {{ .Values.persistence.storageClassName }}
   accessModes:

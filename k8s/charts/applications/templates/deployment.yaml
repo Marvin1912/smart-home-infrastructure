@@ -4,7 +4,11 @@ metadata:
   name: applications
   labels:
     app: applications
+    app.kubernetes.io/managed-by: Helm
   namespace: default
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

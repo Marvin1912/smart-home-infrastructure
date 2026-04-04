@@ -5,6 +5,10 @@ metadata:
   namespace: default
   labels:
     app: applications-service
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: applications
+    meta.helm.sh/release-namespace: default
 spec:
   selector:
     app: applications
