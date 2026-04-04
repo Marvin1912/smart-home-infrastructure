@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: local-mount-pvc
+  name: {{ .Values.persistence.claimName }}
   labels:
     app.kubernetes.io/managed-by: Helm
   annotations:
