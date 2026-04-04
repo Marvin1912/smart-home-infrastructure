@@ -22,8 +22,8 @@
   "panels": [
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+        "type": "prometheus"
+        
       },
       "fieldConfig": {
         "defaults": {
@@ -70,8 +70,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+            "type": "prometheus"
+            
           },
           "editorMode": "code",
           "expr": "sum by (friendly_name) (homeassistant_sensor_battery_percent{friendly_name=\"Badezimmer Batterie\"})",
@@ -86,8 +86,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+        "type": "prometheus"
+        
       },
       "fieldConfig": {
         "defaults": {
@@ -138,8 +138,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+            "type": "prometheus"
+            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Flur Batterie\"}",
@@ -154,8 +154,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+        "type": "prometheus"
+        
       },
       "fieldConfig": {
         "defaults": {
@@ -206,8 +206,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+            "type": "prometheus"
+            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Küche Batterie\"}",
@@ -222,8 +222,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+        "type": "prometheus"
+        
       },
       "fieldConfig": {
         "defaults": {
@@ -274,8 +274,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+            "type": "prometheus"
+            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Schlafzimmer Batterie\"}",
@@ -290,8 +290,8 @@
     },
     {
       "datasource": {
-        "type": "prometheus",
-        "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+        "type": "prometheus"
+        
       },
       "fieldConfig": {
         "defaults": {
@@ -342,8 +342,8 @@
       "targets": [
         {
           "datasource": {
-            "type": "prometheus",
-            "uid": "717f5493-d868-4b43-86ef-3773515b6ac2"
+            "type": "prometheus"
+            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Wohnzimmer Batterie\"}",
