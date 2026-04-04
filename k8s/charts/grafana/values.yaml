@@ -22,7 +22,7 @@ influxdbDatasource:
   isDefault: false
   credentialsSecret:
     name: influxdb-credentials
-    key: INFLUX_TOKEN
+    key: INFLUX_ADMIN_TOKEN
   jsonData:
     version: Flux
     organization: wildfly_domain
