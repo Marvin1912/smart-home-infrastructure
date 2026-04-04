@@ -9,29 +9,25 @@ metadata:
     helm.sh/hook-delete-policy: hook-succeeded
 spec:
   backoffLimit: 3
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
-      restartPolicy: Never
+      restartPolicy: OnFailure
       containers:
         - name: setup
-          image: influxdb:2.7.8
-          command: ["/bin/bash", "-c"]
+          image: bash:5.2.21
+          command: ["/bin/sh", "-c"]
           args:
             - |
-              /bin/bash /scripts/setup_influxdb.sh
+              apk add --no-cache curl jq &&
+              /scripts/setup_influxdb.sh
           env:
             - name: INFLUX_URL
               value: "http://influxdb-service.default.svc.cluster.local:8086"
+            - name: INFLUX_ORG
+              value: {{ .Values.influxdb.org | quote }}
             - name: INIT_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: influxdb-secrets
-                  key: init-token
-            - name: INFLUX_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: influxdb-secrets
-                  key: influx-token
+              value: "rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg=="
           volumeMounts:
             - name: setup-script
               mountPath: /scripts
