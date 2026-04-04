@@ -1,0 +1,40 @@
+image:
+  repository: coredns/coredns
+  tag: "1.13.2"
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: "250m"
+    memory: "64Mi"
+    ephemeralStorage: "64Mi"
+  limits:
+    cpu: "500m"
+    memory: "256Mi"
+    ephemeralStorage: "256Mi"
+
+pv:
+  hostPath: /home/marvin/coredns
+  capacity: 256Mi
+  nodeSelector:
+    kubernetes.io/hostname: home-server
+
+dns:
+  forwarder: 192.168.178.1
+
+probes:
+  liveness:
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  readiness:
+    initialDelaySeconds: 2
+    periodSeconds: 5
+
+blockedDomains:
+  - instagram.com
+  - welt.de
+  - mopo.de
+  - bild.de
+  - focus.de
+  - zeit.de

@@ -1,0 +1,77 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.ingressRoute.name }}
+  namespace: {{ .Values.ingressRoute.namespace }}
+spec:
+  entryPoints:
+{{- range .Values.ingressRoute.entryPoints }}
+    - {{ . }}
+{{- end }}
+  routes:
+    - match: Host(`{{ .Values.ingressRoute.routes.prometheus.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.prometheus.service }}
+          port: {{ .Values.ingressRoute.routes.prometheus.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.grafana.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.grafana.service }}
+          port: {{ .Values.ingressRoute.routes.grafana.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.influxdb.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.influxdb.service }}
+          port: {{ .Values.ingressRoute.routes.influxdb.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.frontend.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.frontend.service }}
+          port: {{ .Values.ingressRoute.routes.frontend.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.backend.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.backend.service }}
+          port: {{ .Values.ingressRoute.routes.backend.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.linkwarden.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.linkwarden.service }}
+          port: {{ .Values.ingressRoute.routes.linkwarden.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.wiki.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.wiki.service }}
+          port: {{ .Values.ingressRoute.routes.wiki.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.anki.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.anki.service }}
+          port: {{ .Values.ingressRoute.routes.anki.port }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.ingressRouteArgocd.name }}
+  namespace: {{ .Values.ingressRouteArgocd.namespace }}
+spec:
+  entryPoints:
+{{- range .Values.ingressRouteArgocd.entryPoints }}
+    - {{ . }}
+{{- end }}
+  routes:
+    - match: Host(`{{ .Values.ingressRouteArgocd.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRouteArgocd.service }}
+          port: {{ .Values.ingressRouteArgocd.port }}

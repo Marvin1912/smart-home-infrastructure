@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anki
+  labels:
+    app: anki
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: anki
+  template:
+    metadata:
+      labels:
+        app: anki
+    spec:
+      containers:
+        - name: anki
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ANKI_COLLECTION_PATH
+              value: {{ .Values.anki.collectionPath }}
+            - name: SCHEDULE
+              value: {{ .Values.anki.schedule | quote }}
+            - name: API_BASE_URL
+              value: {{ .Values.anki.apiBaseUrl }}
+            - name: ANKI_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: anki-credentials
+                  key: ANKI_USERNAME
+            - name: ANKI_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: anki-credentials
+                  key: ANKI_PASSWORD
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+          volumeMounts:
+          - name: data
+            mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: local-mount-anki

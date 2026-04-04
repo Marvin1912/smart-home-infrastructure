@@ -1,0 +1,120 @@
+replicaCount: 1
+
+image:
+  repository: localhost:5000/applications
+  tag: "latest"
+  pullPolicy: Always
+
+containerPort: 9055
+
+env:
+  javaOpts: "-Xms512m -Xmx1024m"
+  adapterPort: "9055"
+  dataSource: "jdbc:postgresql://postgres-service.default.svc.cluster.local:5432/costs"
+  dataSourceUsername: "marvin"
+  camtDirectoryIn: "/data/camt"
+  camtDirectoryDone: "/data/camt/done"
+  importerInCosts: "/data/import/costs"
+  importerInSensordata: "/data/import/sensordata"
+  importerInVocabulary: "/data/import/vocabulary"
+  importerDone: "/data/import/sensordata/done"
+  exporterFolder: "/data/export"
+  backupUploadEnabled: "true"
+  backupWatchDir: "/data/backup/in"
+  backupDoneDir: "/data/backup/done"
+  backupErrorDir: "/data/backup/error"
+  uploaderCredentialsPath: "/data/google/credentials.json"
+  uploaderCostExportFolder: "/data/export"
+  uploaderEnabled: "true"
+  influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
+  influxOrg: "wildfly_domain"
+  influxdbExportEnabled: "false"
+  consulUrl: "http://192.168.178.29:8500"
+
+resources:
+  requests:
+    memory: "1500Mi"
+    cpu: "750m"
+    ephemeral-storage: "512Mi"
+  limits:
+    memory: "2Gi"
+    cpu: "1"
+    ephemeral-storage: "2Gi"
+
+persistence:
+  mountPath: /data
+  storageClassName: local-mount
+
+pv:
+  size: 1Gi
+  path: /home/marvin/data
+  nodeSelector:
+    kubernetes.io/hostname: home-server
+
+serviceMonitor:
+  enabled: true
+  releaseLabel: kube-prometheus-stack
+  path: /actuator/prometheus
+  port: http-web
+  scheme: http
+
+prometheusRules:
+  enabled: true
+  releaseLabel: kube-prometheus-stack
+
+cronjobs:
+  influxdbBackup:
+    enabled: true
+    schedule: "0 2 * * *"
+    image:
+      repository: localhost:5000/influxdb-backup
+      tag: "latest"
+      pullPolicy: Always
+    command: ["/bin/bash", "-c", "influx backup /backup"]
+    env:
+      influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
+      influxOrg: "wildfly_domain"
+      excludeBuckets: ""
+      backupDir: "/backup"
+      publicKey: ""
+      watchDir: "/data/backup/watch"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+        ephemeral-storage: "256Mi"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+        ephemeral-storage: "512Mi"
+
+  dbBackup:
+    enabled: true
+    schedule: "0 3 * * *"
+    image:
+      repository: localhost:5000/db-backup
+      tag: "latest"
+      pullPolicy: Always
+    command: ["/bin/bash", "-c", "pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME > $BACKUP_DIR/backup.sql"]
+    env:
+      dbHost: "postgres-service.default.svc.cluster.local"
+      dbPort: "5432"
+      dbName: "costs"
+      dbUser: "marvin"
+      backupDir: "/backup"
+      publicKey: ""
+      watchDir: "/data/backup/watch"
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+        ephemeral-storage: "256Mi"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+        ephemeral-storage: "512Mi"
+
+service:
+  name: applications-service
+  port: 9055
+  targetPort: 9055

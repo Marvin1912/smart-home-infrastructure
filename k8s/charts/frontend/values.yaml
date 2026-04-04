@@ -1,0 +1,20 @@
+image:
+  repository: localhost:5000/frontend
+  tag: "latest"
+  pullPolicy: Always
+
+containerPort: 3000
+
+resources:
+  requests:
+    memory: "256Mi"
+    cpu: "100m"
+    ephemeral-storage: "256Mi"
+  limits:
+    memory: "512Mi"
+    cpu: "500m"
+    ephemeral-storage: "512Mi"
+
+service:
+  port: 3000
+  targetPort: 3000

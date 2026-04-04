@@ -1,0 +1,34 @@
+image:
+  repository: localhost:5000/linkwarden
+  tag: "latest"
+  pullPolicy: Always
+
+containerPort: 3000
+
+env:
+  databaseUrl: "postgresql://user:password@postgres-service.default.svc.cluster.local:5432/linkwarden"
+  nodeEnv: "production"
+
+pv:
+  size: 1Gi
+  path: /home/marvin/linkwarden
+  nodeSelector:
+    kubernetes.io/hostname: home-server
+
+persistence:
+  storageClassName: local-mount
+  mountPath: /data
+
+service:
+  port: 3000
+  targetPort: 3000
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+    ephemeral-storage: "256Mi"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"
+    ephemeral-storage: "512Mi"

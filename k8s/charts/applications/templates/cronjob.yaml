@@ -1,0 +1,115 @@
+{{- if .Values.cronjobs.influxdbBackup.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: applications-influxdb-backup
+  namespace: default
+spec:
+  schedule: {{ .Values.cronjobs.influxdbBackup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: influxdb-backup
+              image: {{ .Values.cronjobs.influxdbBackup.image.repository }}:{{ .Values.cronjobs.influxdbBackup.image.tag }}
+              imagePullPolicy: {{ .Values.cronjobs.influxdbBackup.image.pullPolicy }}
+              command: {{ .Values.cronjobs.influxdbBackup.command }}
+              env:
+                - name: INFLUX_URL
+                  value: {{ .Values.cronjobs.influxdbBackup.env.influxUrl | quote }}
+                - name: INFLUX_ORG
+                  value: {{ .Values.cronjobs.influxdbBackup.env.influxOrg | quote }}
+                - name: INFLUX_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: applications-credentials
+                      key: INFLUX_TOKEN
+                - name: EXCLUDE_BUCKETS
+                  value: {{ .Values.cronjobs.influxdbBackup.env.excludeBuckets | quote }}
+                - name: BACKUP_DIR
+                  value: {{ .Values.cronjobs.influxdbBackup.env.backupDir | quote }}
+                - name: PUBLIC_KEY
+                  value: {{ .Values.cronjobs.influxdbBackup.env.publicKey | quote }}
+                - name: WATCH_DIR
+                  value: {{ .Values.cronjobs.influxdbBackup.env.watchDir | quote }}
+              resources:
+                requests:
+                  memory: {{ .Values.cronjobs.influxdbBackup.resources.requests.memory | quote }}
+                  cpu: {{ .Values.cronjobs.influxdbBackup.resources.requests.cpu | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.influxdbBackup.resources.requests "ephemeral-storage" | quote }}
+                limits:
+                  memory: {{ .Values.cronjobs.influxdbBackup.resources.limits.memory | quote }}
+                  cpu: {{ .Values.cronjobs.influxdbBackup.resources.limits.cpu | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.influxdbBackup.resources.limits "ephemeral-storage" | quote }}
+              volumeMounts:
+                - name: data
+                  mountPath: {{ .Values.persistence.mountPath }}
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: {{ .Values.persistence.volumeName }}
+{{- end }}
+---
+{{- if .Values.cronjobs.dbBackup.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: applications-db-backup
+  namespace: default
+spec:
+  schedule: {{ .Values.cronjobs.dbBackup.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: db-backup
+              image: {{ .Values.cronjobs.dbBackup.image.repository }}:{{ .Values.cronjobs.dbBackup.image.tag }}
+              imagePullPolicy: {{ .Values.cronjobs.dbBackup.image.pullPolicy }}
+              command: {{ .Values.cronjobs.dbBackup.command }}
+              env:
+                - name: DB_HOST
+                  value: {{ .Values.cronjobs.dbBackup.env.dbHost | quote }}
+                - name: DB_PORT
+                  value: {{ .Values.cronjobs.dbBackup.env.dbPort | quote }}
+                - name: DB_NAME
+                  value: {{ .Values.cronjobs.dbBackup.env.dbName | quote }}
+                - name: DB_USER
+                  value: {{ .Values.cronjobs.dbBackup.env.dbUser | quote }}
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: applications-credentials
+                      key: PGPASSWORD
+                - name: BACKUP_DIR
+                  value: {{ .Values.cronjobs.dbBackup.env.backupDir | quote }}
+                - name: PUBLIC_KEY
+                  value: {{ .Values.cronjobs.dbBackup.env.publicKey | quote }}
+                - name: WATCH_DIR
+                  value: {{ .Values.cronjobs.dbBackup.env.watchDir | quote }}
+              resources:
+                requests:
+                  memory: {{ .Values.cronjobs.dbBackup.resources.requests.memory | quote }}
+                  cpu: {{ .Values.cronjobs.dbBackup.resources.requests.cpu | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.dbBackup.resources.requests "ephemeral-storage" | quote }}
+                limits:
+                  memory: {{ .Values.cronjobs.dbBackup.resources.limits.memory | quote }}
+                  cpu: {{ .Values.cronjobs.dbBackup.resources.limits.cpu | quote }}
+                  ephemeral-storage: {{ index .Values.cronjobs.dbBackup.resources.limits "ephemeral-storage" | quote }}
+              volumeMounts:
+                - name: data
+                  mountPath: {{ .Values.persistence.mountPath }}
+          volumes:
+            - name: data
+              persistentVolumeClaim:
+                claimName: {{ .Values.persistence.volumeName }}
+{{- end }}

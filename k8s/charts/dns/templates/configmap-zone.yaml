@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-zone
+  namespace: default
+data:
+  home-lab: |
+    $ORIGIN home-lab.com.
+    @       86400 IN SOA ns.home-lab.com. admin.home-lab.com. (
+                2024020101 ; Serial
+                3600       ; Refresh
+                1800       ; Retry
+                604800     ; Expire
+                86400 )    ; Negative Cache TTL
+
+    ; Name servers
+    @       IN NS   ns.home-lab.com.
+
+    ; DNS server hostname
+    ns      IN A    192.168.178.29
+
+    ; Hostnames
+    argocd       IN A    192.168.178.29
+    grafana      IN A    192.168.178.29
+    influxdb     IN A    192.168.178.29
+    postgres     IN A    192.168.178.29
+    prometheus   IN A    192.168.178.29
+    frontend     IN A    192.168.178.29
+    backend      IN A    192.168.178.29
+    linkwarden   IN A    192.168.178.29
+    wiki         IN A    192.168.178.29
+    anki         IN A    192.168.178.29

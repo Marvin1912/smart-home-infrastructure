@@ -1,0 +1,57 @@
+ingressRoute:
+  name: main-routes
+  namespace: default
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    prometheus:
+      host: prometheus.local
+      service: prometheus-service
+      port: 9090
+    grafana:
+      host: grafana.local
+      service: grafana-service
+      port: 3000
+    influxdb:
+      host: influxdb.local
+      service: influxdb-service
+      port: 8086
+    frontend:
+      host: frontend.local
+      service: frontend-service
+      port: 3000
+    backend:
+      host: backend.local
+      service: applications-service
+      port: 9055
+    linkwarden:
+      host: linkwarden.local
+      service: linkwarden-service
+      port: 3000
+    wiki:
+      host: wiki.local
+      service: wikijs-service
+      port: 3000
+    anki:
+      host: anki.local
+      service: anki-service
+      port: 8000
+
+ingressRouteArgocd:
+  name: argocd-routes
+  namespace: argocd
+  entryPoints:
+    - web
+    - websecure
+  host: argocd.local
+  service: argocd-server
+  port: 443
+
+ingressRouteTcp:
+  name: mqtt-route
+  namespace: default
+  entryPoints:
+    - mqtt
+  service: mqtt-service
+  port: 8883

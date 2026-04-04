@@ -1,0 +1,28 @@
+image:
+  repository: localhost:5000/anki
+  tag: "latest"
+  pullPolicy: Always
+
+pv:
+  capacity: 1Gi
+  hostPath: /home/marvin/anki
+  nodeSelector:
+    kubernetes.io/hostname: home-server
+
+persistence:
+  storageClassName: local-mount
+  mountPath: /data
+
+anki:
+  collectionPath: /data/collection.anki2
+  syncServer: http://localhost:8080
+
+containerPort: 8000
+
+resources:
+  requests:
+    memory: "512Mi"
+    cpu: "250m"
+  limits:
+    memory: "1Gi"
+    cpu: "500m"

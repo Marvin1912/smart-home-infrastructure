@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: applications
+  labels:
+    app: applications
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: applications
+  template:
+    metadata:
+      labels:
+        app: applications
+    spec:
+      containers:
+        - name: applications
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: JAVA_OPTS
+              value: {{ .Values.env.javaOpts | quote }}
+            - name: ADAPTER_PORT
+              value: {{ .Values.env.adapterPort | quote }}
+            - name: DATA_SOURCE
+              value: {{ .Values.env.dataSource | quote }}
+            - name: DATA_SOURCE_USERNAME
+              value: {{ .Values.env.dataSourceUsername | quote }}
+            - name: DATA_SOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: DATA_SOURCE_PASSWORD
+            - name: CAMT_DIRECTORY_IN
+              value: {{ .Values.env.camtDirectoryIn | quote }}
+            - name: CAMT_DIRECTORY_DONE
+              value: {{ .Values.env.camtDirectoryDone | quote }}
+            - name: IMPORTER_IN_COSTS
+              value: {{ .Values.env.importerInCosts | quote }}
+            - name: IMPORTER_IN_SENSORDATA
+              value: {{ .Values.env.importerInSensordata | quote }}
+            - name: IMPORTER_IN_VOCABULARY
+              value: {{ .Values.env.importerInVocabulary | quote }}
+            - name: IMPORTER_DONE
+              value: {{ .Values.env.importerDone | quote }}
+            - name: EXPORTER_FOLDER
+              value: {{ .Values.env.exporterFolder | quote }}
+            - name: BACKUP_UPLOAD_ENABLED
+              value: {{ .Values.env.backupUploadEnabled | quote }}
+            - name: BACKUP_WATCH_DIR
+              value: {{ .Values.env.backupWatchDir | quote }}
+            - name: BACKUP_DONE_DIR
+              value: {{ .Values.env.backupDoneDir | quote }}
+            - name: BACKUP_ERROR_DIR
+              value: {{ .Values.env.backupErrorDir | quote }}
+            - name: UPLOADER_CREDENTIALS_PATH
+              value: {{ .Values.env.uploaderCredentialsPath | quote }}
+            - name: UPLOADER_COST_EXPORT_FOLDER
+              value: {{ .Values.env.uploaderCostExportFolder | quote }}
+            - name: UPLOADER_ENABLED
+              value: {{ .Values.env.uploaderEnabled | quote }}
+            - name: INFLUX_URL
+              value: {{ .Values.env.influxUrl | quote }}
+            - name: INFLUX_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: INFLUX_TOKEN
+            - name: INFLUX_ORG
+              value: {{ .Values.env.influxOrg | quote }}
+            - name: INFLUXDB_EXPORT_ENABLED
+              value: {{ .Values.env.influxdbExportEnabled | quote }}
+            - name: CONSUL_URL
+              value: {{ .Values.env.consulUrl | quote }}
+            - name: VOCABULARY_DEEPL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: deepl-api-key
+                  key: VOCABULARY_DEEPL_API_KEY
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+              ephemeral-storage: {{ index .Values.resources.requests "ephemeral-storage" | quote }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              ephemeral-storage: {{ index .Values.resources.limits "ephemeral-storage" | quote }}
+          volumeMounts:
+          - name: data
+            mountPath: {{ .Values.persistence.mountPath }}
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: local-mount-pvc
