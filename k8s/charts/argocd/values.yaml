@@ -10,6 +10,8 @@ argocdVersion: "2.10.3"
 #     -p='[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--insecure"}]'
 server:
   insecure: true
+  disable:
+    auth: true
 
 # SSH known-hosts volume for argocd-repo-server.
 # SSA field-manager conflicts strip volumes/volumeMounts from the upstream deployment.

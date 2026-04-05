@@ -23,4 +23,3 @@ metadata:
 data:
   # Configure argocd-server to run in insecure mode for Traefik TLS termination
   server.insecure: "true"
-  server.disable.auth: "true"

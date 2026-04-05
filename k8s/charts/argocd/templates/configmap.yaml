@@ -9,3 +9,4 @@ metadata:
 data:
   # Configure argocd-server to run in insecure mode for Traefik TLS termination
   server.insecure: "{{ .Values.server.insecure | default true }}"
+  server.disable.auth: "{{ .Values.server.disable.auth | default true }}"
