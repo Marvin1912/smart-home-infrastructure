@@ -7,6 +7,7 @@ metadata:
     app: homedns
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: homedns

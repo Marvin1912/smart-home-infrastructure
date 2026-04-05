@@ -11,6 +11,7 @@ metadata:
     meta.helm.sh/release-namespace: default
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: applications
