@@ -7,8 +7,8 @@ metadata:
     argocd.argoproj.io/secret-type: repository
 type: Opaque
 stringData:
-  type: git
-  url: git@github.com:Marvin1912/smart-home-infrastructure.git
+  type: "git"
+  url: "git@github.com:Marvin1912/smart-home-infrastructure.git"
   sshPrivateKey: |
     [SSH_KEY_WILL_BE_POPULATED_FROM_KUBERNETES_SECRET]
 ---

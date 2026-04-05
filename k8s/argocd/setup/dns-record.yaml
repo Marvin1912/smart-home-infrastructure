@@ -1,5 +1,0 @@
-# This file is for reference only. The actual DNS record is defined in
-# k8s/dns/dns.yaml
-#
-# The DNS A record added to the CoreDNS zone:
-# argocd       IN A    192.168.178.29
