@@ -96,7 +96,7 @@ cronjobs:
       repository: localhost:5000/db-backup
       tag: "latest"
       pullPolicy: Always
-    command: ["/bin/bash", "-c", "mkdir -p $BACKUP_DIR && pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME > $BACKUP_DIR/backup.sql"]
+    command: ["/bin/bash", "/backup/backup.sh"]
     env:
       dbHost: "postgres-service.default.svc.cluster.local"
       dbPort: "5432"
