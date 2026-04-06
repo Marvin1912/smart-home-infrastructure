@@ -23,7 +23,8 @@ spec:
             - name: influxdb-backup
               image: {{ .Values.cronjobs.influxdbBackup.image.repository }}:{{ .Values.cronjobs.influxdbBackup.image.tag }}
               imagePullPolicy: {{ .Values.cronjobs.influxdbBackup.image.pullPolicy }}
-              command: {{ .Values.cronjobs.influxdbBackup.command }}
+              command:
+{{ .Values.cronjobs.influxdbBackup.command | toYaml | indent 14 }}
               env:
                 - name: INFLUX_URL
                   value: {{ .Values.cronjobs.influxdbBackup.env.influxUrl | quote }}
@@ -85,7 +86,8 @@ spec:
             - name: db-backup
               image: {{ .Values.cronjobs.dbBackup.image.repository }}:{{ .Values.cronjobs.dbBackup.image.tag }}
               imagePullPolicy: {{ .Values.cronjobs.dbBackup.image.pullPolicy }}
-              command: {{ .Values.cronjobs.dbBackup.command }}
+              command:
+{{ .Values.cronjobs.dbBackup.command | toYaml | indent 14 }}
               env:
                 - name: DB_HOST
                   value: {{ .Values.cronjobs.dbBackup.env.dbHost | quote }}
