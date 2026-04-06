@@ -71,12 +71,12 @@ cronjobs:
       repository: localhost:5000/influxdb-backup
       tag: "latest"
       pullPolicy: Always
-    command: ["/bin/bash", "-c", "influx backup /backup"]
+    command: ["/bin/bash", "-c", "influx backup /data/backup"]
     env:
       influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
       influxOrg: "wildfly_domain"
       excludeBuckets: ""
-      backupDir: "/backup"
+      backupDir: "/data/backup"
       publicKey: ""
       watchDir: "/data/backup/watch"
     resources:
@@ -96,13 +96,13 @@ cronjobs:
       repository: localhost:5000/db-backup
       tag: "latest"
       pullPolicy: Always
-    command: ["/bin/bash", "-c", "pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME > $BACKUP_DIR/backup.sql"]
+    command: ["/bin/bash", "-c", "mkdir -p $BACKUP_DIR && pg_dump -h $DB_HOST -U $DB_USER -d $DB_NAME > $BACKUP_DIR/backup.sql"]
     env:
       dbHost: "postgres-service.default.svc.cluster.local"
       dbPort: "5432"
       dbName: "costs"
       dbUser: "marvin"
-      backupDir: "/backup"
+      backupDir: "/data/backup"
       publicKey: ""
       watchDir: "/data/backup/watch"
     resources:
