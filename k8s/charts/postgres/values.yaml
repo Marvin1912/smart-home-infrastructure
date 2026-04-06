@@ -12,7 +12,7 @@ resources:
     ephemeralStorage: "256Mi"
   limits:
     memory: "512Mi"
-    cpu: "400m"
+    cpu: "1000m"
     ephemeralStorage: "1Gi"
 
 pv:
