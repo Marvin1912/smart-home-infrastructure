@@ -20,7 +20,7 @@ env:
   importerDone: "/data/import/sensordata/done"
   exporterFolder: "/data/export"
   backupUploadEnabled: "true"
-  backupWatchDir: "/data/backup/in"
+  backupWatchDir: "/data/backup/watch"
   backupDoneDir: "/data/backup/done"
   backupErrorDir: "/data/backup/error"
   uploaderCredentialsPath: "/data/google/credentials.json"
