@@ -75,7 +75,7 @@ cronjobs:
     env:
       influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
       influxOrg: "wildfly_domain"
-      excludeBuckets: ""
+      excludeBuckets: "system_metrics"
       backupDir: "/data/backup"
       publicKey: ""
       watchDir: "/data/backup/watch"
