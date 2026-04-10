@@ -71,7 +71,7 @@ cronjobs:
       repository: localhost:5000/influxdb-backup
       tag: "latest"
       pullPolicy: Always
-    command: ["/bin/bash", "-c", "influx backup /data/backup"]
+    command: ["/app/backup/backup.sh"]
     env:
       influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
       influxOrg: "wildfly_domain"
