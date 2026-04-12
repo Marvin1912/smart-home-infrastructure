@@ -28,11 +28,6 @@ spec:
               value: {{ .Values.env.appEnv | quote }}
             - name: APP_DEBUG
               value: {{ .Values.env.appDebug | quote }}
-            - name: SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: stock-portfolio-tracker-secrets
-                  key: SECRET_KEY
             - name: ALLOWED_HOSTS
               value: {{ .Values.env.allowedHosts | quote }}
             - name: DATABASE_URL
@@ -41,11 +36,6 @@ spec:
               value: {{ .Values.env.schedulerTimezone | quote }}
             - name: MONTHLY_REPORT_CRON
               value: {{ .Values.env.monthlyReportCron | quote }}
-            - name: STOCK_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: stock-portfolio-tracker-secrets
-                  key: STOCK_API_KEY
             - name: STOCK_API_BASE_URL
               value: {{ .Values.env.stockApiBaseUrl | quote }}
             - name: PDF_UPLOAD_DIR
