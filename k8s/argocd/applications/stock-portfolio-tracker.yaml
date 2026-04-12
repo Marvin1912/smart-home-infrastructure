@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stock-portfolio-tracker
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: home-lab
+  source:
+    repoURL: 'git@github.com:Marvin1912/smart-home-infrastructure.git'
+    targetRevision: master
+    path: k8s/charts/stock-portfolio-tracker
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
