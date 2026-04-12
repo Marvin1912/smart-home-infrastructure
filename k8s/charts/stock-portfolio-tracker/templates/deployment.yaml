@@ -30,6 +30,16 @@ spec:
               value: {{ .Values.env.appDebug | quote }}
             - name: ALLOWED_HOSTS
               value: {{ .Values.env.allowedHosts | quote }}
+            - name: DATABASE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: stock-portfolio-tracker-secrets
+                  key: database-username
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: stock-portfolio-tracker-secrets
+                  key: database-password
             - name: DATABASE_URL
               value: {{ .Values.env.databaseUrl | quote }}
             - name: SCHEDULER_TIMEZONE
