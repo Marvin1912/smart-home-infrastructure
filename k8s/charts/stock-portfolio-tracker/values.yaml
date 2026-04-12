@@ -17,8 +17,6 @@ env:
   stockApiBaseUrl: "https://api.example-stock-provider.com/v1"
   pdfUploadDir: "/tmp/portfolio_uploads"
   pdfMaxUploadBytes: "20971520"
-  jwtAlgorithm: "HS256"
-  jwtAccessTokenExpireMinutes: "60"
 
 resources:
   requests:
