@@ -36,6 +36,10 @@ ingressRoute:
       host: anki.home-lab.com
       service: anki-service
       port: 8000
+    stock:
+      host: stock.home-lab.com
+      service: stock-portfolio-tracker-service
+      port: 8000
 
 ingressRouteArgocd:
   name: argocd

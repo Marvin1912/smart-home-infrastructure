@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stock-portfolio-tracker
+  labels:
+    app: stock-portfolio-tracker
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: stock-portfolio-tracker
+  template:
+    metadata:
+      labels:
+        app: stock-portfolio-tracker
+    spec:
+      containers:
+        - name: stock-portfolio-tracker
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+              name: http
+          env:
+            - name: APP_ENV
+              value: {{ .Values.env.appEnv | quote }}
+            - name: APP_DEBUG
+              value: {{ .Values.env.appDebug | quote }}
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stock-portfolio-tracker-secrets
+                  key: SECRET_KEY
+            - name: ALLOWED_HOSTS
+              value: {{ .Values.env.allowedHosts | quote }}
+            - name: DATABASE_URL
+              value: {{ .Values.env.databaseUrl | quote }}
+            - name: SMTP_HOST
+              value: {{ .Values.env.smtpHost | quote }}
+            - name: SMTP_PORT
+              value: {{ .Values.env.smtpPort | quote }}
+            - name: SMTP_USERNAME
+              value: {{ .Values.env.smtpUsername | quote }}
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: stock-portfolio-tracker-secrets
+                  key: SMTP_PASSWORD
+            - name: SMTP_FROM_ADDRESS
+              value: {{ .Values.env.smtpFromAddress | quote }}
+            - name: SMTP_FROM_NAME
+              value: {{ .Values.env.smtpFromName | quote }}
+            - name: SMTP_USE_TLS
+              value: {{ .Values.env.smtpUseTls | quote }}
+            - name: SCHEDULER_TIMEZONE
+              value: {{ .Values.env.schedulerTimezone | quote }}
+            - name: MONTHLY_REPORT_CRON
+              value: {{ .Values.env.monthlyReportCron | quote }}
+            - name: STOCK_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stock-portfolio-tracker-secrets
+                  key: STOCK_API_KEY
+            - name: STOCK_API_BASE_URL
+              value: {{ .Values.env.stockApiBaseUrl | quote }}
+            - name: PDF_UPLOAD_DIR
+              value: {{ .Values.env.pdfUploadDir | quote }}
+            - name: PDF_MAX_UPLOAD_BYTES
+              value: {{ .Values.env.pdfMaxUploadBytes | quote }}
+            - name: JWT_ALGORITHM
+              value: {{ .Values.env.jwtAlgorithm | quote }}
+            - name: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+              value: {{ .Values.env.jwtAccessTokenExpireMinutes | quote }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+              ephemeral-storage: {{ index .Values.resources.requests "ephemeral-storage" | quote }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              ephemeral-storage: {{ index .Values.resources.limits "ephemeral-storage" | quote }}
