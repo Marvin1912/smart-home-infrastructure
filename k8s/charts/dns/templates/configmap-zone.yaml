@@ -30,3 +30,4 @@ data:
     linkwarden   IN A    192.168.178.29
     wiki         IN A    192.168.178.29
     anki         IN A    192.168.178.29
+    stock         IN A    192.168.178.29

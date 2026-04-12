@@ -57,6 +57,12 @@ spec:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.anki.service }}
           port: {{ .Values.ingressRoute.routes.anki.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.stock.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.stock.service }}
+          port: {{ .Values.ingressRoute.routes.stock.port }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
