@@ -12,12 +12,6 @@ env:
   appDebug: "false"
   allowedHosts: '["https://stock.home-lab.com"]'
   databaseUrl: "postgresql+asyncpg://postgres:postgres@postgres-service.default.svc.cluster.local:5432/portfolio"
-  smtpHost: "smtp.example.com"
-  smtpPort: "587"
-  smtpUsername: "user@example.com"
-  smtpFromAddress: "noreply@example.com"
-  smtpFromName: "Stock Portfolio Tracker"
-  smtpUseTls: "true"
   schedulerTimezone: "Europe/Berlin"
   monthlyReportCron: "0 8 1 * *"
   stockApiBaseUrl: "https://api.example-stock-provider.com/v1"

@@ -37,23 +37,6 @@ spec:
               value: {{ .Values.env.allowedHosts | quote }}
             - name: DATABASE_URL
               value: {{ .Values.env.databaseUrl | quote }}
-            - name: SMTP_HOST
-              value: {{ .Values.env.smtpHost | quote }}
-            - name: SMTP_PORT
-              value: {{ .Values.env.smtpPort | quote }}
-            - name: SMTP_USERNAME
-              value: {{ .Values.env.smtpUsername | quote }}
-            - name: SMTP_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: stock-portfolio-tracker-secrets
-                  key: SMTP_PASSWORD
-            - name: SMTP_FROM_ADDRESS
-              value: {{ .Values.env.smtpFromAddress | quote }}
-            - name: SMTP_FROM_NAME
-              value: {{ .Values.env.smtpFromName | quote }}
-            - name: SMTP_USE_TLS
-              value: {{ .Values.env.smtpUseTls | quote }}
             - name: SCHEDULER_TIMEZONE
               value: {{ .Values.env.schedulerTimezone | quote }}
             - name: MONTHLY_REPORT_CRON
