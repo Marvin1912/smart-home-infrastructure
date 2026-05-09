@@ -8,6 +8,8 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 0
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: homedns
@@ -15,6 +17,9 @@ spec:
     metadata:
       labels:
         app: homedns
+      annotations:
+        checksum/config-corefile: {{ include (print $.Template.BasePath "/configmap-coredns.yaml") . | sha256sum }}
+        checksum/config-zone: {{ include (print $.Template.BasePath "/configmap-zone.yaml") . | sha256sum }}
     spec:
       hostNetwork: true
       dnsPolicy: Default
