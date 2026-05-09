@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bp-tracker
+  labels:
+    app: bp-tracker
+  namespace: default
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: bp-tracker
+  template:
+    metadata:
+      labels:
+        app: bp-tracker
+    spec:
+      containers:
+        - name: bp-tracker
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+              name: http
+          env:
+            - name: FLASK_PORT
+              value: {{ .Values.env.flaskPort | quote }}
+            - name: BP_DB_HOST
+              value: {{ .Values.env.dbHost | quote }}
+            - name: BP_DB_PORT
+              value: {{ .Values.env.dbPort | quote }}
+            - name: BP_DB_NAME
+              value: {{ .Values.env.dbName | quote }}
+            - name: BP_DB_SCHEMA
+              value: {{ .Values.env.dbSchema | quote }}
+            - name: BP_DB_POOL_MAX
+              value: {{ .Values.env.dbPoolMax | quote }}
+            - name: BP_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: bp-tracker-secrets
+                  key: database-username
+            - name: BP_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bp-tracker-secrets
+                  key: database-password
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory | quote }}
+              cpu: {{ .Values.resources.requests.cpu | quote }}
+              ephemeral-storage: {{ index .Values.resources.requests "ephemeral-storage" | quote }}
+            limits:
+              memory: {{ .Values.resources.limits.memory | quote }}
+              cpu: {{ .Values.resources.limits.cpu | quote }}
+              ephemeral-storage: {{ index .Values.resources.limits "ephemeral-storage" | quote }}

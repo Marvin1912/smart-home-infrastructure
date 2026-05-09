@@ -31,3 +31,4 @@ data:
     wiki         IN A    192.168.178.29
     anki         IN A    192.168.178.29
     stock        IN A    192.168.178.29
+    bp-tracker   IN A    192.168.178.29
