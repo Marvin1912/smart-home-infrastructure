@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bp-tracker-service
+  namespace: default
+  labels:
+    app: bp-tracker-service
+spec:
+  selector:
+    app: bp-tracker
+  ports:
+    - name: http
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}

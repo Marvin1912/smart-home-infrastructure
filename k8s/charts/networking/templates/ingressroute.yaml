@@ -63,6 +63,12 @@ spec:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.stock.service }}
           port: {{ .Values.ingressRoute.routes.stock.port }}
+    - match: Host(`{{ .Values.ingressRoute.routes.bpTracker.host }}`)
+      kind: Rule
+      services:
+        - kind: Service
+          name: {{ .Values.ingressRoute.routes.bpTracker.service }}
+          port: {{ .Values.ingressRoute.routes.bpTracker.port }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute

@@ -40,6 +40,10 @@ ingressRoute:
       host: stock.home-lab.com
       service: stock-portfolio-tracker-service
       port: 8000
+    bpTracker:
+      host: bp-tracker.home-lab.com
+      service: bp-tracker-service
+      port: 5001
 
 ingressRouteArgocd:
   name: argocd

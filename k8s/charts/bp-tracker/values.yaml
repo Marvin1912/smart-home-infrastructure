@@ -1,0 +1,30 @@
+replicaCount: 1
+
+image:
+  repository: localhost:5000/bp-tracker
+  tag: "latest"
+  pullPolicy: Always
+
+containerPort: 5001
+
+env:
+  flaskPort: "5001"
+  dbHost: "postgres-service.default.svc.cluster.local"
+  dbPort: "5432"
+  dbName: "costs"
+  dbSchema: "bp"
+  dbPoolMax: "5"
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "50m"
+    ephemeral-storage: "128Mi"
+  limits:
+    memory: "256Mi"
+    cpu: "200m"
+    ephemeral-storage: "256Mi"
+
+service:
+  port: 5001
+  targetPort: 5001
