@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-sync-script
+  namespace: {{ .Release.Namespace }}
+data:
+  sync.sh: |
+    #!/bin/sh
+    set -eu
+
+    log() { printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+
+    apk add --no-cache curl jq >/dev/null
+
+    : "${GRAFANA_URL:?missing}"
+    : "${GRAFANA_USER:?missing}"
+    : "${GRAFANA_PASSWORD:?missing}"
+    : "${GITHUB_TOKEN:?missing}"
+    : "${GIT_USER:?missing}"
+    : "${GIT_EMAIL:?missing}"
+    : "${GIT_REPO:?missing}"
+    : "${GIT_BRANCH:?missing}"
+    : "${DASHBOARD_DIR:?missing}"
+
+    WORK=/tmp/repo
+    rm -rf "$WORK"
+
+    log "Cloning $GIT_REPO"
+    git clone --depth 1 --branch "$GIT_BRANCH" \
+      "https://${GIT_USER}:${GITHUB_TOKEN}@${GIT_REPO}" "$WORK"
+
+    STAGE=/tmp/stage
+    rm -rf "$STAGE"
+    mkdir -p "$STAGE"
+
+    log "Listing dashboards from Grafana"
+    LIST=$(curl -sSf -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
+      "${GRAFANA_URL}/api/search?type=dash-db")
+
+    COUNT=$(printf '%s' "$LIST" | jq 'length')
+    log "Found $COUNT dashboards"
+    if [ "$COUNT" -eq 0 ]; then
+      log "Refusing to wipe dashboard dir when Grafana reports 0 dashboards"
+      exit 1
+    fi
+
+    printf '%s' "$LIST" | jq -r '.[].uid' | while IFS= read -r uid; do
+      [ -n "$uid" ] || continue
+      log "Fetching dashboard $uid"
+      RESP=$(curl -sSf -u "${GRAFANA_USER}:${GRAFANA_PASSWORD}" \
+        "${GRAFANA_URL}/api/dashboards/uid/${uid}")
+      TITLE=$(printf '%s' "$RESP" | jq -r '.dashboard.title')
+      SLUG=$(printf '%s' "$TITLE" \
+        | tr '[:upper:]' '[:lower:]' \
+        | tr ' ' '_' \
+        | tr -cd 'a-z0-9_-')
+      if [ -z "$SLUG" ]; then
+        log "Skipping dashboard with empty slug (title='$TITLE')"
+        continue
+      fi
+      printf '%s' "$RESP" \
+        | jq --indent 2 '.dashboard | .id = null' \
+        > "${STAGE}/${SLUG}.json"
+    done
+
+    DEST="${WORK}/${DASHBOARD_DIR}"
+    mkdir -p "$DEST"
+    rm -f "${DEST}"/*.json
+    cp "${STAGE}"/*.json "$DEST"/
+
+    cd "$WORK"
+    git config user.name "$GIT_USER"
+    git config user.email "$GIT_EMAIL"
+    git add "$DASHBOARD_DIR"
+
+    if git diff --cached --quiet; then
+      log "No dashboard changes; nothing to commit"
+      exit 0
+    fi
+
+    log "Committing and pushing changes"
+    git commit -m "Sync Grafana dashboards from instance ($(date -u +%Y-%m-%d))"
+    git push origin "$GIT_BRANCH"
+    log "Done"

@@ -9,7 +9,6 @@ metadata:
   labels:
     app: grafana
 spec:
-  resyncPeriod: {{ $.Values.resyncPeriod }}
   instanceSelector:
     matchLabels:
       app: "grafana"

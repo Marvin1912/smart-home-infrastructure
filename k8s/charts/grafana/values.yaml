@@ -30,4 +30,13 @@ influxdbDatasource:
     version: Flux
     tlsSkipVerify: true
 
-resyncPeriod: 15m
+dashboardSync:
+  image: alpine/git:latest
+  schedule: "0 3 * * *"
+  grafanaUrl: http://grafana-service.default.svc.cluster.local:3000
+  gitUser: grafana-dashboard-sync
+  gitEmail: grafana-sync@noreply.local
+  gitRepo: github.com/Marvin1912/smart-home-infrastructure.git
+  gitBranch: master
+  dashboardDir: k8s/charts/grafana/dashboards
+

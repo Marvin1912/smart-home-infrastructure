@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: grafana-dashboard-sync
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: grafana
+spec:
+  schedule: {{ .Values.dashboardSync.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: sync
+              image: {{ .Values.dashboardSync.image | quote }}
+              command: ["/bin/sh", "/scripts/sync.sh"]
+              env:
+                - name: GRAFANA_URL
+                  value: {{ .Values.dashboardSync.grafanaUrl | quote }}
+                - name: GRAFANA_USER
+                  value: {{ .Values.grafana.user | quote }}
+                - name: GRAFANA_PASSWORD
+                  value: {{ .Values.grafana.password | quote }}
+                - name: GIT_USER
+                  value: {{ .Values.dashboardSync.gitUser | quote }}
+                - name: GIT_EMAIL
+                  value: {{ .Values.dashboardSync.gitEmail | quote }}
+                - name: GIT_REPO
+                  value: {{ .Values.dashboardSync.gitRepo | quote }}
+                - name: GIT_BRANCH
+                  value: {{ .Values.dashboardSync.gitBranch | quote }}
+                - name: DASHBOARD_DIR
+                  value: {{ .Values.dashboardSync.dashboardDir | quote }}
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-dashboard-sync-secrets
+                      key: GITHUB_TOKEN
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+          volumes:
+            - name: script
+              configMap:
+                name: grafana-dashboard-sync-script
+                defaultMode: 0755
