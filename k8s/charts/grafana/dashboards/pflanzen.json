@@ -352,7 +352,7 @@
           "refId": "A"
         }
       ],
-      "title": "New panel",
+      "title": "Feuchtigkeit",
       "type": "timeseries"
     }
   ],
@@ -370,5 +370,5 @@
   "timezone": "browser",
   "title": "Pflanzen",
   "uid": "959c8e49-c2ca-4f01-9236-9a6e3c5e692b",
-  "version": 6
+  "version": 7
 }
