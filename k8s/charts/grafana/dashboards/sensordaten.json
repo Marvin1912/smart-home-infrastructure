@@ -18,12 +18,12 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -71,7 +71,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "sum by (friendly_name) (homeassistant_sensor_battery_percent{friendly_name=\"Badezimmer Batterie\"})",
@@ -87,7 +86,6 @@
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -139,7 +137,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Flur Batterie\"}",
@@ -155,7 +152,6 @@
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -207,7 +203,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Küche Batterie\"}",
@@ -223,7 +218,6 @@
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -275,7 +269,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Schlafzimmer Batterie\"}",
@@ -291,7 +284,6 @@
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -343,7 +335,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Wohnzimmer Batterie\"}",
@@ -650,8 +641,8 @@
             }
           },
           "mappings": [],
-          "max": 30,
-          "min": 15,
+          "max": 40,
+          "min": -20,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -801,5 +792,7 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Sensordaten"
+  "title": "Sensordaten",
+  "uid": "e5e234c1-2b05-43e4-a864-fb71d766728a",
+  "version": 3
 }

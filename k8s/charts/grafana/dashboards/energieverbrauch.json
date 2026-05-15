@@ -18,6 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "panels": [
     {
@@ -715,5 +716,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Energieverbrauch",
+  "uid": "bacb0197-3a2e-4e05-a7be-3bf9b1ac0f69",
+  "version": 1,
   "weekStart": ""
 }

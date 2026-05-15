@@ -18,6 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -690,5 +691,7 @@
   "timepicker": {},
   "timezone": "",
   "title": "Geld",
+  "uid": "c97356c0-e65f-4c09-bfd3-d4ed4e0a5fc4",
+  "version": 1,
   "weekStart": ""
 }

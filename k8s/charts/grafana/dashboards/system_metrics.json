@@ -18,6 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -531,5 +532,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "System Metrics",
+  "uid": "8bc22e88-c80a-42b6-ae92-7eb0a98b032f",
+  "version": 1,
   "weekStart": ""
 }

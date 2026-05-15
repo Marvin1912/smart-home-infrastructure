@@ -18,12 +18,12 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
+  "id": null,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -71,7 +71,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Feder Calathea Batterie\"}",
@@ -87,7 +86,6 @@
     {
       "datasource": {
         "type": "prometheus"
-        
       },
       "fieldConfig": {
         "defaults": {
@@ -135,7 +133,6 @@
         {
           "datasource": {
             "type": "prometheus"
-            
           },
           "editorMode": "code",
           "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Emerald Palm Batterie\"}",
@@ -271,7 +268,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "type": "prometheus"
+        "uid": "2acb1446-3af8-4388-92e4-76ff49ef3ca6"
       },
       "fieldConfig": {
         "defaults": {
@@ -329,12 +326,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
+        "h": 11,
         "w": 24,
         "x": 0,
         "y": 4
       },
-      "id": 1,
+      "id": 6,
       "options": {
         "legend": {
           "calcs": [],
@@ -351,14 +348,11 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "datasource": {
-            "type": "influxdb"
-          },
           "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> map(fn: (r) => ({\n      r with friendly_name:\n        if r.entity_id == \"moisture_feder_calathea_luftfeuchtigkeit\" or r.entity_id == \"feder_calathea_soil_moisture\" then \"Feder Calathea\"\n        else if r.entity_id == \"moisture_emerald_palm_luftfeuchtigkeit\" or r.entity_id == \"emerald_palm_soil_moisture\" then \"Emerald Palm\"\n        else if r.entity_id == \"drachenbaum_soil_moisture\" then \"Drachenbaum\"\n        else if r.entity_id == \"ficus_bonsai_soil_moisture\" then \"Ficus Bonsai\"\n        else \"Nicht bekannt\"\n    }))\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])",
           "refId": "A"
         }
       ],
-      "title": "Luftfeuchtigkeit Pflanzen",
+      "title": "New panel",
       "type": "timeseries"
     }
   ],
@@ -374,5 +368,7 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Pflanzen"
+  "title": "Pflanzen",
+  "uid": "959c8e49-c2ca-4f01-9236-9a6e3c5e692b",
+  "version": 6
 }
