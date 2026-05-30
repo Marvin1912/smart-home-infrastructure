@@ -1,0 +1,17 @@
+[Unit]
+Description=Touch dashboard kiosk
+After=default.target
+
+[Service]
+Type=simple
+Environment=WAYLAND_DISPLAY=wayland-0
+ExecStart=/usr/bin/chromium --kiosk --noerrdialogs --disable-translate \
+  --disable-features=TranslateUI --check-for-update-interval=31536000 \
+  --disable-pinch --overscroll-history-navigation=0 \
+  --password-store=basic \
+  --app=http://frontend.home-lab.com/touch
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
