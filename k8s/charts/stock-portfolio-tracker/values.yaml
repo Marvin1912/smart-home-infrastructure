@@ -10,7 +10,7 @@ containerPort: 8000
 env:
   appEnv: "production"
   appDebug: "false"
-  allowedHosts: '["https://stock.home-lab.com"]'
+  allowedHosts: '["https://stock.home-lab.com", "http://frontend.home-lab.com"]'
   databaseUrl: "postgresql+asyncpg://$(DATABASE_USERNAME):$(DATABASE_PASSWORD)@postgres-service.default.svc.cluster.local:5432/costs"
   schedulerTimezone: "Europe/Berlin"
   monthlyReportCron: "0 8 1 * *"
