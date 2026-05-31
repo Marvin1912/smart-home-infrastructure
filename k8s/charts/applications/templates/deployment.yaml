@@ -86,6 +86,11 @@ spec:
                 secretKeyRef:
                   name: deepl-api-key
                   key: VOCABULARY_DEEPL_API_KEY
+            - name: GROCERY_CLAUDE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: anthropic-api-key
+                  key: GROCERY_CLAUDE_API_KEY
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory | quote }}
