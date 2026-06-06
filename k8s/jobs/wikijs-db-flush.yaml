@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wikijs-db-flush
+  namespace: default
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: db-flush
+          image: postgres:15.3
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" <<'EOSQL'
+              DO $$
+              DECLARE
+                tbl TEXT;
+                wikijs_tables TEXT[] := ARRAY[
+                  'analytics', 'assets', 'assetFolders', 'authentication',
+                  'branding', 'commentProviders', 'comments', 'editors',
+                  'groups', 'locales', 'navigation', 'pageHistory',
+                  'pageLinks', 'pageTags', 'pages', 'renderers',
+                  'searchEngines', 'sessions', 'settings', 'siteConfig',
+                  'storage', 'tags', 'userGroups', 'users',
+                  'knex_migrations', 'knex_migrations_lock'
+                ];
+              BEGIN
+                FOREACH tbl IN ARRAY wikijs_tables LOOP
+                  IF EXISTS (
+                    SELECT 1 FROM pg_tables
+                    WHERE schemaname = 'public' AND tablename = tbl
+                  ) THEN
+                    EXECUTE format('TRUNCATE TABLE %I CASCADE', tbl);
+                    RAISE NOTICE 'Truncated: %', tbl;
+                  END IF;
+                END LOOP;
+              END $$;
+              EOSQL
+          env:
+            - name: DB_HOST
+              value: "postgres-service"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USER
+              value: "marvin"
+            - name: DB_NAME
+              value: "costs"
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
