@@ -16,7 +16,7 @@ spec:
           args:
             - |
               psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" <<'EOSQL'
-              DO $$
+              DO $BLOCK$
               DECLARE
                 tbl TEXT;
                 wikijs_tables TEXT[] := ARRAY[
@@ -38,7 +38,7 @@ spec:
                     RAISE NOTICE 'Truncated: %', tbl;
                   END IF;
                 END LOOP;
-              END $$;
+              END $BLOCK$;
               EOSQL
           env:
             - name: DB_HOST
