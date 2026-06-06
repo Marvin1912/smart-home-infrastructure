@@ -19,17 +19,12 @@ spec:
               DO $BLOCK$
               DECLARE
                 tbl TEXT;
-                wikijs_tables TEXT[] := ARRAY[
-                  'analytics', 'assets', 'assetFolders', 'authentication',
-                  'branding', 'commentProviders', 'comments', 'editors',
-                  'groups', 'locales', 'navigation', 'pageHistory',
-                  'pageLinks', 'pageTags', 'pages', 'renderers',
-                  'searchEngines', 'sessions', 'settings', 'siteConfig',
-                  'storage', 'tags', 'userGroups', 'users',
-                  'knex_migrations', 'knex_migrations_lock'
+                content_tables TEXT[] := ARRAY[
+                  'pages', 'pageHistory', 'pageLinks', 'pageTags',
+                  'tags', 'assets', 'assetFolders', 'comments', 'sessions'
                 ];
               BEGIN
-                FOREACH tbl IN ARRAY wikijs_tables LOOP
+                FOREACH tbl IN ARRAY content_tables LOOP
                   IF EXISTS (
                     SELECT 1 FROM pg_tables
                     WHERE schemaname = 'public' AND tablename = tbl
@@ -38,6 +33,12 @@ spec:
                     RAISE NOTICE 'Truncated: %', tbl;
                   END IF;
                 END LOOP;
+                -- Fix groups sequence to match WikiJS expected config (start 0, increment 1)
+                IF EXISTS (SELECT 1 FROM pg_sequences WHERE sequencename = 'groups_id_seq') THEN
+                  ALTER SEQUENCE groups_id_seq MINVALUE 0 START WITH 0 INCREMENT BY 1;
+                  PERFORM setval('groups_id_seq', COALESCE((SELECT MAX(id) FROM groups), 0));
+                  RAISE NOTICE 'Reset groups_id_seq';
+                END IF;
               END $BLOCK$;
               EOSQL
           env:
