@@ -42,23 +42,6 @@ services:
       - "5000:5000"
     restart: unless-stopped
 
-  influxdb:
-    image: influxdb:2.7.1
-    container_name: influxdb
-    hostname: influxdb
-    environment:
-      DOCKER_INFLUXDB_INIT_MODE: setup
-      DOCKER_INFLUXDB_INIT_USERNAME: marvin
-      DOCKER_INFLUXDB_INIT_PASSWORD: password
-      DOCKER_INFLUXDB_INIT_ORG: wildfly_domain
-      DOCKER_INFLUXDB_INIT_BUCKET: costs
-      INFLUXDB_REPORTING_DISABLED: true
-    ports:
-      - "8086:8086"
-    volumes:
-      - influxdb_data:/var/lib/influxdb
-    restart: unless-stopped
-
   homeassistant:
     container_name: home_assistant
     image: "ghcr.io/home-assistant/home-assistant:2026.1.3"
@@ -84,26 +67,6 @@ services:
     ports:
       - 1885:1883
       - 9005:9001 
-
-  portfolio-performance:
-    build:
-      context: ../portfolio-performance-image
-      args:
-        PACKAGING: firefox
-    container_name: portfolio
-    restart: always
-    ports:
-      - "5800:5800"
-    volumes:
-      - /opt/docker-volumes/pp/config:/config
-      - /opt/docker-volumes/pp/workspace:/opt/portfolio/workspace
-    environment:
-      KEEP_APP_RUNNING: 1
-      USER_ID: 0
-      GROUP_ID: 0
-      DISPLAY_WIDTH: 1920
-      DISPLAY_HEIGHT: 1080
-      TZ: "Europe/Berlin"
 
   zigbee2mqtt:
     container_name: zigbee2mqtt
