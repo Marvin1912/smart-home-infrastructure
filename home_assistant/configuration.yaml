@@ -27,10 +27,6 @@ panel_iframe:
     title: "Portfolio"
     url: "http://192.168.178.29:5800/"
     icon: "mdi:bitcoin"
-  consul:
-    title: "Consul"
-    url: "http://192.168.178.29:8500"
-    icon: "mdi:folder-key"
 
 influxdb:
   api_version: 2

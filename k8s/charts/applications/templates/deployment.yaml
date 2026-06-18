@@ -79,8 +79,21 @@ spec:
               value: {{ .Values.env.influxOrg | quote }}
             - name: INFLUXDB_EXPORT_ENABLED
               value: {{ .Values.env.influxdbExportEnabled | quote }}
-            - name: CONSUL_URL
-              value: {{ .Values.env.consulUrl | quote }}
+            - name: SALARY_IMPORT_IBANS
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: SALARY_IMPORT_IBANS
+            - name: SPECIAL_COST_BLOCKED_IBANS
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: SPECIAL_COST_BLOCKED_IBANS
+            - name: MONTHLY_COST_BLOCKED_IBANS
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: MONTHLY_COST_BLOCKED_IBANS
             - name: VOCABULARY_DEEPL_API_KEY
               valueFrom:
                 secretKeyRef:
