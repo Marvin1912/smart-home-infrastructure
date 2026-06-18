@@ -29,7 +29,6 @@ env:
   influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
   influxOrg: "wildfly_domain"
   influxdbExportEnabled: "false"
-  consulUrl: "http://192.168.178.29:8500"
 
 resources:
   requests:
