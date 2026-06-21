@@ -61,6 +61,8 @@ serviceMonitor:
 prometheusRules:
   enabled: true
   releaseLabel: kube-prometheus-stack
+  needsWaterAlert:
+    enabled: false
 
 cronjobs:
   influxdbBackup:

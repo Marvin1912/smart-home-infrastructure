@@ -12,6 +12,7 @@ metadata:
     meta.helm.sh/release-namespace: default
 spec:
   groups:
+  {{- if .Values.prometheusRules.needsWaterAlert.enabled }}
   - name: plants
     rules:
     - alert: NeedsWater
@@ -22,4 +23,5 @@ spec:
       annotations:
         summary: "{{ `{{ $labels.plant }}` }} needs Water!"
         description: "{{ `{{ $labels.plant }}` }} must be watered!"
+  {{- end }}
 {{- end }}
