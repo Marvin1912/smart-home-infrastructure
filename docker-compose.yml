@@ -61,7 +61,7 @@ services:
       - TZ=Europe/Berlin
 
   ha-mcp:
-    image: homeassistant-ai/ha-mcp:latest
+    image: ghcr.io/homeassistant-ai/ha-mcp:latest
     container_name: ha-mcp
     command: ha-mcp-web
     environment:
