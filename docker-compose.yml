@@ -60,6 +60,19 @@ services:
     environment:
       - TZ=Europe/Berlin
 
+  ha-mcp:
+    image: homeassistant-ai/ha-mcp:latest
+    container_name: ha-mcp
+    command: ha-mcp-web
+    environment:
+      - HOMEASSISTANT_URL=http://host.docker.internal:8123
+      - HOMEASSISTANT_TOKEN=${HOMEASSISTANT_TOKEN}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8086:8086"
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   influxdb_data:
