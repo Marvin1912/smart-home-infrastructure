@@ -191,7 +191,7 @@ data:
                 "retentionRules": [
                     {
                         "type": "expire",
-                        "everySeconds": 18316800,
+                        "everySeconds": 7776000,
                         "shardGroupDurationSeconds": 604800
                     }
                 ]
@@ -240,15 +240,21 @@ data:
     create_tasks() {
         print_info "Creating scheduled tasks..."
 
-        # Task 1: Downsample to 30m means (Active)
+        # Task: Downsample to 30m means (Active)
+        # Runs daily and aggregates the [-95d, -83d] window (a 12-day window
+        # around the 90-day retention cutoff) into 30m means, then writes the
+        # result into sensor_data_30m. The wide window gives ~5 days of overlap
+        # so a missed run doesn't lose data before it ages out of sensor_data's
+        # 90-day retention; re-processing already-downsampled points is a no-op
+        # (same series+timestamp just overwrites).
         print_info "Creating task 'Downsample to 30m means' (Active)..."
-        TASK1_FLUX='option task = {name: "Downsample to 30m means", every: 7d}
+        TASK1_FLUX='option task = {name: "Downsample to 30m means", every: 1d}
 
     from(bucket: "sensor_data")
-        |> range(start: -7d)
+        |> range(start: -95d, stop: -83d)
         |> filter(fn: (r) => r._field == "value")
         |> aggregateWindow(every: 30m, fn: mean, createEmpty: false)
-        // |> to(bucket: "sensor_data_30m")'
+        |> to(bucket: "sensor_data_30m")'
 
         TASK1_ID=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
             -H "Content-Type: application/json" \
@@ -258,33 +264,10 @@ data:
                 "name": "Downsample to 30m means",
                 "status": "active",
                 "flux": '"$(echo "$TASK1_FLUX" | jq -Rs .)"',
-                "every": "7d"
+                "every": "1d"
             }' \
             "$INFLUX_URL/api/v2/tasks" | jq -r '.id')
         print_success "Task 'Downsample to 30m means' created with ID: $TASK1_ID"
-
-        # Task 2: Downsample All (Inactive)
-        print_info "Creating task 'Downsample All' (Inactive)..."
-        TASK2_FLUX='option task = {name: "Downsample All", every: 7d}
-
-    from(bucket: "sensor_data")
-        |> range(start: -30d)
-        |> filter(fn: (r) => r._field == "value")
-        |> aggregateWindow(every: 30m, fn: mean, createEmpty: false)
-        |> to(bucket: "sensor_data_30m")'
-
-        TASK2_ID=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-                "orgID": "'"$ORG_ID"'",
-                "org": "'"$INFLUX_ORG"'",
-                "name": "Downsample All",
-                "status": "inactive",
-                "flux": '"$(echo "$TASK2_FLUX" | jq -Rs .)"',
-                "every": "7d"
-            }' \
-            "$INFLUX_URL/api/v2/tasks" | jq -r '.id')
-        print_success "Task 'Downsample All' created with ID: $TASK2_ID"
     }
 
     # Verify configuration
@@ -325,11 +308,8 @@ data:
         echo "Configuration Summary:"
         echo "  - Organization: $INFLUX_ORG (ID: $ORG_ID)"
         echo "  - User Buckets: 4 (costs, sensor_data, sensor_data_30m, system_metrics)"
-        echo "  - Tasks: 2 (1 active, 1 inactive)"
+        echo "  - Tasks: 1 (active)"
         echo "  - Generated API Token: ${INFLUX_TOKEN:0:20}..."
-        echo ""
-        echo "Note: The 'Downsample to 30m means' task has its to() bucket line commented out,"
-        echo "exactly as in the original configuration."
     }
 
     # Run main function
