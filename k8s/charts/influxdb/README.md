@@ -22,13 +22,16 @@ Buckets are created by the post-install setup job
 | Bucket            | Retention | Purpose                                                        |
 |-------------------|-----------|----------------------------------------------------------------|
 | `costs`           | infinite  | Cost / consumption series imported by the `applications` jobs. |
-| `sensor_data`     | 212 days  | Raw sensor readings written by Home Assistant.                 |
+| `sensor_data`     | 90 days   | Raw sensor readings written by Home Assistant.                 |
 | `sensor_data_30m` | infinite  | 30-minute downsamples of `sensor_data` (task target).          |
 | `system_metrics`  | infinite  | Host/container metrics written by Telegraf.                    |
 
-A scheduled Flux task `Downsample to 30m means` (every 7d, active) aggregates
-`sensor_data` into 30-minute means. A second task `Downsample All` exists in
-`inactive` state for one-off back-fills.
+A scheduled Flux task `Downsample to 30m means` (every 1d, active) aggregates
+the `[-95d, -83d]` window of `sensor_data` into 30-minute means and writes
+them into `sensor_data_30m`. The 12-day window gives several days of overlap
+around the 90-day retention cutoff, so a missed run can't cause data to expire
+out of `sensor_data` before it's been downsampled — re-processing an
+already-downsampled window is a no-op (same series+timestamp overwrites).
 
 ## `sensor_data` schema
 
