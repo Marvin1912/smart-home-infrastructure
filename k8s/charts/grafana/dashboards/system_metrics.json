@@ -343,42 +343,78 @@
               }
             ]
           },
-          "unit": "deckbytes"
+          "unit": "decbytes"
         },
         "overrides": [
           {
             "matcher": {
               "id": "byName",
-              "options": "free {device=\"sda1\", fstype=\"vfat\", host=\"home-server\", mode=\"rw\", path=\"/boot/efi\"}"
+              "options": "free {device=\"dm-1\", fstype=\"ext4\", host=\"home-server\", label=\"home--server--vg-root\", mode=\"rw\", path=\"/\"}"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "Free"
+                "value": "/ - free"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "total {device=\"sda1\", fstype=\"vfat\", host=\"home-server\", mode=\"rw\", path=\"/boot/efi\"}"
+              "options": "free {device=\"dm-3\", fstype=\"ext4\", host=\"home-server\", label=\"home--server--vg-home\", mode=\"rw\", path=\"/home\"}"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "Total"
+                "value": "/home - free"
               }
             ]
           },
           {
             "matcher": {
               "id": "byName",
-              "options": "used {device=\"sda1\", fstype=\"vfat\", host=\"home-server\", mode=\"rw\", path=\"/boot/efi\"}"
+              "options": "total {device=\"dm-1\", fstype=\"ext4\", host=\"home-server\", label=\"home--server--vg-root\", mode=\"rw\", path=\"/\"}"
             },
             "properties": [
               {
                 "id": "displayName",
-                "value": "Used"
+                "value": "/ - total"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "total {device=\"dm-3\", fstype=\"ext4\", host=\"home-server\", label=\"home--server--vg-home\", mode=\"rw\", path=\"/home\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "/home - total"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "used {device=\"dm-1\", fstype=\"ext4\", host=\"home-server\", label=\"home--server--vg-root\", mode=\"rw\", path=\"/\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "/ - used"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "used {device=\"dm-3\", fstype=\"ext4\", host=\"home-server\", label=\"home--server--vg-home\", mode=\"rw\", path=\"/home\"}"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "/home - used"
               }
             ]
           }
@@ -408,7 +444,7 @@
           "datasource": {
             "type": "influxdb"
           },
-          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"disk\")\n  |> filter(fn: (r) => r[\"_field\"] == \"used\" or r[\"_field\"] == \"total\" or r[\"_field\"] == \"free\")\n  |> filter(fn: (r) => r[\"device\"] =~ /sda[0-9]/)\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"system_metrics\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"disk\")\n  |> filter(fn: (r) => r[\"_field\"] == \"used\" or r[\"_field\"] == \"total\" or r[\"_field\"] == \"free\")\n  |> filter(fn: (r) => (r[\"device\"] == \"dm-1\" and r[\"path\"] == \"/\") or (r[\"device\"] == \"dm-3\" and r[\"path\"] == \"/home\"))\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
@@ -533,6 +569,6 @@
   "timezone": "browser",
   "title": "System Metrics",
   "uid": "8bc22e88-c80a-42b6-ae92-7eb0a98b032f",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }

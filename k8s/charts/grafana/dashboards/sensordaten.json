@@ -787,12 +787,12 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-90d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Sensordaten",
   "uid": "e5e234c1-2b05-43e4-a864-fb71d766728a",
-  "version": 4
+  "version": 5
 }
