@@ -20,6 +20,8 @@ services:
       - "5000:5000"
     environment:
       REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - registry_data:/var/lib/registry
     restart: unless-stopped
 
   registry-ui:
@@ -92,3 +94,6 @@ services:
 volumes:
   postgres_data:
   influxdb_data:
+  registry_data:
+    external: true
+    name: "14e2cfc99e6da543096c21fb61ee206eefd50f720b2b4913a4d8b883aaf7cf5b"
