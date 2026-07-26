@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: registry-ui
+  namespace: default
+subsets:
+- addresses:
+  - ip: {{ .Values.registryUi.ip }}
+  ports:
+  - name: http
+    port: {{ .Values.registryUi.port }}
+    protocol: TCP

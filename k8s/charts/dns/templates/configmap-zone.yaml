@@ -32,3 +32,4 @@ data:
     anki         IN A    192.168.178.29
     stock        IN A    192.168.178.29
     bp-tracker   IN A    192.168.178.29
+    registry     IN A    192.168.178.29
