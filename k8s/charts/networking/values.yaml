@@ -44,6 +44,10 @@ ingressRoute:
       host: bp-tracker.home-lab.com
       service: bp-tracker-service
       port: 5001
+    registry:
+      host: registry.home-lab.com
+      service: registry-ui
+      port: 8090
 
 ingressRouteArgocd:
   name: argocd
