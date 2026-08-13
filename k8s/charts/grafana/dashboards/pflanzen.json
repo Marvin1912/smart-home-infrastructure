@@ -167,7 +167,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -188,7 +189,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^state \\{domain=\"sensor\", entity_id=\"drachenbaum_battery_state\", friendly_name=\"Drachenbaum Battery state\", source=\"HA\"\\}$/",
+          "fields": "",
           "values": false
         },
         "showPercentChange": false,
@@ -198,7 +199,14 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "query": "from(bucket: \"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"entity_id\"] == \"drachenbaum_battery_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"state\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+          "datasource": {
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Drachenbaum Batterie\"}",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         }
       ],
@@ -227,7 +235,8 @@
                 "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -248,7 +257,7 @@
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "/^state \\{domain=\"sensor\", entity_id=\"ficus_bonsai_battery_state\", friendly_name=\"Ficus Bonsai Battery state\", source=\"HA\"\\}$/",
+          "fields": "",
           "values": false
         },
         "showPercentChange": false,
@@ -258,7 +267,14 @@
       "pluginVersion": "12.1.0",
       "targets": [
         {
-          "query": "from(bucket: \"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"entity_id\"] == \"ficus_bonsai_battery_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"state\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+          "datasource": {
+            "type": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "homeassistant_sensor_battery_percent{friendly_name=\"Ficus Bonsai Batterie\"}",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
           "refId": "A"
         }
       ],
