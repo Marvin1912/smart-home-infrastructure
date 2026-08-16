@@ -109,6 +109,11 @@ spec:
                 secretKeyRef:
                   name: anthropic-api-key
                   key: GROCERY_CLAUDE_API_KEY
+            - name: OPENWEATHERMAP_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: applications-credentials
+                  key: OPENWEATHERMAP_API_KEY
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory | quote }}
