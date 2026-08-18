@@ -117,7 +117,7 @@ spec:
             - name: OPENWEATHERMAP_LAT
               value: {{ .Values.env.weatherLat | quote }}
             - name: OPENWEATHERMAP_LON
-              value: {{ .Values.env.weatherLong | quote }}
+              value: {{ .Values.env.weatherLon | quote }}
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory | quote }}
