@@ -114,6 +114,10 @@ spec:
                 secretKeyRef:
                   name: applications-credentials
                   key: OPENWEATHERMAP_API_KEY
+            - name: OPENWEATHERMAP_LAT
+              value: {{ .Values.env.weatherLat | quote }}
+            - name: OPENWEATHERMAP_LON
+              value: {{ .Values.env.weatherLong | quote }}
           resources:
             requests:
               memory: {{ .Values.resources.requests.memory | quote }}

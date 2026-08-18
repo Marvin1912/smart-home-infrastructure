@@ -29,6 +29,8 @@ env:
   influxUrl: "http://influxdb-service.default.svc.cluster.local:8086"
   influxOrg: "wildfly_domain"
   influxdbExportEnabled: "false"
+  weatherLat: "53.552495"
+  weatherLon: "10.024718"
 
 resources:
   requests:
