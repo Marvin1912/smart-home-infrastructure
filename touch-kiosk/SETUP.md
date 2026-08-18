@@ -24,6 +24,8 @@ provided by the Raspberry Pi OS desktop packages. It launches `/usr/bin/labwc-pi
 | Config file (this repo)           | Target path on Pi                                    |
 |-----------------------------------|------------------------------------------------------|
 | `systemd/touch-kiosk.service`     | `~/.config/systemd/user/touch-kiosk.service`         |
+| `systemd/touch-kiosk-restart.service` | `~/.config/systemd/user/touch-kiosk-restart.service` |
+| `systemd/touch-kiosk-restart.timer`   | `~/.config/systemd/user/touch-kiosk-restart.timer`   |
 | `labwc/rc.xml`                    | `~/.config/labwc/rc.xml`                             |
 | `labwc/environment`               | `~/.config/labwc/environment`                        |
 | `wayfire.ini`                     | `~/.config/wayfire.ini`                              |
@@ -46,7 +48,13 @@ provided by the Raspberry Pi OS desktop packages. It launches `/usr/bin/labwc-pi
    # Service starts automatically when the graphical session launches
    ```
 
-4. Reboot:
+4. Enable the periodic restart timer (safety net for a Chromium instance stuck
+   on an error page, e.g. after a brief network hiccup):
+   ```bash
+   systemctl --user enable --now touch-kiosk-restart.timer
+   ```
+
+5. Reboot:
    ```bash
    sudo reboot
    ```
@@ -68,6 +76,10 @@ Boot
 - `labwc/rc.xml` maps the Goodix touchscreen to the DSI-1 output.
 - `wayfire.ini` disables DPMS and screensaver (screen stays on indefinitely).
 - The kiosk service restarts automatically on failure (`Restart=on-failure`).
+- `touch-kiosk-restart.timer` force-restarts the kiosk every 30 minutes as a
+  safety net: Chromium doesn't crash (so `Restart=on-failure` never triggers)
+  when it merely fails to reach `frontend.home-lab.com` — it just sits on an
+  error page. The periodic restart makes it re-navigate to the app URL.
 
 ## Notes
 
@@ -76,3 +88,14 @@ Boot
 - Hostname is `raspberrypi` — set via `sudo raspi-config` → System → Hostname.
 - Static IP (`192.168.178.98`) is assigned by DHCP reservation on the router,
   not configured on the Pi.
+- **Known issue:** NetworkManager may hold onto other saved Wi-Fi profiles
+  (e.g. a neighbor's network picked up during setup) with the same
+  `autoconnect-priority` as the Pi's own SSID. If the Pi's Wi-Fi drops, it can
+  reconnect to the wrong network, breaking DNS resolution for
+  `frontend.home-lab.com`. Check `nmcli connection show` periodically and
+  remove/disable-autoconnect on any unintended profiles
+  (`sudo nmcli connection delete "<name>"`), or raise the priority of the
+  Pi's own SSID (`nmcli connection modify "<ssid>" connection.autoconnect-priority 10`).
+  The restart timer above does **not** fix this — it only helps if the Pi is
+  already back on the correct network but Chromium is stuck showing an error
+  page.

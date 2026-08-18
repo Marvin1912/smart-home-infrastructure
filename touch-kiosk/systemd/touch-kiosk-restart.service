@@ -1,0 +1,7 @@
+[Unit]
+Description=Restart touch dashboard kiosk
+After=touch-kiosk.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/systemctl --user restart touch-kiosk.service
