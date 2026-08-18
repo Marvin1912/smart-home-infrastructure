@@ -30,6 +30,7 @@ provided by the Raspberry Pi OS desktop packages. It launches `/usr/bin/labwc-pi
 | `labwc/environment`               | `~/.config/labwc/environment`                        |
 | `wayfire.ini`                     | `~/.config/wayfire.ini`                              |
 | `lightdm/lightdm.conf`            | `/etc/lightdm/lightdm.conf` (merge into `[Seat:*]`)  |
+| `chromium-policies/managed/touch-kiosk.json` | `/etc/chromium/policies/managed/touch-kiosk.json` |
 
 ## Setup Steps
 
@@ -58,6 +59,12 @@ provided by the Raspberry Pi OS desktop packages. It launches `/usr/bin/labwc-pi
    ```bash
    sudo reboot
    ```
+
+Note: `/etc/chromium/policies/managed/touch-kiosk.json` disables Chromium's
+translate feature via enterprise policy — needed because the
+`--disable-translate` / `--disable-features=TranslateUI` command-line flags
+no longer reliably suppress the "Translate this page?" bubble on current
+Chromium versions.
 
 ## How It Works
 
