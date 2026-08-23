@@ -60,11 +60,15 @@ provided by the Raspberry Pi OS desktop packages. It launches `/usr/bin/labwc-pi
    sudo reboot
    ```
 
-Note: `/etc/chromium/policies/managed/touch-kiosk.json` disables Chromium's
-translate feature via enterprise policy — needed because the
-`--disable-translate` / `--disable-features=TranslateUI` command-line flags
-no longer reliably suppress the "Translate this page?" bubble on current
-Chromium versions.
+Note: `/etc/chromium/policies/managed/touch-kiosk.json` sets two enterprise
+policies:
+- `TranslateEnabled: false` — needed because the `--disable-translate` /
+  `--disable-features=TranslateUI` command-line flags no longer reliably
+  suppress the "Translate this page?" bubble on current Chromium versions.
+- `HttpsOnlyMode: "disallowed"` — Chromium enables HTTPS-First Mode by
+  default in incognito windows (see below), which blocks the plain-HTTP
+  `frontend.home-lab.com` behind an interstitial warning with no way to
+  click through unattended. This policy disables that enforcement.
 
 ## How It Works
 
@@ -87,16 +91,17 @@ Boot
   safety net: Chromium doesn't crash (so `Restart=on-failure` never triggers)
   when it merely fails to reach `frontend.home-lab.com` — it just sits on an
   error page. The periodic restart makes it re-navigate to the app URL.
-- `touch-kiosk.service` wipes `~/.config/chromium` via `ExecStartPre` before
-  every start (initial boot, on-failure restart, and the 30-minute timer
-  restart alike). This is required to actually pick up a redeployed frontend:
-  restarting the Chromium *process* alone leaves the profile — and with it
-  any Service Worker / Cache Storage the frontend app registered — intact.
-  A Service Worker intercepts fetches before HTTP response headers (like the
-  frontend's Traefik `no-cache` middleware, see `k8s/charts/networking`) are
-  even considered, so it can keep serving a stale app shell indefinitely
-  regardless of server-side cache headers. Wiping the profile is the only
-  restart-time guarantee that the newest deploy gets loaded.
+- `touch-kiosk.service` runs Chromium with `--incognito`, so no profile
+  persists across restarts (initial boot, on-failure restart, and the
+  30-minute timer restart alike). This is required to actually pick up a
+  redeployed frontend: restarting the Chromium *process* alone leaves a
+  persistent profile — and with it any Service Worker / Cache Storage the
+  frontend app registered — intact. A Service Worker intercepts fetches
+  before HTTP response headers (like the frontend's Traefik `no-cache`
+  middleware, see `k8s/charts/networking`) are even considered, so it can
+  keep serving a stale app shell indefinitely regardless of server-side
+  cache headers. Incognito mode is the built-in guarantee that the newest
+  deploy always gets loaded fresh.
 
 ## Notes
 
