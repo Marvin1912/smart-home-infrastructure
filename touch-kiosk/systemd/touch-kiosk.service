@@ -5,14 +5,11 @@ After=default.target
 [Service]
 Type=simple
 Environment=WAYLAND_DISPLAY=wayland-0
-# Wipe the Chromium profile before every start so a redeploy of the frontend
-# is guaranteed to be picked up. A restarted process alone is not enough: the
-# profile persists across restarts, and any Service Worker / Cache Storage
-# registered by the app intercepts fetches before HTTP cache headers (e.g.
-# the Traefik no-cache middleware) ever come into play, so a stale app can
-# keep being served indefinitely otherwise.
-ExecStartPre=/bin/rm -rf %h/.config/chromium
-ExecStart=/usr/bin/chromium --kiosk --noerrdialogs --disable-translate \
+# --incognito keeps Chromium from persisting a profile across restarts, so a
+# redeployed frontend is always picked up fresh: no Service Worker / Cache
+# Storage from a stale app can survive to intercept fetches before HTTP
+# cache headers (e.g. the Traefik no-cache middleware) come into play.
+ExecStart=/usr/bin/chromium --kiosk --incognito --noerrdialogs --disable-translate \
   --disable-features=TranslateUI --check-for-update-interval=31536000 \
   --disable-pinch --overscroll-history-navigation=0 \
   --password-store=basic --no-first-run --no-default-browser-check \
