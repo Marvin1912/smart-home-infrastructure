@@ -49,6 +49,10 @@ ingressRoute:
       service: registry-ui
       port: 8090
 
+middlewares:
+  frontendNoCache:
+    name: frontend-no-cache
+
 ingressRouteArgocd:
   name: argocd
   namespace: argocd

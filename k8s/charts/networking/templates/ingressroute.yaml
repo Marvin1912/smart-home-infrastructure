@@ -29,6 +29,8 @@ spec:
           port: {{ .Values.ingressRoute.routes.influxdb.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.frontend.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.frontendNoCache.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.frontend.service }}
