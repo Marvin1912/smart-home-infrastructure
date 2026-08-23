@@ -1,3 +1,4 @@
 {
-  "TranslateEnabled": false
+  "TranslateEnabled": false,
+  "HttpsOnlyMode": "disallowed"
 }
