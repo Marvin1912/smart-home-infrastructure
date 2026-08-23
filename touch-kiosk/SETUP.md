@@ -87,6 +87,16 @@ Boot
   safety net: Chromium doesn't crash (so `Restart=on-failure` never triggers)
   when it merely fails to reach `frontend.home-lab.com` — it just sits on an
   error page. The periodic restart makes it re-navigate to the app URL.
+- `touch-kiosk.service` wipes `~/.config/chromium` via `ExecStartPre` before
+  every start (initial boot, on-failure restart, and the 30-minute timer
+  restart alike). This is required to actually pick up a redeployed frontend:
+  restarting the Chromium *process* alone leaves the profile — and with it
+  any Service Worker / Cache Storage the frontend app registered — intact.
+  A Service Worker intercepts fetches before HTTP response headers (like the
+  frontend's Traefik `no-cache` middleware, see `k8s/charts/networking`) are
+  even considered, so it can keep serving a stale app shell indefinitely
+  regardless of server-side cache headers. Wiping the profile is the only
+  restart-time guarantee that the newest deploy gets loaded.
 
 ## Notes
 
