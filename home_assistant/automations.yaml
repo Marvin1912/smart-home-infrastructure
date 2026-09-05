@@ -1,0 +1,40 @@
+- id: '1781885433036'
+  alias: 'Steckdose: Alle 2 Stunden für 10 Minuten an'
+  description: Schaltet die Steckdose alle 2 Stunden ein und nach 10 Minuten wieder
+    aus.
+  triggers:
+  - hours: /1
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.0xa4c1384930c28843
+  - delay:
+      hours: 0
+      minutes: 25
+      seconds: 0
+      milliseconds: 0
+  - action: switch.turn_off
+    target:
+      entity_id: switch.0xa4c1384930c28843
+  mode: single
+- id: '1783061895837'
+  alias: Luftreiniger Schlafzimmer Zeitplan
+  description: Luftreiniger läuft dauerhaft im Schlafmodus. Bei HA-Neustart wird der
+    Schlafmodus erneut gesetzt.
+  triggers:
+  - trigger: homeassistant
+    event: start
+    id: ha_start
+  conditions: []
+  actions:
+  - action: fan.turn_on
+    target:
+      entity_id: fan.core_200s_series
+  - action: fan.set_preset_mode
+    target:
+      entity_id: fan.core_200s_series
+    data:
+      preset_mode: sleep
+  mode: single

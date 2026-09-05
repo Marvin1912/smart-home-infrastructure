@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: home-assistant-config-sync-script
+  namespace: {{ .Release.Namespace }}
+data:
+  sync.sh: |
+    #!/bin/sh
+    set -eu
+
+    log() { printf '[%s] %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*"; }
+
+    : "${SOURCE_DIR:?missing}"
+    : "${GITHUB_TOKEN:?missing}"
+    : "${GIT_USER:?missing}"
+    : "${GIT_EMAIL:?missing}"
+    : "${GIT_REPO:?missing}"
+    : "${GIT_BRANCH:?missing}"
+    : "${CONFIG_DIR:?missing}"
+
+    for f in automations.yaml scripts.yaml scenes.yaml; do
+      if [ ! -f "${SOURCE_DIR}/${f}" ]; then
+        log "Refusing to sync: ${SOURCE_DIR}/${f} is missing"
+        exit 1
+      fi
+    done
+    if [ ! -d "${SOURCE_DIR}/themes" ]; then
+      log "Refusing to sync: ${SOURCE_DIR}/themes is missing"
+      exit 1
+    fi
+
+    WORK=/tmp/repo
+    rm -rf "$WORK"
+
+    log "Cloning $GIT_REPO"
+    git clone --depth 1 --branch "$GIT_BRANCH" \
+      "https://${GIT_USER}:${GITHUB_TOKEN}@${GIT_REPO}" "$WORK"
+
+    DEST="${WORK}/${CONFIG_DIR}"
+    mkdir -p "$DEST"
+
+    log "Copying automations.yaml, scripts.yaml, scenes.yaml, themes/"
+    cp "${SOURCE_DIR}/automations.yaml" "$DEST/automations.yaml"
+    cp "${SOURCE_DIR}/scripts.yaml" "$DEST/scripts.yaml"
+    cp "${SOURCE_DIR}/scenes.yaml" "$DEST/scenes.yaml"
+    rm -rf "${DEST}/themes"
+    mkdir -p "${DEST}/themes"
+    cp -a "${SOURCE_DIR}/themes/." "${DEST}/themes/"
+
+    cd "$WORK"
+    git config user.name "$GIT_USER"
+    git config user.email "$GIT_EMAIL"
+    git add "$CONFIG_DIR"
+
+    if git diff --cached --quiet; then
+      log "No config changes; nothing to commit"
+      exit 0
+    fi
+
+    log "Committing and pushing changes"
+    git commit -m "Sync Home Assistant config from instance ($(date -u +%Y-%m-%d))"
+    git push origin "$GIT_BRANCH"
+    log "Done"
