@@ -24,10 +24,8 @@ data:
         exit 1
       fi
     done
-    if [ ! -d "${SOURCE_DIR}/themes" ]; then
-      log "Refusing to sync: ${SOURCE_DIR}/themes is missing"
-      exit 1
-    fi
+    # themes/ is optional: HA doesn't create it until a custom theme exists,
+    # so a missing directory just means "no themes configured" — not a bad mount.
 
     WORK=/tmp/repo
     rm -rf "$WORK"
@@ -45,7 +43,9 @@ data:
     cp "${SOURCE_DIR}/scenes.yaml" "$DEST/scenes.yaml"
     rm -rf "${DEST}/themes"
     mkdir -p "${DEST}/themes"
-    cp -a "${SOURCE_DIR}/themes/." "${DEST}/themes/"
+    if [ -d "${SOURCE_DIR}/themes" ]; then
+      cp -a "${SOURCE_DIR}/themes/." "${DEST}/themes/"
+    fi
 
     cd "$WORK"
     git config user.name "$GIT_USER"
