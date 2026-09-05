@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: home-assistant-config-sync
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: home-assistant
+spec:
+  schedule: {{ .Values.configSync.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            kubernetes.io/hostname: {{ .Values.configSync.nodeSelector }}
+          containers:
+            - name: sync
+              image: {{ .Values.configSync.image | quote }}
+              command: ["/bin/sh", "/scripts/sync.sh"]
+              env:
+                - name: SOURCE_DIR
+                  value: "/source"
+                - name: GIT_USER
+                  value: {{ .Values.configSync.gitUser | quote }}
+                - name: GIT_EMAIL
+                  value: {{ .Values.configSync.gitEmail | quote }}
+                - name: GIT_REPO
+                  value: {{ .Values.configSync.gitRepo | quote }}
+                - name: GIT_BRANCH
+                  value: {{ .Values.configSync.gitBranch | quote }}
+                - name: CONFIG_DIR
+                  value: {{ .Values.configSync.configDir | quote }}
+                - name: GITHUB_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.configSync.githubTokenSecretName }}
+                      key: {{ .Values.configSync.githubTokenSecretKey }}
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+                  readOnly: true
+                - name: ha-config
+                  mountPath: /source
+                  readOnly: true
+          volumes:
+            - name: script
+              configMap:
+                name: home-assistant-config-sync-script
+                defaultMode: 0755
+            - name: ha-config
+              hostPath:
+                path: {{ .Values.configSync.hostConfigPath }}
+                type: Directory

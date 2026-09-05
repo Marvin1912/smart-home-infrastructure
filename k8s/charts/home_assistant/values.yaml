@@ -8,3 +8,19 @@ battery:
 prometheusRules:
   enabled: true
   releaseLabel: kube-prometheus-stack
+
+configSync:
+  image: alpine/git:latest
+  schedule: "0 4 * * *"
+  nodeSelector: home-server
+  hostConfigPath: /opt/home_assistant/config
+  gitUser: home-assistant-config-sync
+  gitEmail: ha-sync@noreply.local
+  gitRepo: github.com/Marvin1912/smart-home-infrastructure.git
+  gitBranch: master
+  configDir: home_assistant
+  # Reuses the GitHub push token already sealed for the Grafana dashboard
+  # sync CronJob (k8s/charts/grafana/templates/dashboard-sync-sealedsecret.yaml) —
+  # same repo, same permission scope, so no separate secret was sealed.
+  githubTokenSecretName: grafana-dashboard-sync-secrets
+  githubTokenSecretKey: GITHUB_TOKEN
