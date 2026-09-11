@@ -42,6 +42,14 @@ path, key, encrypted = sys.argv[1:4]
 with open(path) as f:
     data = json.load(f)
 data["spec"]["encryptedData"][key] = encrypted
+
+# --scope cluster-wide requires this annotation on the SealedSecret itself,
+# otherwise the controller falls back to strict (namespace/name) scope and
+# fails to decrypt: "no key could decrypt secret".
+cluster_wide = {"sealedsecrets.bitnami.com/cluster-wide": "true"}
+data["metadata"].setdefault("annotations", {}).update(cluster_wide)
+data["spec"]["template"].setdefault("metadata", {}).setdefault("annotations", {}).update(cluster_wide)
+
 with open(path, "w") as f:
     json.dump(data, f, indent=2)
     f.write("\n")
