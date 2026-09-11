@@ -7,6 +7,7 @@ spec:
   description: Home Lab applications project
   sourceRepos:
     - 'git@github.com:Marvin1912/smart-home-infrastructure.git'
+    - 'quay.io/jetstack/charts'
   destinations:
     - namespace: '*'
       server: 'https://kubernetes.default.svc'
