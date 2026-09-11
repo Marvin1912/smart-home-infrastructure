@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cert-manager-config
+description: ClusterIssuer + Wildcard-Certificate for *.geitner.cc via Let's Encrypt DNS-01 (Cloudflare)
+type: application
+version: 1.0.0
