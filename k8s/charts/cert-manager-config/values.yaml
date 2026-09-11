@@ -1,0 +1,16 @@
+clusterIssuer:
+  name: letsencrypt-prod
+  acmeServer: https://acme-v02.api.letsencrypt.org/directory
+  acmeEmail: geitnermarvin@gmail.com
+  privateKeySecretName: letsencrypt-prod-account-key
+  cloudflareApiTokenSecretName: cloudflare-api-key
+  cloudflareApiTokenSecretKey: CLOUDFLARE_TOKEN
+
+certificate:
+  name: wildcard-geitner-cc
+  namespace: default
+  secretName: wildcard-tls
+  dnsNames:
+    - geitner.cc
+    - "*.geitner.cc"
+  renewBefore: 720h
