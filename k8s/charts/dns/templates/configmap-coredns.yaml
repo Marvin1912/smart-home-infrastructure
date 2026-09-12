@@ -12,6 +12,13 @@ data:
         file /etc/coredns/zones/home-lab
     }
 
+    geitner.cc:53 {
+        log
+        errors
+        health
+        file /etc/coredns/zones/geitner-cc
+    }
+
     .:53 {
         hosts /etc/coredns/blocklist/adblock.hosts {
             reload 30s
