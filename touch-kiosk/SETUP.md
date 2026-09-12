@@ -7,7 +7,7 @@ auto-logging in via LightDM into a labwc Wayland session.
 
 - Raspberry Pi (tested on 64-bit Debian/Raspberry Pi OS Trixie)
 - DSI touchscreen with Goodix capacitive controller (mapped to output `DSI-1`)
-- `frontend.home-lab.com` must resolve to the frontend host — this is served by
+- `frontend.geitner.cc` must resolve to the frontend host — this is served by
   the local DNS at **192.168.178.29** (not set on the Pi itself)
 
 ## Packages
@@ -60,15 +60,19 @@ provided by the Raspberry Pi OS desktop packages. It launches `/usr/bin/labwc-pi
    sudo reboot
    ```
 
-Note: `/etc/chromium/policies/managed/touch-kiosk.json` sets two enterprise
-policies:
+Note: `/etc/chromium/policies/managed/touch-kiosk.json` sets one enterprise
+policy:
 - `TranslateEnabled: false` — needed because the `--disable-translate` /
   `--disable-features=TranslateUI` command-line flags no longer reliably
   suppress the "Translate this page?" bubble on current Chromium versions.
-- `HttpsOnlyMode: "disallowed"` — Chromium enables HTTPS-First Mode by
-  default in incognito windows (see below), which blocks the plain-HTTP
-  `frontend.home-lab.com` behind an interstitial warning with no way to
-  click through unattended. This policy disables that enforcement.
+
+`HttpsOnlyMode: "disallowed"` used to be set here too, to stop Chromium's
+HTTPS-First Mode from blocking the then-plain-HTTP `frontend.home-lab.com`
+behind an interstitial with no way to click through unattended. Now that
+`frontend.geitner.cc` is served over real HTTPS with a valid Let's Encrypt
+certificate (smart-home-infrastructure#112), that policy is no longer
+needed and has been removed — HTTPS-First Mode doesn't interfere with a
+properly-certified HTTPS site.
 
 ## How It Works
 
@@ -81,7 +85,7 @@ Boot
                      └── dbus-update-activation-environment --systemd WAYLAND_DISPLAY
                           └── systemd user graphical-session.target
                                └── touch-kiosk.service
-                                    └── chromium --kiosk http://frontend.home-lab.com/touch
+                                    └── chromium --kiosk https://frontend.geitner.cc/touch
 ```
 
 - `labwc/rc.xml` maps the Goodix touchscreen to the DSI-1 output.
@@ -89,7 +93,7 @@ Boot
 - The kiosk service restarts automatically on failure (`Restart=on-failure`).
 - `touch-kiosk-restart.timer` force-restarts the kiosk every 30 minutes as a
   safety net: Chromium doesn't crash (so `Restart=on-failure` never triggers)
-  when it merely fails to reach `frontend.home-lab.com` — it just sits on an
+  when it merely fails to reach `frontend.geitner.cc` — it just sits on an
   error page. The periodic restart makes it re-navigate to the app URL.
 - `touch-kiosk.service` runs Chromium with `--incognito`, so no profile
   persists across restarts (initial boot, on-failure restart, and the
@@ -114,7 +118,7 @@ Boot
   (e.g. a neighbor's network picked up during setup) with the same
   `autoconnect-priority` as the Pi's own SSID. If the Pi's Wi-Fi drops, it can
   reconnect to the wrong network, breaking DNS resolution for
-  `frontend.home-lab.com`. Check `nmcli connection show` periodically and
+  `frontend.geitner.cc`. Check `nmcli connection show` periodically and
   remove/disable-autoconnect on any unintended profiles
   (`sudo nmcli connection delete "<name>"`), or raise the priority of the
   Pi's own SSID (`nmcli connection modify "<ssid>" connection.autoconnect-priority 10`).
