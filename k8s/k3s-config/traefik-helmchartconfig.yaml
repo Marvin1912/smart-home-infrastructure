@@ -1,0 +1,50 @@
+# Traefik HelmChartConfig — customizes the k3s built-in Traefik addon (kube-system/traefik).
+# Not managed by Argo CD: this patches a k3s system add-on, not an application chart
+# (it was previously tracked at k8s/networking/traefik-helmchart.yaml and removed in
+# 87b55e8 when Traefik was explicitly excluded from the Argo CD Helm-chart conversion).
+# Applied manually against the cluster, analog to the migration flow in config.yaml.
+#
+# Rollout steps (manual maintenance window recommended — a HelmChartConfig change
+# makes helm-controller re-run the traefik Helm release, which may briefly restart
+# the Traefik pod and interrupt in-flight requests):
+#   1. kubectl apply -f k8s/k3s-config/traefik-helmchartconfig.yaml
+#   2. Wait for helm-controller to reconcile: kubectl -n kube-system get pods -l app.kubernetes.io/name=traefik -w
+#   3. Verify entryPoints on the Service: kubectl -n kube-system get svc traefik -o jsonpath='{.spec.ports}'
+#      -> expect "web" (80) and "websecure" (443) ports
+#   4. Verify the websecure listener: echo | openssl s_client -connect <traefik-lb-ip>:443
+#      -> expect a TLS handshake (falls back to the Traefik default self-signed cert
+#      until a real route/certificate is wired up, see #112)
+#
+# Note (2026-09-12): verified against the live cluster that "websecure" (port 443,
+# TLS-terminating) is already active — it ships enabled by default in this chart
+# version (traefik-27.0.201+up27.0.2), independent of this file. This manifest makes
+# that explicit and pins it in version control instead of relying on undocumented
+# chart defaults. "postgres" reflects the already-live, previously-untracked config.
+#
+# Part of #111 (websecure entrypoint activation), tracking issue #107.
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  valuesContent: |-
+    additionalArguments:
+      - "--entrypoints.postgres.address=:5432"
+
+    ports:
+      postgres:
+        port: 5432
+        expose: true
+        exposedPort: 5432
+        protocol: TCP
+        expose:
+          default: true
+      websecure:
+        port: 8443
+        exposedPort: 443
+        protocol: TCP
+        expose:
+          default: true
+        tls:
+          enabled: true
