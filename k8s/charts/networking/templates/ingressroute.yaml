@@ -5,9 +5,7 @@ metadata:
   namespace: {{ .Values.ingressRoute.namespace }}
 spec:
   entryPoints:
-{{- range .Values.ingressRoute.entryPoints }}
-    - {{ . }}
-{{- end }}
+    - websecure
   tls:
     secretName: {{ .Values.ingressRoute.tls.secretName }}
   routes:
@@ -87,9 +85,7 @@ metadata:
   namespace: {{ .Values.ingressRouteArgocd.namespace }}
 spec:
   entryPoints:
-{{- range .Values.ingressRouteArgocd.entryPoints }}
-    - {{ . }}
-{{- end }}
+    - websecure
   tls:
     secretName: {{ .Values.ingressRouteArgocd.tls.secretName }}
   routes:

@@ -1,9 +1,6 @@
 ingressRoute:
   name: kube-test
   namespace: default
-  entryPoints:
-    - web
-    - websecure
   tls:
     secretName: wildcard-tls
   routes:
@@ -59,9 +56,6 @@ middlewares:
 ingressRouteArgocd:
   name: argocd
   namespace: argocd
-  entryPoints:
-    - web
-    - websecure
   tls:
     secretName: wildcard-tls
   host: argocd.geitner.cc
