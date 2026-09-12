@@ -8,6 +8,8 @@ spec:
 {{- range .Values.ingressRoute.entryPoints }}
     - {{ . }}
 {{- end }}
+  tls:
+    secretName: {{ .Values.ingressRoute.tls.secretName }}
   routes:
     - match: Host(`{{ .Values.ingressRoute.routes.prometheus.host }}`)
       kind: Rule
@@ -88,6 +90,8 @@ spec:
 {{- range .Values.ingressRouteArgocd.entryPoints }}
     - {{ . }}
 {{- end }}
+  tls:
+    secretName: {{ .Values.ingressRouteArgocd.tls.secretName }}
   routes:
     - match: Host(`{{ .Values.ingressRouteArgocd.host }}`)
       kind: Rule

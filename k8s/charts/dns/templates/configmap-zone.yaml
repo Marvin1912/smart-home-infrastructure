@@ -20,10 +20,29 @@ data:
     ns      IN A    192.168.178.29
 
     ; Hostnames
+    ; Migrated to the geitner-cc zone below (#112); postgres stays here since
+    ; it is a raw TCP/SNI route, not part of the *.geitner.cc hostname migration.
+    postgres     IN A    192.168.178.29
+
+  geitner-cc: |
+    $ORIGIN geitner.cc.
+    @       86400 IN SOA ns.geitner.cc. admin.geitner.cc. (
+                2026091201 ; Serial
+                3600       ; Refresh
+                1800       ; Retry
+                604800     ; Expire
+                86400 )    ; Negative Cache TTL
+
+    ; Name servers
+    @       IN NS   ns.geitner.cc.
+
+    ; DNS server hostname
+    ns      IN A    192.168.178.29
+
+    ; Hostnames
     argocd       IN A    192.168.178.29
     grafana      IN A    192.168.178.29
     influxdb     IN A    192.168.178.29
-    postgres     IN A    192.168.178.29
     prometheus   IN A    192.168.178.29
     frontend     IN A    192.168.178.29
     backend      IN A    192.168.178.29

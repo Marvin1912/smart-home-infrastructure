@@ -6,11 +6,21 @@ clusterIssuer:
   cloudflareApiTokenSecretName: cloudflare-api-key
   cloudflareApiTokenSecretKey: CLOUDFLARE_TOKEN
 
-certificate:
-  name: wildcard-geitner-cc
-  namespace: default
-  secretName: wildcard-tls
-  dnsNames:
-    - geitner.cc
-    - "*.geitner.cc"
-  renewBefore: 720h
+certificates:
+  - name: wildcard-geitner-cc
+    namespace: default
+    secretName: wildcard-tls
+    dnsNames:
+      - geitner.cc
+      - "*.geitner.cc"
+    renewBefore: 720h
+  # IngressRoute.spec.tls.secretName requires the Secret to live in the same
+  # namespace as the IngressRoute — the ArgoCD IngressRoute lives in "argocd",
+  # not "default", so it needs its own copy of the wildcard certificate (#112).
+  - name: wildcard-geitner-cc-argocd
+    namespace: argocd
+    secretName: wildcard-tls
+    dnsNames:
+      - geitner.cc
+      - "*.geitner.cc"
+    renewBefore: 720h

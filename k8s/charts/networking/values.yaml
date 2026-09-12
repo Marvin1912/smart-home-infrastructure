@@ -3,49 +3,52 @@ ingressRoute:
   namespace: default
   entryPoints:
     - web
+    - websecure
+  tls:
+    secretName: wildcard-tls
   routes:
     prometheus:
-      host: prometheus.home-lab.com
+      host: prometheus.geitner.cc
       service: kube-prometheus-stack-prometheus
       port: 9090
     grafana:
-      host: grafana.home-lab.com
+      host: grafana.geitner.cc
       service: grafana-service
       port: 3000
     influxdb:
-      host: influxdb.home-lab.com
+      host: influxdb.geitner.cc
       service: influxdb-service
       port: 8086
     frontend:
-      host: frontend.home-lab.com
+      host: frontend.geitner.cc
       service: frontend-service
       port: 80
     backend:
-      host: backend.home-lab.com
+      host: backend.geitner.cc
       service: applications-service
       port: 9055
     linkwarden:
-      host: linkwarden.home-lab.com
+      host: linkwarden.geitner.cc
       service: linkwarden
       port: 3000
     wiki:
-      host: wiki.home-lab.com
+      host: wiki.geitner.cc
       service: wikijs-service
       port: 3000
     anki:
-      host: anki.home-lab.com
+      host: anki.geitner.cc
       service: anki-service
       port: 8000
     stock:
-      host: stock.home-lab.com
+      host: stock.geitner.cc
       service: stock-portfolio-tracker-service
       port: 8000
     bpTracker:
-      host: bp-tracker.home-lab.com
+      host: bp-tracker.geitner.cc
       service: bp-tracker-service
       port: 5001
     registry:
-      host: registry.home-lab.com
+      host: registry.geitner.cc
       service: registry-ui
       port: 8090
 
@@ -58,7 +61,10 @@ ingressRouteArgocd:
   namespace: argocd
   entryPoints:
     - web
-  host: argocd.home-lab.com
+    - websecure
+  tls:
+    secretName: wildcard-tls
+  host: argocd.geitner.cc
   service: argocd-server
   port: 80
 
