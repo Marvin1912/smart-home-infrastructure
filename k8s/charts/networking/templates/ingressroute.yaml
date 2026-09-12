@@ -41,12 +41,6 @@ spec:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.backend.service }}
           port: {{ .Values.ingressRoute.routes.backend.port }}
-    - match: Host(`{{ .Values.ingressRoute.routes.linkwarden.host }}`)
-      kind: Rule
-      services:
-        - kind: Service
-          name: {{ .Values.ingressRoute.routes.linkwarden.service }}
-          port: {{ .Values.ingressRoute.routes.linkwarden.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.wiki.host }}`)
       kind: Rule
       services:

@@ -24,10 +24,6 @@ ingressRoute:
       host: backend.geitner.cc
       service: applications-service
       port: 9055
-    linkwarden:
-      host: linkwarden.geitner.cc
-      service: linkwarden
-      port: 3000
     wiki:
       host: wiki.geitner.cc
       service: wikijs-service
