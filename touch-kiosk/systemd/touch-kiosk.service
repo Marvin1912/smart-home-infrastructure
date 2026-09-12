@@ -13,7 +13,7 @@ ExecStart=/usr/bin/chromium --kiosk --incognito --noerrdialogs --disable-transla
   --disable-features=TranslateUI --check-for-update-interval=31536000 \
   --disable-pinch --overscroll-history-navigation=0 \
   --password-store=basic --no-first-run --no-default-browser-check \
-  --app=http://frontend.home-lab.com/touch
+  --app=https://frontend.geitner.cc/touch
 Restart=on-failure
 RestartSec=5
 
