@@ -9,7 +9,7 @@ workload (a.k.a. `backend`) and Grafana for time-series storage.
 |-----------|-------------------------------------------------------------|
 | URL       | `http://influxdb-service.default.svc.cluster.local:8086`    |
 | Org       | `wildfly_domain`                                            |
-| UI / HTTP | `http://influxdb.home-lab.com` (via Traefik IngressRoute)   |
+| UI / HTTPS | `https://influxdb.geitner.cc` (via Traefik IngressRoute)   |
 
 The chart provisions a `ClusterIP` Service named `influxdb-service` in the
 `default` namespace; in-cluster workloads connect via the FQDN above.
