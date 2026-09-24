@@ -24,3 +24,18 @@ certificates:
       - geitner.cc
       - "*.geitner.cc"
     renewBefore: 720h
+
+# Renewal monitoring (#113): scrape cert-manager's own metrics and alert if a
+# certificate is close to expiry without having renewed, or cert-manager reports
+# it as not Ready.
+serviceMonitor:
+  enabled: true
+  releaseLabel: kube-prometheus-stack
+
+prometheusRules:
+  enabled: true
+  releaseLabel: kube-prometheus-stack
+  # 14 days: renewBefore above is 720h/30d, so a healthy certificate should have
+  # already renewed well before this threshold — firing here means something is
+  # actually wrong (DNS-01 challenge failing, ClusterIssuer misconfigured, etc.).
+  expirySoonSeconds: 1209600

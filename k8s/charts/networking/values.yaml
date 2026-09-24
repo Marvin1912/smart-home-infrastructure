@@ -48,6 +48,16 @@ ingressRoute:
 middlewares:
   frontendNoCache:
     name: frontend-no-cache
+  # HSTS: evaluated as part of #113 after all services were verified to serve a
+  # valid Let's Encrypt chain over websecure. 180 days (not the 1-2 years typical
+  # for public sites) since this is the first rollout on an internal-only domain;
+  # preload is off on purpose — geitner.cc is not (and should not become) submitted
+  # to browsers' HSTS preload list, which is effectively irreversible.
+  hstsHeaders:
+    name: hsts-headers
+    maxAgeSeconds: 15552000
+    includeSubdomains: true
+    preload: false
 
 ingressRouteArgocd:
   name: argocd
