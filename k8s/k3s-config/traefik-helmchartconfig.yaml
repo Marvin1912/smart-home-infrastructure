@@ -33,6 +33,14 @@
 # The entryPoint redirection is Traefik's documented mechanism for exactly this case
 # and is implemented internally as a middleware on the `web` entryPoint.
 #
+# `to` is the literal port ":443", not the entrypoint name "websecure": the
+# websecure entryPoint listens on container port 8443 (exposedPort: 443 below is
+# only the Service-level remap), and `to=websecure` makes Traefik build the
+# Location header from the entrypoint's own listening port — i.e. it redirects to
+# ":8443", which isn't reachable from outside the pod. Verified live on
+# 2026-09-24: `to=websecure` produced `Location: https://.../` with :8443
+# appended; `to=:443` fixed it.
+#
 # Part of #111 (websecure entrypoint activation) and #113 (HTTP->HTTPS redirect),
 # tracking issue #107.
 apiVersion: helm.cattle.io/v1
@@ -44,7 +52,7 @@ spec:
   valuesContent: |-
     additionalArguments:
       - "--entrypoints.postgres.address=:5432"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.to=:443"
       - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
       - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
 
