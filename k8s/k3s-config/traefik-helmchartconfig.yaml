@@ -14,6 +14,8 @@
 #   4. Verify the websecure listener: echo | openssl s_client -connect <traefik-lb-ip>:443
 #      -> expect a TLS handshake (falls back to the Traefik default self-signed cert
 #      until a real route/certificate is wired up, see #112)
+#   5. Verify the HTTP->HTTPS redirect: curl -I http://<any-host>.geitner.cc
+#      -> expect "HTTP/1.1 301 Moved Permanently" with a "Location: https://..." header
 #
 # Note (2026-09-12): verified against the live cluster that "websecure" (port 443,
 # TLS-terminating) is already active — it ships enabled by default in this chart
@@ -21,7 +23,18 @@
 # that explicit and pins it in version control instead of relying on undocumented
 # chart defaults. "postgres" reflects the already-live, previously-untracked config.
 #
-# Part of #111 (websecure entrypoint activation), tracking issue #107.
+# Note (2026-09-24, #113): all 11 currently routed services were verified to present
+# a valid Let's Encrypt chain (chain of trust to ISRG Root X1, `openssl verify return
+# code: 0`) over websecure before the redirect below was added — see PR for #113.
+# The redirect uses Traefik's static entryPoint-level redirection (--entrypoints.web.*)
+# rather than a namespaced Middleware CRD: IngressRoutes here only listen on
+# `websecure`, so a Middleware couldn't be attached to plain-HTTP traffic on `web`
+# without also matching (and redirect-looping) the HTTPS traffic on the same route.
+# The entryPoint redirection is Traefik's documented mechanism for exactly this case
+# and is implemented internally as a middleware on the `web` entryPoint.
+#
+# Part of #111 (websecure entrypoint activation) and #113 (HTTP->HTTPS redirect),
+# tracking issue #107.
 apiVersion: helm.cattle.io/v1
 kind: HelmChartConfig
 metadata:
@@ -31,6 +44,9 @@ spec:
   valuesContent: |-
     additionalArguments:
       - "--entrypoints.postgres.address=:5432"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entryPoint.permanent=true"
 
     ports:
       postgres:

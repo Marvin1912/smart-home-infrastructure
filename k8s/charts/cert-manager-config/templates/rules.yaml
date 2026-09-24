@@ -1,0 +1,34 @@
+{{- if .Values.prometheusRules.enabled }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cert-manager-rules
+  namespace: default
+  labels:
+    release: {{ .Values.prometheusRules.releaseLabel }}
+    app.kubernetes.io/managed-by: Helm
+spec:
+  groups:
+    - name: certificates
+      rules:
+        # certmanager_certificate_* metrics carry their own "namespace" label (the
+        # Certificate's namespace), which the Prometheus Operator relabels to
+        # "exported_namespace" because it collides with the scrape target's own
+        # "namespace" label (cert-manager, from the ServiceMonitor).
+        - alert: CertificateExpirySoon
+          expr: (certmanager_certificate_expiration_timestamp_seconds - time()) < {{ .Values.prometheusRules.expirySoonSeconds | int }}
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Certificate {{ `{{ $labels.name }}` }} ({{ `{{ $labels.exported_namespace }}` }}) expires soon and has not renewed"
+            description: "cert-manager has not renewed certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} in time (renewBefore is 720h/30d, this fires below {{ .Values.prometheusRules.expirySoonSeconds | int }}s remaining) — check cert-manager logs and the ACME/DNS-01 challenge status."
+        - alert: CertificateNotReady
+          expr: max by (name, exported_namespace, condition) (certmanager_certificate_ready_status{condition!="True"}) == 1
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Certificate {{ `{{ $labels.name }}` }} ({{ `{{ $labels.exported_namespace }}` }}) is not Ready"
+            description: "cert-manager reports certificate {{ `{{ $labels.name }}` }} in namespace {{ `{{ $labels.exported_namespace }}` }} as not ready (condition={{ `{{ $labels.condition }}` }})."
+{{- end }}

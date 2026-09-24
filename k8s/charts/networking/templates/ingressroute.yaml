@@ -11,18 +11,24 @@ spec:
   routes:
     - match: Host(`{{ .Values.ingressRoute.routes.prometheus.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.prometheus.service }}
           port: {{ .Values.ingressRoute.routes.prometheus.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.grafana.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.grafana.service }}
           port: {{ .Values.ingressRoute.routes.grafana.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.influxdb.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.influxdb.service }}
@@ -31,42 +37,55 @@ spec:
       kind: Rule
       middlewares:
         - name: {{ .Values.middlewares.frontendNoCache.name }}
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.frontend.service }}
           port: {{ .Values.ingressRoute.routes.frontend.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.backend.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.backend.service }}
           port: {{ .Values.ingressRoute.routes.backend.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.wiki.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.wiki.service }}
           port: {{ .Values.ingressRoute.routes.wiki.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.anki.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.anki.service }}
           port: {{ .Values.ingressRoute.routes.anki.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.stock.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.stock.service }}
           port: {{ .Values.ingressRoute.routes.stock.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.bpTracker.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.bpTracker.service }}
           port: {{ .Values.ingressRoute.routes.bpTracker.port }}
     - match: Host(`{{ .Values.ingressRoute.routes.registry.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRoute.routes.registry.service }}
@@ -85,6 +104,8 @@ spec:
   routes:
     - match: Host(`{{ .Values.ingressRouteArgocd.host }}`)
       kind: Rule
+      middlewares:
+        - name: {{ .Values.middlewares.hstsHeaders.name }}
       services:
         - kind: Service
           name: {{ .Values.ingressRouteArgocd.service }}
