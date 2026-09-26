@@ -2351,13 +2351,20 @@
           "text": "37.82",
           "value": "37.82"
         },
-        "description": "Fixer Strompreis in Cent pro kWh",
-        "hide": 2,
+        "description": "Strompreis in Cent pro kWh (Dezimalpunkt, z. B. 37.82). Zum dauerhaften Übernehmen das Dashboard mit \"Update default variable values\" speichern.",
+        "hide": 0,
         "label": "Strompreis (ct/kWh)",
         "name": "Strompreis",
+        "options": [
+          {
+            "selected": true,
+            "text": "37.82",
+            "value": "37.82"
+          }
+        ],
         "query": "37.82",
-        "skipUrlSync": true,
-        "type": "constant"
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
