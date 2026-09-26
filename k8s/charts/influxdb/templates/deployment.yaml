@@ -29,6 +29,7 @@ spec:
             port: 8086
           initialDelaySeconds: {{ .Values.probes.liveness.initialDelaySeconds }}
           periodSeconds: {{ .Values.probes.liveness.periodSeconds }}
+          timeoutSeconds: {{ .Values.probes.liveness.timeoutSeconds }}
         readinessProbe:
           httpGet:
             path: /health
@@ -56,6 +57,10 @@ spec:
                 key: INFLUX_ADMIN_TOKEN
           - name: INFLUXDB_REPORTING_DISABLED
             value: "{{ .Values.influxdb.reportingDisabled }}"
+          # Soft heap limit below the container limit so the Go GC reclaims
+          # memory before the kernel OOM-kills influxd under query load.
+          - name: GOMEMLIMIT
+            value: "{{ .Values.influxdb.goMemLimit }}"
         resources:
           requests:
             memory: {{ .Values.resources.requests.memory | quote }}

@@ -25,11 +25,13 @@ influxdb:
   org: "wildfly_domain"
   bucket: "costs"
   reportingDisabled: "true"
+  goMemLimit: "1100MiB"
 
 probes:
   liveness:
     initialDelaySeconds: 30
     periodSeconds: 10
+    timeoutSeconds: 5
   readiness:
     initialDelaySeconds: 15
     periodSeconds: 5
