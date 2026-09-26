@@ -8,6 +8,10 @@ metadata:
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: 0
+  # influxd holds an exclusive lock on its bolt file; a surge pod on the same
+  # volume cannot start until the old one is gone.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: influxdb
