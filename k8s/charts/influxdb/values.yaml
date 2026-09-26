@@ -25,7 +25,7 @@ influxdb:
   org: "wildfly_domain"
   bucket: "costs"
   reportingDisabled: "true"
-  goMemLimit: "1100MiB"
+  goMemLimit: "1350MiB"
 
 probes:
   liveness:
