@@ -406,7 +406,20 @@
           },
           "unit": "kwatth"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Jahr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -820,6 +833,18 @@
           "unit": "kwatth"
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Jahr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
@@ -1279,6 +1304,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Jahr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Kosten"
             },
             "properties": [
@@ -1735,6 +1772,18 @@
           {
             "matcher": {
               "id": "byName",
+              "options": "Jahr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
               "options": "Kosten"
             },
             "properties": [
@@ -2188,6 +2237,18 @@
           "unit": "kwatth"
         },
         "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Jahr"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "string"
+              }
+            ]
+          },
           {
             "matcher": {
               "id": "byName",
