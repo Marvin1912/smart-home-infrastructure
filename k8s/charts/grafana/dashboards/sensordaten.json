@@ -41,48 +41,71 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
+            "mode": "continuous-BlYlRd"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "gauge",
+              "mode": "gradient",
+              "valueDisplayMode": "text"
+            },
+            "inspect": false
           },
           "decimals": 1,
           "mappings": [],
+          "min": -10,
+          "max": 35,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
-                "value": 0
+                "value": null
               }
             ]
           },
           "unit": "celsius"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sensor"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
+        "h": 8,
+        "w": 12,
         "x": 0,
         "y": 1
       },
-      "hideTimeOverride": false,
       "id": 2,
       "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "countRows": false,
           "fields": "",
-          "values": false
+          "reducer": [
+            "sum"
+          ]
         },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
+        "showHeader": true
       },
       "pluginVersion": "12.1.0",
       "targets": [
@@ -90,12 +113,12 @@
           "datasource": {
             "type": "influxdb"
           },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\" and r.entity_id == \"badezimmer_temperature\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\")\n  |> filter(fn: (r) => contains(value: r.entity_id, set: [\"badezimmer_temperature\",\"flur_temperature\",\"kueche_temperature\",\"schlafzimmer_temperature\",\"wohnzimmer_temperature\",\"draussen_temperature\"]))\n  |> group(columns: [\"entity_id\"])\n  |> sort(columns: [\"_time\"])\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0, Aktuell: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0,\n        Aktuell: r._value\n      }))\n  |> group()\n  |> map(fn: (r) => ({\n      Sensor:\n        if r.entity_id == \"badezimmer_temperature\" then \"Badezimmer\"\n        else if r.entity_id == \"flur_temperature\" then \"Flur\"\n        else if r.entity_id == \"kueche_temperature\" then \"Küche\"\n        else if r.entity_id == \"schlafzimmer_temperature\" then \"Schlafzimmer\"\n        else if r.entity_id == \"wohnzimmer_temperature\" then \"Wohnzimmer\"\n        else if r.entity_id == \"draussen_temperature\" then \"Draußen\"\n        else r.entity_id,\n      Aktuell: r.Aktuell,\n      Min: r.Min,\n      Max: r.Max,\n      \"Ø\": r.sum / r.n,\n      ord: if r.entity_id =~ /^draussen_/ then 1 else 0\n    }))\n  |> sort(columns: [\"ord\", \"Sensor\"])\n  |> drop(columns: [\"ord\"])\n",
           "refId": "A"
         }
       ],
       "timeFrom": "24h",
-      "title": "Badezimmer Temperatur",
+      "title": "Temperatur",
       "transformations": [
         {
           "id": "organize",
@@ -103,15 +126,17 @@
             "excludeByName": {},
             "includeByName": {},
             "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
+              "Sensor": 0,
+              "Aktuell": 1,
+              "Min": 2,
+              "Max": 3,
+              "Ø": 4
             },
             "renameByName": {}
           }
         }
       ],
-      "type": "stat"
+      "type": "table"
     },
     {
       "datasource": {
@@ -120,48 +145,83 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "gauge",
+              "mode": "gradient",
+              "valueDisplayMode": "text"
+            },
+            "inspect": false
           },
           "decimals": 1,
           "mappings": [],
+          "min": 0,
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
+                "color": "orange",
+                "value": null
+              },
+              {
                 "color": "green",
-                "value": 0
+                "value": 40
+              },
+              {
+                "color": "orange",
+                "value": 60
+              },
+              {
+                "color": "red",
+                "value": 70
               }
             ]
           },
-          "unit": "celsius"
+          "unit": "percent"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Sensor"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "auto"
+                }
+              },
+              {
+                "id": "custom.width",
+                "value": 130
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 4,
+        "h": 8,
+        "w": 12,
+        "x": 12,
         "y": 1
       },
-      "hideTimeOverride": false,
       "id": 3,
       "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+        "cellHeight": "sm",
+        "footer": {
+          "show": false,
+          "countRows": false,
           "fields": "",
-          "values": false
+          "reducer": [
+            "sum"
+          ]
         },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
+        "showHeader": true
       },
       "pluginVersion": "12.1.0",
       "targets": [
@@ -169,12 +229,12 @@
           "datasource": {
             "type": "influxdb"
           },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\" and r.entity_id == \"flur_temperature\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
+          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\")\n  |> filter(fn: (r) => contains(value: r.entity_id, set: [\"badezimmer_humidity\",\"flur_humidity\",\"kueche_humidity\",\"schlafzimmer_humidity\",\"wohnzimmer_humidity\",\"draussen_humidity\"]))\n  |> group(columns: [\"entity_id\"])\n  |> sort(columns: [\"_time\"])\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0, Aktuell: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0,\n        Aktuell: r._value\n      }))\n  |> group()\n  |> map(fn: (r) => ({\n      Sensor:\n        if r.entity_id == \"badezimmer_humidity\" then \"Badezimmer\"\n        else if r.entity_id == \"flur_humidity\" then \"Flur\"\n        else if r.entity_id == \"kueche_humidity\" then \"Küche\"\n        else if r.entity_id == \"schlafzimmer_humidity\" then \"Schlafzimmer\"\n        else if r.entity_id == \"wohnzimmer_humidity\" then \"Wohnzimmer\"\n        else if r.entity_id == \"draussen_humidity\" then \"Draußen\"\n        else r.entity_id,\n      Aktuell: r.Aktuell,\n      Min: r.Min,\n      Max: r.Max,\n      \"Ø\": r.sum / r.n,\n      ord: if r.entity_id =~ /^draussen_/ then 1 else 0\n    }))\n  |> sort(columns: [\"ord\", \"Sensor\"])\n  |> drop(columns: [\"ord\"])\n",
           "refId": "A"
         }
       ],
       "timeFrom": "24h",
-      "title": "Flur Temperatur",
+      "title": "Luftfeuchtigkeit",
       "transformations": [
         {
           "id": "organize",
@@ -182,805 +242,17 @@
             "excludeByName": {},
             "includeByName": {},
             "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
+              "Sensor": 0,
+              "Aktuell": 1,
+              "Min": 2,
+              "Max": 3,
+              "Ø": 4
             },
             "renameByName": {}
           }
         }
       ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 8,
-        "y": 1
-      },
-      "hideTimeOverride": false,
-      "id": 4,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\" and r.entity_id == \"kueche_temperature\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Küche Temperatur",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 12,
-        "y": 1
-      },
-      "hideTimeOverride": false,
-      "id": 5,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\" and r.entity_id == \"schlafzimmer_temperature\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Schlafzimmer Temperatur",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 16,
-        "y": 1
-      },
-      "hideTimeOverride": false,
-      "id": 6,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\" and r.entity_id == \"wohnzimmer_temperature\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Wohnzimmer Temperatur",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "celsius"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 20,
-        "y": 1
-      },
-      "hideTimeOverride": false,
-      "id": 7,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"°C\" and r._field == \"value\" and r.entity_id == \"draussen_temperature\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Draußen Temperatur",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 0,
-        "y": 6
-      },
-      "hideTimeOverride": false,
-      "id": 8,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.entity_id == \"badezimmer_humidity\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Badezimmer Luftfeuchtigkeit",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 4,
-        "y": 6
-      },
-      "hideTimeOverride": false,
-      "id": 9,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.entity_id == \"flur_humidity\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Flur Luftfeuchtigkeit",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 8,
-        "y": 6
-      },
-      "hideTimeOverride": false,
-      "id": 10,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.entity_id == \"kueche_humidity\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Küche Luftfeuchtigkeit",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 12,
-        "y": 6
-      },
-      "hideTimeOverride": false,
-      "id": 11,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.entity_id == \"schlafzimmer_humidity\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Schlafzimmer Luftfeuchtigkeit",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 16,
-        "y": 6
-      },
-      "hideTimeOverride": false,
-      "id": 12,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.entity_id == \"wohnzimmer_humidity\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Wohnzimmer Luftfeuchtigkeit",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "fixed",
-            "fixedColor": "text"
-          },
-          "decimals": 1,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 5,
-        "w": 4,
-        "x": 20,
-        "y": 6
-      },
-      "hideTimeOverride": false,
-      "id": 13,
-      "options": {
-        "colorMode": "none",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "horizontal",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.1.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb"
-          },
-          "query": "from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"%\" and r._field == \"value\" and r.entity_id == \"draussen_humidity\")\n  |> group()\n  |> reduce(\n      identity: {Min: 1000.0, Max: -1000.0, sum: 0.0, n: 0.0},\n      fn: (r, accumulator) => ({\n        Min: if r._value < accumulator.Min then r._value else accumulator.Min,\n        Max: if r._value > accumulator.Max then r._value else accumulator.Max,\n        sum: accumulator.sum + r._value,\n        n: accumulator.n + 1.0\n      }))\n  |> map(fn: (r) => ({Min: r.Min, Max: r.Max, Avg: r.sum / r.n}))\n  |> rename(columns: {Avg: \"Ø\"})\n",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": "24h",
-      "title": "Draußen Luftfeuchtigkeit",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {},
-            "includeByName": {},
-            "indexByName": {
-              "Min": 0,
-              "Max": 1,
-              "Ø": 2
-            },
-            "renameByName": {}
-          }
-        }
-      ],
-      "type": "stat"
+      "type": "table"
     },
     {
       "datasource": {
@@ -1019,7 +291,7 @@
         "h": 5,
         "w": 20,
         "x": 0,
-        "y": 11
+        "y": 9
       },
       "id": 14,
       "options": {
@@ -1110,7 +382,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 11
+        "y": 9
       },
       "id": 15,
       "options": {
@@ -1149,7 +421,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 16
+        "y": 14
       },
       "id": 17,
       "panels": [
@@ -1216,7 +488,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 17
+            "y": 15
           },
           "id": 16,
           "options": {
@@ -1262,7 +534,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 15
       },
       "id": 19,
       "panels": [
@@ -1329,7 +601,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 16
           },
           "id": 18,
           "options": {
@@ -1375,7 +647,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 16
       },
       "id": 21,
       "panels": [
@@ -1442,7 +714,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 19
+            "y": 17
           },
           "id": 20,
           "options": {
@@ -1488,7 +760,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 17
       },
       "id": 23,
       "panels": [
@@ -1555,7 +827,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 20
+            "y": 18
           },
           "id": 22,
           "options": {
