@@ -4,6 +4,8 @@ metadata:
   name: influxdb-setup-job
   namespace: default
   annotations:
+    # Argo CD maps this to a PostSync hook, i.e. the job runs on every sync;
+    # the setup script (configmap.yaml) must stay idempotent.
     helm.sh/hook: post-install
     helm.sh/hook-weight: "1"
     helm.sh/hook-delete-policy: hook-succeeded

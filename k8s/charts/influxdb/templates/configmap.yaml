@@ -11,6 +11,10 @@ data:
 
     # InfluxDB Configuration Setup Script
     # This script recreates the InfluxDB configuration from 192.168.178.29:8086
+    #
+    # Runs on every Argo CD sync (Argo CD maps the Helm post-install hook of
+    # the setup job to PostSync), so every step must be idempotent: existing
+    # buckets and tasks are left alone and the temporary API token is revoked.
 
     set -e
 
@@ -42,7 +46,7 @@ data:
 
     # Generate a new API token using the initial admin token
     generate_api_token() {
-        print_info "Generating new API token with init token: ${INIT_TOKEN}..."
+        print_info "Generating temporary API token..."
 
         # Use the init token to create a proper API token with all permissions
         local org_response=$(curl -s -H "Authorization: Token $INIT_TOKEN" \
@@ -108,6 +112,7 @@ data:
             "$INFLUX_URL/api/v2/authorizations")
 
         INFLUX_TOKEN=$(echo "$token_response" | jq -r '.token')
+        INFLUX_TOKEN_ID=$(echo "$token_response" | jq -r '.id')
 
         if [ -z "$INFLUX_TOKEN" ] || [ "$INFLUX_TOKEN" = "null" ]; then
             print_error "Failed to generate API token"
@@ -115,7 +120,20 @@ data:
             exit 1
         fi
 
-        print_success "New API token generated successfully"
+        # The token is only needed for this run; revoke it on exit so repeated
+        # runs don't pile up tokens.
+        trap revoke_api_token EXIT
+
+        print_success "Temporary API token generated successfully"
+    }
+
+    # Revoke the temporary API token created by generate_api_token
+    revoke_api_token() {
+        if [ -n "$INFLUX_TOKEN_ID" ] && [ "$INFLUX_TOKEN_ID" != "null" ]; then
+            curl -s -X DELETE -H "Authorization: Token $INIT_TOKEN" \
+                "$INFLUX_URL/api/v2/authorizations/$INFLUX_TOKEN_ID" > /dev/null
+            print_success "Temporary API token revoked"
+        fi
     }
 
     # Check if InfluxDB is running
@@ -159,81 +177,47 @@ data:
         fi
     }
 
+    # Create a bucket unless one with that name already exists
+    # Usage: create_bucket <name> <retention seconds, 0 = infinite>
+    create_bucket() {
+        local name="$1"
+        local retention="$2"
+
+        local existing_id=$(curl -s -H "Authorization: Token $INFLUX_TOKEN" \
+            "$INFLUX_URL/api/v2/buckets?orgID=$ORG_ID&name=$name" | \
+            jq -r '.buckets[0].id // empty')
+
+        if [ -n "$existing_id" ]; then
+            print_success "Bucket '$name' already exists with ID: $existing_id"
+            return 0
+        fi
+
+        print_info "Creating bucket '$name'..."
+        local bucket_id=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{
+                "orgID": "'"$ORG_ID"'",
+                "name": "'"$name"'",
+                "retentionRules": [
+                    {
+                        "type": "expire",
+                        "everySeconds": '"$retention"',
+                        "shardGroupDurationSeconds": 604800
+                    }
+                ]
+            }' \
+            "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
+        print_success "Bucket '$name' created with ID: $bucket_id"
+    }
+
     # Create user buckets
     create_buckets() {
         print_info "Creating user buckets..."
 
-        # Bucket: costs
-        print_info "Creating bucket 'costs'..."
-        COSTS_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-                "orgID": "'"$ORG_ID"'",
-                "name": "costs",
-                "retentionRules": [
-                    {
-                        "type": "expire",
-                        "everySeconds": 0,
-                        "shardGroupDurationSeconds": 604800
-                    }
-                ]
-            }' \
-            "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
-        print_success "Bucket 'costs' created with ID: $COSTS_BUCKET"
-
-        # Bucket: sensor_data
-        print_info "Creating bucket 'sensor_data'..."
-        SENSOR_DATA_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-                "orgID": "'"$ORG_ID"'",
-                "name": "sensor_data",
-                "retentionRules": [
-                    {
-                        "type": "expire",
-                        "everySeconds": 7776000,
-                        "shardGroupDurationSeconds": 604800
-                    }
-                ]
-            }' \
-            "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
-        print_success "Bucket 'sensor_data' created with ID: $SENSOR_DATA_BUCKET"
-
-        # Bucket: sensor_data_30m
-        print_info "Creating bucket 'sensor_data_30m'..."
-        SENSOR_DATA_30M_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-                "orgID": "'"$ORG_ID"'",
-                "name": "sensor_data_30m",
-                "retentionRules": [
-                    {
-                        "type": "expire",
-                        "everySeconds": 0,
-                        "shardGroupDurationSeconds": 604800
-                    }
-                ]
-            }' \
-            "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
-        print_success "Bucket 'sensor_data_30m' created with ID: $SENSOR_DATA_30M_BUCKET"
-
-        # Bucket: system_metrics
-        print_info "Creating bucket 'system_metrics'..."
-        SYSTEM_METRICS_BUCKET=$(curl -s -X POST -H "Authorization: Token $INFLUX_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-                "orgID": "'"$ORG_ID"'",
-                "name": "system_metrics",
-                "retentionRules": [
-                    {
-                        "type": "expire",
-                        "everySeconds": 0,
-                        "shardGroupDurationSeconds": 604800
-                    }
-                ]
-            }' \
-            "$INFLUX_URL/api/v2/buckets" | jq -r '.id')
-        print_success "Bucket 'system_metrics' created with ID: $SYSTEM_METRICS_BUCKET"
+        create_bucket costs 0
+        create_bucket sensor_data 7776000
+        create_bucket sensor_data_30m 0
+        create_bucket system_metrics 0
     }
 
     # Create scheduled tasks
@@ -247,6 +231,15 @@ data:
         # so a missed run doesn't lose data before it ages out of sensor_data's
         # 90-day retention; re-processing already-downsampled points is a no-op
         # (same series+timestamp just overwrites).
+        local existing_task=$(curl -s -H "Authorization: Token $INFLUX_TOKEN" \
+            "$INFLUX_URL/api/v2/tasks?orgID=$ORG_ID&name=Downsample%20to%2030m%20means" | \
+            jq -r '.tasks[0].id // empty')
+
+        if [ -n "$existing_task" ]; then
+            print_success "Task 'Downsample to 30m means' already exists with ID: $existing_task"
+            return 0
+        fi
+
         print_info "Creating task 'Downsample to 30m means' (Active)..."
         TASK1_FLUX='option task = {name: "Downsample to 30m means", every: 1d}
 
@@ -309,7 +302,6 @@ data:
         echo "  - Organization: $INFLUX_ORG (ID: $ORG_ID)"
         echo "  - User Buckets: 4 (costs, sensor_data, sensor_data_30m, system_metrics)"
         echo "  - Tasks: 1 (active)"
-        echo "  - Generated API Token: ${INFLUX_TOKEN:0:20}..."
     }
 
     # Run main function
