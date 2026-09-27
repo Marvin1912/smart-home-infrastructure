@@ -22,9 +22,9 @@ panel_iframe:
 
 influxdb:
   api_version: 2
-  ssl: false
-  host: influxdb.home-lab.com
-  port: 80
+  ssl: true
+  host: influxdb.geitner.cc
+  port: 443
   token: rmz5aaaKYSpgvXSO3C1UFZmXjvtpwI81b7hcMaMJJqOTjvgI82iNAbSsF7fpGIy2fduNDKACQ759cyaiECrulg==
   organization: wildfly_domain
   bucket: sensor_data
@@ -34,6 +34,9 @@ influxdb:
     - friendly_name
   default_measurement: units
   include:
+    entities:
+      - sensor.0xa4c1384930c28843_power
+      - sensor.0xa4c1384930c28843_energy
     entity_globs:
       - sensor.tasmota*
       - sensor.moisture*
