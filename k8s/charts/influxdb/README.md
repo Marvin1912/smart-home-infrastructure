@@ -17,7 +17,10 @@ The chart provisions a `ClusterIP` Service named `influxdb-service` in the
 ## Buckets
 
 Buckets are created by the post-install setup job
-(`templates/setup-job.yaml` + `templates/configmap.yaml`).
+(`templates/setup-job.yaml` + `templates/configmap.yaml`). Argo CD maps the
+Helm `post-install` hook to `PostSync`, so the job runs on **every sync**. The
+script is therefore idempotent: it only creates missing buckets and tasks and
+revokes the temporary API token it generates.
 
 | Bucket            | Retention | Purpose                                                        |
 |-------------------|-----------|----------------------------------------------------------------|
