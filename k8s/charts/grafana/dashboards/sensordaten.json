@@ -46,16 +46,16 @@
           "custom": {
             "align": "auto",
             "cellOptions": {
-              "type": "gauge",
               "mode": "gradient",
+              "type": "gauge",
               "valueDisplayMode": "text"
             },
             "inspect": false
           },
           "decimals": 1,
           "mappings": [],
-          "min": -10,
           "max": 35,
+          "min": -10,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -98,12 +98,12 @@
       "options": {
         "cellHeight": "sm",
         "footer": {
-          "show": false,
           "countRows": false,
           "fields": "",
           "reducer": [
             "sum"
-          ]
+          ],
+          "show": false
         },
         "showHeader": true
       },
@@ -126,10 +126,10 @@
             "excludeByName": {},
             "includeByName": {},
             "indexByName": {
-              "Sensor": 0,
               "Aktuell": 1,
-              "Min": 2,
               "Max": 3,
+              "Min": 2,
+              "Sensor": 0,
               "Ø": 4
             },
             "renameByName": {}
@@ -150,16 +150,16 @@
           "custom": {
             "align": "auto",
             "cellOptions": {
-              "type": "gauge",
               "mode": "gradient",
+              "type": "gauge",
               "valueDisplayMode": "text"
             },
             "inspect": false
           },
           "decimals": 1,
           "mappings": [],
-          "min": 0,
           "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -214,12 +214,12 @@
       "options": {
         "cellHeight": "sm",
         "footer": {
-          "show": false,
           "countRows": false,
           "fields": "",
           "reducer": [
             "sum"
-          ]
+          ],
+          "show": false
         },
         "showHeader": true
       },
@@ -242,10 +242,10 @@
             "excludeByName": {},
             "includeByName": {},
             "indexByName": {
-              "Sensor": 0,
               "Aktuell": 1,
-              "Min": 2,
               "Max": 3,
+              "Min": 2,
+              "Sensor": 0,
               "Ø": 4
             },
             "renameByName": {}
@@ -346,24 +346,24 @@
           },
           "mappings": [
             {
-              "type": "value",
               "options": {
                 "high": {
                   "color": "green",
                   "index": 0,
                   "text": "Hoch"
                 },
-                "medium": {
-                  "color": "orange",
-                  "index": 1,
-                  "text": "Mittel"
-                },
                 "low": {
                   "color": "red",
                   "index": 2,
                   "text": "Niedrig"
+                },
+                "medium": {
+                  "color": "orange",
+                  "index": 1,
+                  "text": "Mittel"
                 }
-              }
+              },
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -440,6 +440,8 @@
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
+                "axisSoftMax": 30,
+                "axisSoftMin": 15,
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
                 "drawStyle": "line",
@@ -465,9 +467,7 @@
                 },
                 "thresholdsStyle": {
                   "mode": "off"
-                },
-                "axisSoftMin": 15,
-                "axisSoftMax": 30
+                }
               },
               "decimals": 1,
               "mappings": [],
@@ -553,6 +553,7 @@
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
+                "axisSoftMin": 30,
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
                 "drawStyle": "line",
@@ -578,11 +579,11 @@
                 },
                 "thresholdsStyle": {
                   "mode": "off"
-                },
-                "axisSoftMin": 30
+                }
               },
               "decimals": 1,
               "mappings": [],
+              "max": 100,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -592,8 +593,7 @@
                   }
                 ]
               },
-              "unit": "percent",
-              "max": 100
+              "unit": "percent"
             },
             "overrides": []
           },
@@ -666,6 +666,8 @@
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
+                "axisSoftMax": 40,
+                "axisSoftMin": -10,
                 "barAlignment": 0,
                 "barWidthFactor": 0.6,
                 "drawStyle": "line",
@@ -691,9 +693,7 @@
                 },
                 "thresholdsStyle": {
                   "mode": "off"
-                },
-                "axisSoftMin": -10,
-                "axisSoftMax": 40
+                }
               },
               "decimals": 1,
               "mappings": [],
@@ -808,6 +808,8 @@
               },
               "decimals": 1,
               "mappings": [],
+              "max": 100,
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -817,9 +819,7 @@
                   }
                 ]
               },
-              "unit": "percent",
-              "min": 0,
-              "max": 100
+              "unit": "percent"
             },
             "overrides": []
           },
@@ -883,5 +883,5 @@
   "timezone": "",
   "title": "Sensordaten",
   "uid": "e5e234c1-2b05-43e4-a864-fb71d766728a",
-  "version": 5
+  "version": 8
 }
