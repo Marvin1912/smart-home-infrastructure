@@ -649,6 +649,117 @@
         "x": 0,
         "y": 16
       },
+      "id": 25,
+      "panels": [
+        {
+          "datasource": {
+            "type": "influxdb"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "smooth",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 1,
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "pressurehpa"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 17
+          },
+          "id": 24,
+          "options": {
+            "legend": {
+              "calcs": [
+                "min",
+                "max",
+                "mean",
+                "lastNotNull"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Name",
+              "sortDesc": false
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "desc"
+            }
+          },
+          "pluginVersion": "12.1.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "influxdb"
+              },
+              "query": "names = (r) => ({\n    r with friendly_name:\n      if r.entity_id == \"badezimmer_pressure\" then \"Badezimmer\"\n      else if r.entity_id == \"flur_pressure\" then \"Flur\"\n      else if r.entity_id == \"kueche_pressure\" then \"Küche\"\n      else if r.entity_id == \"schlafzimmer_pressure\" then \"Schlafzimmer\"\n      else if r.entity_id == \"wohnzimmer_pressure\" then \"Wohnzimmer\"\n      else \"Nicht bekannt\"\n  })\n\nb30 = from(bucket:\"sensor_data_30m\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"hPa\" and r._field == \"value\")\n  |> map(fn: names)\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nb = from(bucket:\"sensor_data\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"hPa\" and r._field == \"value\")\n  |> map(fn: names)\n  |> filter(fn: (r) => r.friendly_name != \"Nicht bekannt\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> duplicate(column: \"friendly_name\", as: \"_field\")\n  |> group(columns: [\"_field\"])\n  |> keep(columns: [\"_time\", \"_value\", \"_field\"])\n\nunion(tables: [b30, b])\n",
+              "refId": "A"
+            }
+          ],
+          "title": "Luftdruck",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Innen – Luftdruck",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 17
+      },
       "id": 21,
       "panels": [
         {
@@ -714,7 +825,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 17
+            "y": 18
           },
           "id": 20,
           "options": {
@@ -760,7 +871,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 18
       },
       "id": 23,
       "panels": [
@@ -827,7 +938,7 @@
             "h": 12,
             "w": 24,
             "x": 0,
-            "y": 18
+            "y": 19
           },
           "id": 22,
           "options": {
