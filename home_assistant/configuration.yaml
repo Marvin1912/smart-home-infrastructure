@@ -45,6 +45,7 @@ influxdb:
       - sensor.*_moisture
       - sensor.*_battery_*
       - sensor.*_illuminance_level
+      - sensor.*_pressure
 
 prometheus:
   filter:
