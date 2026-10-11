@@ -1032,6 +1032,8 @@
               },
               "decimals": 0,
               "mappings": [],
+              "max": 3,
+              "min": -1,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1041,9 +1043,7 @@
                   }
                 ]
               },
-              "unit": "none",
-              "min": -1,
-              "max": 3
+              "unit": "none"
             },
             "overrides": [
               {
@@ -1060,7 +1060,6 @@
                     "id": "mappings",
                     "value": [
                       {
-                        "type": "value",
                         "options": {
                           "0": {
                             "index": 0,
@@ -1078,7 +1077,8 @@
                             "index": 3,
                             "text": "HOCH"
                           }
-                        }
+                        },
+                        "type": "value"
                       }
                     ]
                   }
@@ -1098,7 +1098,6 @@
                     "id": "mappings",
                     "value": [
                       {
-                        "type": "value",
                         "options": {
                           "-1": {
                             "index": 0,
@@ -1112,7 +1111,8 @@
                             "index": 2,
                             "text": "STEIGEND"
                           }
-                        }
+                        },
+                        "type": "value"
                       }
                     ]
                   }
@@ -1177,5 +1177,5 @@
   "timezone": "",
   "title": "Sensordaten",
   "uid": "e5e234c1-2b05-43e4-a864-fb71d766728a",
-  "version": 8
+  "version": 10
 }
